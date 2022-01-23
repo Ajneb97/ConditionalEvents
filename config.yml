@@ -1,0 +1,17 @@
+Config:
+    update_notification: true
+Messages:
+    prefix: "&4[&bConditionalEvents&4] "
+    commandReload: "&aConfig Reloaded."
+    commandNoPermissions: "&cYou don't have permissions to use this command."
+    commandResetError: "&cUse &7/ce reset <player> <event>"
+    eventDoesNotExists: "&cThat event doesn't exists on the config."
+    cooldownReset: "&aCooldown was reset for player &e%player% &aon event &e%event%&a!"
+    eventEnableError: "&cUse &7/ce enable <event>"
+    eventDisableError: "&cUse &7/ce disable <event>"
+    eventEnabled: "&aEvent &7%event% &aenabled."
+    eventDisabled: "&aEvent &7%event% &adisabled."
+    seconds: 's'
+    minutes: 'm'
+    hours: 'h'
+    days: 'd'
