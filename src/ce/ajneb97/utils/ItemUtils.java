@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import me.clip.placeholderapi.PlaceholderAPI;
+
 public class ItemUtils {
 	
 	private String nombre;
@@ -71,6 +73,15 @@ public class ItemUtils {
 	@SuppressWarnings("deprecation")
 	public static void removeItem(Player player,String textLine) {
 		// remove_item: <id>;<amount>;datavalue: <datavalue>;name: <name>;lorecontains: <lore_line>
+		// remove_item: %checkitem_remove...%
+		if(textLine.startsWith("remove_item: %checkitem")) {
+			if(Bukkit.getServer().getPluginManager().getPlugin("PlaceholderAPI") == null) {
+				return;
+			}
+			textLine = textLine.replace("remove_item: ", "");
+			PlaceholderAPI.setPlaceholders(player, textLine);
+			return;
+		}
 		String[] sep = textLine.replace("remove_item: ", "").split(";");
 		
 		String material = sep[0];

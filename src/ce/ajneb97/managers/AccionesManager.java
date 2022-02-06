@@ -6,17 +6,22 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.FireworkEffect.Type;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -27,6 +32,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -288,6 +294,10 @@ public class AccionesManager {
 		}
 		if(linea.startsWith("title: ")) {
 			title(jugador,linea,pRange,pWorld,toAll);
+			return;
+		}
+		if(linea.startsWith("firework: ")) {
+			firework(jugador,linea,pRange,pWorld,toAll);
 			return;
 		}
 		if(linea.startsWith("gamemode: ")) {
@@ -827,6 +837,58 @@ public class AccionesManager {
 		}
 	}
 	
+	private static void firework(Player jugador,String linea,PropiedadesRange toRange,PropiedadesWorld toWorld,boolean toAll) {
+		ArrayList<Color> colors = new ArrayList<Color>();
+		Type type = null;
+		ArrayList<Color> fadeColors = new ArrayList<Color>();
+		int power = 0;
+
+		String[] sep = linea.split(" ");
+		for(String s : sep) {
+			if(s.startsWith("colors:")) {
+				s = s.replace("colors:", "");
+				String[] colorsSep = s.split(",");
+				for(String colorSep : colorsSep) {
+					colors.add(getColorFromName(colorSep));
+				}
+			}else if(s.startsWith("type:")) {
+				s = s.replace("type:", "");
+				type = Type.valueOf(s);
+			}else if(s.startsWith("fade:")) {
+				s = s.replace("fade:", "");
+				String[] colorsSep = s.split(",");
+				for(String colorSep : colorsSep) {
+					fadeColors.add(getColorFromName(colorSep));
+				}
+			}else if(s.startsWith("power:")) {
+				s = s.replace("power:", "");
+				power = Integer.valueOf(s);
+			}
+		}
+		
+		if(toRange.isActivado()) {
+			double radio = toRange.getRadio();
+			for(Player p : AccionesManager.getJugadoresCercanos(jugador, radio)) {
+				ConditionalEventsAPI.spawnFirework(p.getLocation(), colors, type, fadeColors, power);
+			}
+		}else if(toWorld.isActivado()) {
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				if(p.getWorld().getName().equals(toWorld.getWorld())) {
+					ConditionalEventsAPI.spawnFirework(p.getLocation(), colors, type, fadeColors, power);
+				}
+			}
+		}else if(toAll) {
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				ConditionalEventsAPI.spawnFirework(p.getLocation(), colors, type, fadeColors, power);
+			}
+		}
+		else {
+			ConditionalEventsAPI.spawnFirework(jugador.getLocation(), colors, type, fadeColors, power);
+		}
+		
+		
+	}
+	
 	public void gamemode(Player jugador,String linea,PropiedadesRange toRange,PropiedadesWorld toWorld,boolean toAll) {
 		linea = linea.replace("gamemode: ", "");
 		
@@ -877,5 +939,45 @@ public class AccionesManager {
 			BlockUtils.setHeadTextureData(block, headTexture);
 			
 		}
+	}
+	
+	private static Color getColorFromName(String colorName) {
+		switch(colorName) {
+		case "AQUA":
+			return Color.AQUA;
+		case "BLACK":
+			return Color.BLACK;
+		case "BLUE":
+			return Color.BLUE;
+		case "FUCHSIA":
+			return Color.FUCHSIA;
+		case "GRAY":
+			return Color.GRAY;
+		case "GREEN":
+			return Color.GREEN;
+		case "LIME":
+			return Color.LIME;
+		case "MAROON":
+			return Color.MAROON;
+		case "NAVY":
+			return Color.NAVY;
+		case "OLIVE":
+			return Color.OLIVE;
+		case "ORANGE":
+			return Color.ORANGE;
+		case "PURPLE":
+			return Color.PURPLE;
+		case "RED":
+			return Color.RED;
+		case "SILVER":
+			return Color.SILVER;
+		case "TEAL":
+			return Color.TEAL;
+		case "WHITE":
+			return Color.WHITE;
+		case "YELLOW":
+			return Color.YELLOW;
+		}
+		return null;
 	}
 }
