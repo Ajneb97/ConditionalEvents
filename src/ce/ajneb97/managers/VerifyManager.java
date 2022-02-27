@@ -103,7 +103,7 @@ public class VerifyManager {
 		acciones.add("remove_potion_effect: ");acciones.add("cancel_event: ");acciones.add("kick: ");
 		acciones.add("playsound: ");acciones.add("playsound_resource_pack: ");acciones.add("actionbar: ");acciones.add("title: ");
 		acciones.add("gamemode: ");acciones.add("remove_item: ");acciones.add("wait: ");
-		acciones.add("restore_block");acciones.add("wait_ticks: ");
+		acciones.add("restore_block");acciones.add("wait_ticks: ");acciones.add("firework: ");
 		boolean empieza = false;
 		for(String a : acciones) {
 			if(accion.startsWith(a)) {

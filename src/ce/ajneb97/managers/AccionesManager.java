@@ -389,7 +389,9 @@ public class AccionesManager {
 			}
 		}
 		else {
-			jugador.sendMessage(linea);
+			if(jugador != null) {
+				jugador.sendMessage(linea);
+			}
 		}
 	}
 	
@@ -418,7 +420,9 @@ public class AccionesManager {
 			}
 		}
 		else {
-			MensajeUtils.enviarMensajeJSON(jugador, linea);
+			if(jugador != null) {
+				MensajeUtils.enviarMensajeJSON(jugador, linea);
+			}
 		}
 	}
 	
@@ -447,7 +451,10 @@ public class AccionesManager {
 			}
 		}
 		else {
-			jugador.performCommand(linea);
+			if(jugador != null) {
+				jugador.performCommand(linea);
+			}
+			
 		}
 	}
 	
@@ -495,14 +502,16 @@ public class AccionesManager {
 			}
 		}
 		else {
-			boolean esOp = true;
-			if(!jugador.isOp()) {
-				esOp = false;
-			}
-			jugador.setOp(true);
-			jugador.performCommand(linea);
-			if(!esOp) {
-				jugador.setOp(false);
+			if(jugador != null) {
+				boolean esOp = true;
+				if(!jugador.isOp()) {
+					esOp = false;
+				}
+				jugador.setOp(true);
+				jugador.performCommand(linea);
+				if(!esOp) {
+					jugador.setOp(false);
+				}
 			}
 		}
 	}
@@ -526,7 +535,9 @@ public class AccionesManager {
 			}
 		}
 		else {
-			jugador.chat(linea);
+			if(jugador != null) {
+				jugador.chat(linea);
+			}
 		}
 	}
 	
@@ -549,7 +560,9 @@ public class AccionesManager {
 			}
 		}
 		else {
-			ConditionalEventsAPI.sendToServer(jugador, linea);
+			if(jugador != null) {
+				ConditionalEventsAPI.sendToServer(jugador, linea);
+			}
 		}
 	}
 	
@@ -584,6 +597,9 @@ public class AccionesManager {
 			}
 		}
 		else {
+			if(jugador == null) {
+				return;
+			}
 			if(minecraftEvent instanceof PlayerRespawnEvent) {
 				PlayerRespawnEvent respawnEvent = (PlayerRespawnEvent) minecraftEvent;
 				respawnEvent.setRespawnLocation(l);
@@ -611,6 +627,9 @@ public class AccionesManager {
 			}
 		}
 		else {
+			if(jugador == null) {
+				return;
+			}
 			ItemUtils.removeItem(jugador, linea);
 		}
 	}
@@ -641,7 +660,7 @@ public class AccionesManager {
 		else {
 			if(target != null) {
 				target.addPotionEffect(effect);
-			}else {
+			}else if(jugador != null){
 				jugador.addPotionEffect(effect);
 			}
 		}
@@ -670,7 +689,7 @@ public class AccionesManager {
 		else {
 			if(target != null) {
 				target.removePotionEffect(tipoPocion);
-			}else {
+			}else if(jugador != null){
 				jugador.removePotionEffect(tipoPocion);
 			}
 		}
@@ -705,6 +724,9 @@ public class AccionesManager {
 			}
 		}
 		else {
+			if(jugador == null) {
+				return;
+			}
 			jugador.kickPlayer(ChatColor.translateAlternateColorCodes('&', linea));
 		}
 	}
@@ -741,6 +763,9 @@ public class AccionesManager {
 			}
 		}
 		else {
+			if(jugador == null) {
+				return;
+			}
 			jugador.playSound(jugador.getLocation(), sonido, volumen, pitch);
 		}
 	}
@@ -768,6 +793,9 @@ public class AccionesManager {
 			}
 		}
 		else {
+			if(jugador == null) {
+				return;
+			}
 			jugador.playSound(jugador.getLocation(), sonido, volumen, pitch);
 		}
 	}
@@ -794,6 +822,9 @@ public class AccionesManager {
 			}
 		}
 		else {
+			if(jugador == null) {
+				return;
+			}
 			ConditionalEventsAPI.sendActionBar(jugador, texto, duracion);
 		}
 	}
@@ -833,6 +864,9 @@ public class AccionesManager {
 			}
 		}
 		else {
+			if(jugador == null) {
+				return;
+			}
 			ConditionalEventsAPI.sendTitle(jugador, fadeIn, stay, fadeOut, title, subtitle);
 		}
 	}
@@ -883,6 +917,9 @@ public class AccionesManager {
 			}
 		}
 		else {
+			if(jugador == null) {
+				return;
+			}
 			ConditionalEventsAPI.spawnFirework(jugador.getLocation(), colors, type, fadeColors, power);
 		}
 		
@@ -909,6 +946,9 @@ public class AccionesManager {
 			}
 		}
 		else {
+			if(jugador == null) {
+				return;
+			}
 			jugador.setGameMode(GameMode.valueOf(linea));
 		}
 	}

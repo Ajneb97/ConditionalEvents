@@ -305,12 +305,16 @@ public class JugadorListener implements Listener{
 		String nombreItem = itemUtils.getNombre();
 		List<String> lore = itemUtils.getLoreList();
 		String loreItem = itemUtils.getLoreString();
+		
+		double damage = event.getFinalDamage();
+		
 		for(Evento e : eventos) {
 			ArrayList<Variable> variables = EventoUtils.getVariablesAVerificar(e.getCondiciones(), e.getAcciones(), jugador, false);
 			if(dañado instanceof Player) {
 				variables = EventoUtils.getVariablesAVerificarTarget(variables,e.getCondiciones(), e.getAcciones(), (Player)dañado, true);
 			}
 			
+			EventoUtils.remplazarVariable(variables, "%damage%", damage+"");
 			EventoUtils.remplazarVariable(variables, "%victim%", tipoVictima);
 			EventoUtils.remplazarVariable(variables, "%victim_name%", nombreVictima);
 			EventoUtils.remplazarVariable(variables, "%item%", materialItem);
@@ -352,9 +356,24 @@ public class JugadorListener implements Listener{
 			Player jugador = (Player) dañado;
 			String causa = event.getCause().toString();
 			
+			double damage = event.getFinalDamage();
+			String tipoDamager = "";
+			String nameDamager = "";
+			if(event instanceof EntityDamageByEntityEvent) {
+				EntityDamageByEntityEvent event2 = (EntityDamageByEntityEvent) event;
+				Entity damager = event2.getDamager();
+				tipoDamager = damager.getType().name();
+				if(damager.getCustomName() != null) {
+					nameDamager = damager.getCustomName();
+				}
+			}
+			
 			ArrayList<Evento> eventos = EventoUtils.getEventosAceptados(plugin.getEventos(), TipoEvento.PLAYER_DAMAGE);
 			for(Evento e : eventos) {
 				ArrayList<Variable> variables = EventoUtils.getVariablesAVerificar(e.getCondiciones(), e.getAcciones(), jugador, false);
+				EventoUtils.remplazarVariable(variables, "%damager_type%", tipoDamager);
+				EventoUtils.remplazarVariable(variables, "%damager_name%", nameDamager);
+				EventoUtils.remplazarVariable(variables, "%damage%", damage+"");
 				EventoUtils.remplazarVariable(variables, "%cause%", causa);
 				EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
 			}

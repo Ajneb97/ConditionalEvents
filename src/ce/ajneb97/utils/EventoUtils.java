@@ -55,6 +55,9 @@ public class EventoUtils {
 				if(linea.charAt(c) == '%') {
 					if(c+1 < linea.length()) {
 						int lastPos = linea.indexOf("%", c+1);
+						if(lastPos == -1) {
+							continue;
+						}
 						String variable = linea.substring(c,lastPos+1);
 						if(!listaYaContieneVariable(variables,variable)) {
 							if((variable.contains("target:") && target)
@@ -76,6 +79,9 @@ public class EventoUtils {
 					if(linea.charAt(c) == '%') {
 						if(c+1 < linea.length()) {
 							int lastPos = linea.indexOf("%", c+1);
+							if(lastPos == -1) {
+								continue;
+							}
 							String variable = linea.substring(c,lastPos+1);
 							if(!listaYaContieneVariable(variables,variable)) {
 								if((variable.contains("target:") && target)
