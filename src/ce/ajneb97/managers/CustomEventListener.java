@@ -4,20 +4,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
-import org.bukkit.plugin.RegisteredListener;
-
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.Variable;
 import ce.ajneb97.eventos.Evento;
@@ -53,6 +46,14 @@ public class CustomEventListener implements Listener{
 		Class<?> clase = event.getClass();
 //		Bukkit.getConsoleSender().sendMessage("Encuentra evento con clase: "+clase.getCanonicalName());
 //		Bukkit.getConsoleSender().sendMessage("LLAMA EVENTO! y Encuentra metodos:");
+		try {
+			if (!Class.forName(e.getCustomEvent()).isAssignableFrom(clase)) {
+			    return;
+			}
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		List<String> variablesToCapture = e.getVariablesToCapture();
 		ArrayList<Variable> variablesToCaptureRemplazadas = new ArrayList<Variable>();
 		for(String linea : variablesToCapture) {
