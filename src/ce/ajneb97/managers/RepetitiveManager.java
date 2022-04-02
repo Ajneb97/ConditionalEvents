@@ -54,7 +54,7 @@ public class RepetitiveManager {
 				public void run() {
 					for(Player jugador : Bukkit.getOnlinePlayers()) {
 						ArrayList<Variable> variables = EventoUtils.getVariablesAVerificar(evento.getCondiciones(), evento.getAcciones(), jugador, false);
-						EventoUtils.comprobarEvento(evento, jugador, variables, null, plugin);
+						EventoUtils.comprobarEvento(evento, jugador, variables, null, plugin, true);
 					}
 				}
 			}.runTaskAsynchronously(plugin);
@@ -83,7 +83,7 @@ public class RepetitiveManager {
 				@Override
 				public void run() {
 					ArrayList<Variable> variables = EventoUtils.getVariablesAVerificar(evento.getCondiciones(), evento.getAcciones(), null, false);
-					EventoUtils.comprobarEvento(evento, null, variables, null, plugin);
+					EventoUtils.comprobarEvento(evento, null, variables, null, plugin, true);
 				}
 			}.runTaskAsynchronously(plugin);
 			

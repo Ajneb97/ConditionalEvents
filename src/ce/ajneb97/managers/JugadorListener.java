@@ -71,7 +71,7 @@ public class JugadorListener implements Listener{
 		ArrayList<Evento> eventos = EventoUtils.getEventosAceptados(plugin.getEventos(), TipoEvento.PLAYER_JOIN);
 		for(Evento e : eventos) {
 			ArrayList<Variable> variables = EventoUtils.getVariablesAVerificar(e.getCondiciones(), e.getAcciones(), jugador, false);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -81,7 +81,7 @@ public class JugadorListener implements Listener{
 		ArrayList<Evento> eventos = EventoUtils.getEventosAceptados(plugin.getEventos(), TipoEvento.PLAYER_LEAVE);
 		for(Evento e : eventos) {
 			ArrayList<Variable> variables = EventoUtils.getVariablesAVerificar(e.getCondiciones(), e.getAcciones(), jugador, false);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -91,7 +91,7 @@ public class JugadorListener implements Listener{
 		ArrayList<Evento> eventos = EventoUtils.getEventosAceptados(plugin.getEventos(), TipoEvento.PLAYER_RESPAWN);
 		for(Evento e : eventos) {
 			ArrayList<Variable> variables = EventoUtils.getVariablesAVerificar(e.getCondiciones(), e.getAcciones(), jugador, false);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -106,7 +106,7 @@ public class JugadorListener implements Listener{
 		for(Evento e : eventos) {
 			ArrayList<Variable> variables = EventoUtils.getVariablesAVerificar(e.getCondiciones(), e.getAcciones(), jugador, false);
 			EventoUtils.remplazarVariable(variables, "%cause%", cause);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -170,7 +170,7 @@ public class JugadorListener implements Listener{
 				}
 				EventoUtils.remplazarVariable(variables, "%item_lore%", loreItem);
 				EventoUtils.remplazarVariable(variables, "%block_head_texture%", textureData);
-				EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+				EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 			}
 		}
 	}
@@ -215,7 +215,7 @@ public class JugadorListener implements Listener{
 					EventoUtils.remplazarVariable(variables, "%item_lore_line_"+(i+1)+"%", lore.get(i));
 				}
 				EventoUtils.remplazarVariable(variables, "%item_lore%", loreItem);
-				EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+				EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 			}
 		}
 		
@@ -225,11 +225,15 @@ public class JugadorListener implements Listener{
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void alInteractuarItem(PlayerInteractEvent event) {
 		Player jugador = event.getPlayer();
+//		if(!Bukkit.getVersion().contains("1.8") && !event.getHand().equals(EquipmentSlot.HAND)) {
+//			return;
+//		}
 		ArrayList<Evento> eventos = EventoUtils.getEventosAceptados(plugin.getEventos(), TipoEvento.ITEM_INTERACT);
 		if(eventos.size() == 0) {
 			return;
 		}
-		ItemStack item = jugador.getItemInHand();
+
+		ItemStack item = event.getItem();
 		ItemUtils itemUtils = new ItemUtils(item);
 		String materialItem = itemUtils.getMaterial();
 		short durability = itemUtils.getDurability();
@@ -263,7 +267,7 @@ public class JugadorListener implements Listener{
 				EventoUtils.remplazarVariable(variables, "%item_lore_line_"+(i+1)+"%", lore.get(i));
 			}
 			EventoUtils.remplazarVariable(variables, "%item_lore%", loreItem);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -324,7 +328,7 @@ public class JugadorListener implements Listener{
 				EventoUtils.remplazarVariable(variables, "%item_lore_line_"+(i+1)+"%", lore.get(i));
 			}
 			EventoUtils.remplazarVariable(variables, "%item_lore%", loreItem);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -344,7 +348,7 @@ public class JugadorListener implements Listener{
 			EventoUtils.remplazarVariable(variables, "%world_to%", toWorld);
 			EventoUtils.remplazarVariable(variables, "%online_players_from%", onlineFrom+"");
 			EventoUtils.remplazarVariable(variables, "%online_players_to%", onlineTo+"");
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 		
 	}
@@ -375,7 +379,7 @@ public class JugadorListener implements Listener{
 				EventoUtils.remplazarVariable(variables, "%damager_name%", nameDamager);
 				EventoUtils.remplazarVariable(variables, "%damage%", damage+"");
 				EventoUtils.remplazarVariable(variables, "%cause%", causa);
-				EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+				EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 			}
 		}
 	}
@@ -427,7 +431,7 @@ public class JugadorListener implements Listener{
 				EventoUtils.remplazarVariable(variables, "%victim_block_y%", blockY+"");
 				EventoUtils.remplazarVariable(variables, "%victim_block_z%", blockZ+"");
 				EventoUtils.remplazarVariable(variables, "%victim_world%", world);
-				EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+				EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 			}
 		}
 	}
@@ -466,7 +470,7 @@ public class JugadorListener implements Listener{
 			EventoUtils.remplazarVariable(variables, "%block_world%", l.getWorld().getName());
 			EventoUtils.remplazarVariable(variables, "%block%", block.getType().name());
 			EventoUtils.remplazarVariable(variables, "%block_head_texture%", textureData);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -501,7 +505,7 @@ public class JugadorListener implements Listener{
 			EventoUtils.remplazarVariable(variables, "%block_z%", l.getBlockZ()+"");
 			EventoUtils.remplazarVariable(variables, "%block_world%", l.getWorld().getName());
 			EventoUtils.remplazarVariable(variables, "%block%", block.getType().name());
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -519,7 +523,7 @@ public class JugadorListener implements Listener{
 			}
 			EventoUtils.remplazarVariable(variables, "%args_length%", (args.length-1)+"");
 			
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -531,7 +535,7 @@ public class JugadorListener implements Listener{
 		for(Evento e : eventos) {
 			ArrayList<Variable> variables = EventoUtils.getVariablesAVerificar(e.getCondiciones(), e.getAcciones(), jugador, false);
 			EventoUtils.remplazarVariable(variables, "%message%", mensaje);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, true);
 		}
 	}
 	
@@ -559,7 +563,7 @@ public class JugadorListener implements Listener{
 				EventoUtils.remplazarVariable(variables, "%item_lore_line_"+(i+1)+"%", lore.get(i));
 			}
 			EventoUtils.remplazarVariable(variables, "%item_lore%", loreItem);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -591,7 +595,7 @@ public class JugadorListener implements Listener{
 				EventoUtils.remplazarVariable(variables, "%item_lore_line_"+(i+1)+"%", lore.get(i));
 			}
 			EventoUtils.remplazarVariable(variables, "%item_lore%", loreItem);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -605,7 +609,7 @@ public class JugadorListener implements Listener{
 			ArrayList<Variable> variables = EventoUtils.getVariablesAVerificar(e.getCondiciones(), e.getAcciones(), jugador, false);
 			EventoUtils.remplazarVariable(variables, "%old_level%", oldLevel+"");
 			EventoUtils.remplazarVariable(variables, "%new_level%", newLevel+"");
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -650,7 +654,7 @@ public class JugadorListener implements Listener{
 				EventoUtils.remplazarVariable(variables, "%item_lore_line_"+(i+1)+"%", lore.get(i));
 			}
 			EventoUtils.remplazarVariable(variables, "%item_lore%", loreItem);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -699,7 +703,7 @@ public class JugadorListener implements Listener{
 				}
 				EventoUtils.remplazarVariable(variables, "%item_lore%", loreItem);
 				EventoUtils.remplazarVariable(variables, "%slot%", slot+"");
-				EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+				EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 			}
 		}
 	}
@@ -728,7 +732,7 @@ public class JugadorListener implements Listener{
 				EventoUtils.remplazarVariable(variables, "%item_lore_line_"+(i+1)+"%", lore.get(i));
 			}
 			EventoUtils.remplazarVariable(variables, "%item_lore%", loreItem);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -756,7 +760,7 @@ public class JugadorListener implements Listener{
 				EventoUtils.remplazarVariable(variables, "%item_lore_line_"+(i+1)+"%", lore.get(i));
 			}
 			EventoUtils.remplazarVariable(variables, "%item_lore%", loreItem);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 	
@@ -786,7 +790,7 @@ public class JugadorListener implements Listener{
 			}
 			EventoUtils.remplazarVariable(variables, "%item_lore%", loreItem);
 			EventoUtils.remplazarVariable(variables, "%select_type%", action);
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}
 	}
 }

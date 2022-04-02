@@ -38,7 +38,7 @@ public class OtrosListener implements Listener{
 			EventoUtils.remplazarVariable(variables, "%entity%", tipoEntidad);
 			EventoUtils.remplazarVariable(variables, "%entity_world%", mundo);
 			EventoUtils.remplazarVariable(variables, "%reason%", razonSpawn);
-			EventoUtils.comprobarEvento(e, null, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, null, variables, event, plugin, false);
 		}
 	}
 	
@@ -55,7 +55,7 @@ public class OtrosListener implements Listener{
 			}
 			EventoUtils.remplazarVariable(variables, "%args_length%", (args.length-1)+"");
 			
-			EventoUtils.comprobarEvento(e, null, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, null, variables, event, plugin, false);
 		}
 	}
 }

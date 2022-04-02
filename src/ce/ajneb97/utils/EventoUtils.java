@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -281,6 +282,14 @@ public class EventoUtils {
 		}
 		else if(variable.equals("%empty%")) {
 			variables.add(new Variable(variable,""));
+		}else if(variable.equals("%block_below%")) {
+			Location l = jugador.getLocation().clone().add(0, -1, 0);
+			Block block = l.getBlock();
+			String blockType = "AIR";
+			if(block != null) {
+				blockType = block.getType().name();
+			}
+			variables.add(new Variable(variable,blockType));
 		}
 		else {
 			if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
@@ -331,7 +340,7 @@ public class EventoUtils {
 		}
 	}
 	
-	public static void comprobarEvento(Evento e,Player jugador,ArrayList<Variable> variables,Event event,ConditionalEvents plugin) {
+	public static void comprobarEvento(Evento e,Player jugador,ArrayList<Variable> variables,Event event,ConditionalEvents plugin,boolean isAsync) {
 		String permisoParaIgnorar = e.getPermisoParaIgnorar();
 		if(jugador != null && permisoParaIgnorar != null && jugador.hasPermission(permisoParaIgnorar)) {
 			//Ignora el evento y pasa al siguiente
@@ -382,7 +391,7 @@ public class EventoUtils {
 				if(jugador != null) {
 					jManager.reiniciarCooldown(e, jugador.getName());
 				}
-				accionesManager.ejecutarTodo("default");
+				accionesManager.ejecutarTodo("default",isAsync);
 				if(jugador != null) {
 					jManager.setCooldown(e, jugador);
 					if(e.isOneTime()) {
@@ -390,7 +399,7 @@ public class EventoUtils {
 					}
 				}
 			}else {
-				accionesManager.ejecutarTodo(resultadoCondiciones);
+				accionesManager.ejecutarTodo(resultadoCondiciones,isAsync);
 			}
 		}
 	}

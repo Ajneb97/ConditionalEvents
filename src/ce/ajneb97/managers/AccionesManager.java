@@ -29,6 +29,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -123,7 +124,7 @@ public class AccionesManager {
 		this.sender = sender;
 	}
 
-	public void ejecutarTodo(String tipo) {
+	public void ejecutarTodo(String tipo,boolean isAsync) {
 		this.currentPos = 0;
 		List<String> acciones = new ArrayList<String>();
 		for(Acciones a : evento.getAcciones()) {
@@ -139,15 +140,22 @@ public class AccionesManager {
 		//en sync.
 		cancelarEvento();
 		
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				ejecutarAcciones(true);
-				//API
-				ConditionalEventsEvent event = new ConditionalEventsEvent(jugador,evento.getNombre(),tipo);
-				plugin.getServer().getPluginManager().callEvent(event);
-			}
-		}.runTask(plugin);
+		if(isAsync) {
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					ejecutarAcciones(true);
+					//API
+					ConditionalEventsEvent event = new ConditionalEventsEvent(jugador,evento.getNombre(),tipo);
+					plugin.getServer().getPluginManager().callEvent(event);
+				}
+			}.runTask(plugin);
+		}else {
+			ejecutarAcciones(true);
+			//API
+			ConditionalEventsEvent event = new ConditionalEventsEvent(jugador,evento.getNombre(),tipo);
+			plugin.getServer().getPluginManager().callEvent(event);
+		}
 	}
 	
 	public void cancelarEvento() {
@@ -311,6 +319,10 @@ public class AccionesManager {
 		
 		if(linea.startsWith("restore_block")) {
 			restoreBlock();
+			return;
+		}
+		if(linea.startsWith("keep_items: ")) {
+			keepItems(linea);
 			return;
 		}
 	}
@@ -978,6 +990,25 @@ public class AccionesManager {
 			}
 			BlockUtils.setHeadTextureData(block, headTexture);
 			
+		}
+	}
+	
+	public void keepItems(String linea) {
+		linea = linea.replace("keep_items: ", "");
+		if(minecraftEvent instanceof PlayerDeathEvent) {
+			PlayerDeathEvent deathEvent = (PlayerDeathEvent) minecraftEvent;
+			if(linea.equals("items")) {
+				deathEvent.setKeepInventory(true);
+				deathEvent.getDrops().clear();
+			}else if(linea.equals("xp")) {
+				deathEvent.setKeepLevel(true);
+				deathEvent.setDroppedExp(0);
+			}else if(linea.equals("all")) {
+				deathEvent.setKeepInventory(true);
+				deathEvent.setKeepLevel(true);
+				deathEvent.getDrops().clear();
+				deathEvent.setDroppedExp(0);
+			}
 		}
 	}
 	

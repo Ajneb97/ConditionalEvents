@@ -51,6 +51,13 @@ public class CustomEventListener implements Listener{
 
 	  public void ejecutaEvento(Event event,Evento e) {
 		Class<?> clase = event.getClass();
+		try {
+			if (!Class.forName(e.getCustomEvent()).isAssignableFrom(clase)) {
+			    return;
+			}
+		} catch (ClassNotFoundException e1) {
+			e1.printStackTrace();
+		}
 //		Bukkit.getConsoleSender().sendMessage("Encuentra evento con clase: "+clase.getCanonicalName());
 //		Bukkit.getConsoleSender().sendMessage("LLAMA EVENTO! y Encuentra metodos:");
 		List<String> variablesToCapture = e.getVariablesToCapture();
@@ -128,7 +135,7 @@ public class CustomEventListener implements Listener{
 			for(Variable v : variablesToCaptureRemplazadas) {
 				EventoUtils.remplazarVariable(variables, v.getNombre(), v.getValor());
 			}
-			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin);
+			EventoUtils.comprobarEvento(e, jugador, variables, event, plugin, false);
 		}catch(Exception ex) {
 			
 		}
