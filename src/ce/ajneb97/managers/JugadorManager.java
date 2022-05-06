@@ -32,7 +32,6 @@ public class JugadorManager {
 			String linea = condiciones.get(i);
 			//Cada linea sigue este formato:
 			//%block% equals DIAMOND_ORE or %block% equals EMERALD_ORE
-			
 			//Una linea puede tener el formato de
 			//%block% equals DIAMOND_ORE or %block% equals EMERALD_ORE executes <accion>
 			String executedActions = null;
@@ -66,8 +65,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}else if(condicionMini.contains(" !equals ")) {
 						String[] condicionMiniSep = condicionMini.split(" !equals ");
@@ -78,8 +75,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}else if(condicionMini.contains(" equalsIgnoreCase ")) {
 						String[] condicionMiniSep = condicionMini.split(" equalsIgnoreCase ");
@@ -90,8 +85,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}else if(condicionMini.contains(" !equalsIgnoreCase ")) {
 						String[] condicionMiniSep = condicionMini.split(" !equalsIgnoreCase ");
@@ -102,8 +95,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}
 					else if(condicionMini.contains(" startsWith ")) {
@@ -115,8 +106,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}else if(condicionMini.contains(" !startsWith ")) {
 						String[] condicionMiniSep = condicionMini.split(" !startsWith ");
@@ -127,8 +116,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}else if(condicionMini.contains(" contains ")) {
 						String[] condicionMiniSep = condicionMini.split(" contains ");
@@ -139,8 +126,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}else if(condicionMini.contains(" !contains ")) {
 						String[] condicionMiniSep = condicionMini.split(" !contains ");
@@ -151,8 +136,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}
 					else if(condicionMini.contains(" >= ")) {
@@ -166,8 +149,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}else if(condicionMini.contains(" <= ")) {
 						String[] condicionMiniSep = condicionMini.split(" <= ");
@@ -180,8 +161,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}else if(condicionMini.contains(" == ")) {
 						String[] condicionMiniSep = condicionMini.split(" == ");
@@ -194,8 +173,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}else if(condicionMini.contains(" != ")) {
 						String[] condicionMiniSep = condicionMini.split(" != ");
@@ -208,8 +185,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}else if(condicionMini.contains(" > ")) {
 						String[] condicionMiniSep = condicionMini.split(" > ");
@@ -222,8 +197,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}else if(condicionMini.contains(" < ")) {
 						String[] condicionMiniSep = condicionMini.split(" < ");
@@ -236,8 +209,6 @@ public class JugadorManager {
 							if(executedActions != null) {
 								return executedActions;
 							}
-						}else if(executedActions != null) {
-							lineaAprobada = true;
 						}
 					}
 				}catch(Exception e) {
@@ -245,10 +216,13 @@ public class JugadorManager {
 				}
 				
 				
-				
 				if(lineaAprobada) {
 					break;
 				}
+			}
+			if(executedActions != null) {
+				//Es un execute, pero ninguna de las condiciones OR se cumplio.
+				continue;
 			}
 			if(!lineaAprobada) {
 				return "false";
