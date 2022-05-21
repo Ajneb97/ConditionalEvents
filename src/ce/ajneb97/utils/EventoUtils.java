@@ -387,17 +387,15 @@ public class EventoUtils {
 			if(event != null && event instanceof ServerCommandEvent) {
 				accionesManager.setCommandSender(((ServerCommandEvent) event).getSender());
 			}
+			if(jugador != null) {
+				jManager.reiniciarCooldown(e, jugador.getName());
+				jManager.setCooldown(e, jugador);
+				if(e.isOneTime()) {
+					e.agregarOneTime(jugador.getName());
+				}
+			}
 			if(resultadoCondiciones.equals("true")) {
-				if(jugador != null) {
-					jManager.reiniciarCooldown(e, jugador.getName());
-				}
 				accionesManager.ejecutarTodo("default",isAsync);
-				if(jugador != null) {
-					jManager.setCooldown(e, jugador);
-					if(e.isOneTime()) {
-						e.agregarOneTime(jugador.getName());
-					}
-				}
 			}else {
 				accionesManager.ejecutarTodo(resultadoCondiciones,isAsync);
 			}
