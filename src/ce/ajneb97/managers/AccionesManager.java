@@ -651,7 +651,11 @@ public class AccionesManager {
 		PotionEffectType tipoPocion = PotionEffectType.getByName(sep[0]);
 		int duracionPocion = Integer.valueOf(sep[1]);
 		int nivelPocion = Integer.valueOf(sep[2])-1;
-		PotionEffect effect = new PotionEffect(tipoPocion,duracionPocion,nivelPocion);
+		boolean showParticles = true;
+		if(sep.length >= 4) {
+			showParticles = Boolean.valueOf(sep[3]);
+		}
+		PotionEffect effect = new PotionEffect(tipoPocion,duracionPocion,nivelPocion,false,showParticles);
 		
 		if(toRange.isActivado()) {
 			double radio = toRange.getRadio();

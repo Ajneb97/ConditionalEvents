@@ -17,7 +17,8 @@ public class Utilidades {
 	public static boolean esVersionNueva() {
 		if(Bukkit.getVersion().contains("1.13") || Bukkit.getVersion().contains("1.14") ||
 				Bukkit.getVersion().contains("1.15") || Bukkit.getVersion().contains("1.16")
-				 || Bukkit.getVersion().contains("1.17") || Bukkit.getVersion().contains("1.18")) {
+				 || Bukkit.getVersion().contains("1.17") || Bukkit.getVersion().contains("1.18")
+				 || Bukkit.getVersion().contains("1.19")) {
 			return true;
 		}else {
 			return false;

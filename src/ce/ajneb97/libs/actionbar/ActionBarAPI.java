@@ -9,7 +9,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.utils.MensajeUtils;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -19,7 +18,8 @@ public class ActionBarAPI
 
 public static void sendActionBar(Player player, String message)
   {
-	  if(Bukkit.getVersion().contains("1.16") || Bukkit.getVersion().contains("1.17") || Bukkit.getVersion().contains("1.18")) {
+	  if(Bukkit.getVersion().contains("1.16") || Bukkit.getVersion().contains("1.17") || Bukkit.getVersion().contains("1.18")
+			  || Bukkit.getVersion().contains("1.19")) {
 		  player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(MensajeUtils.getMensajeColor(message)));
 		  return;
 	  }
