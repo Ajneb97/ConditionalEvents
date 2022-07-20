@@ -1,0 +1,11 @@
+main: ce.ajneb97.ConditionalEvents
+version: 4.0.1
+name: ConditionalEvents
+api-version: 1.13
+softdepend: [PlaceholderAPI]
+author: Ajneb97
+
+commands:
+  conditionalevents:
+    description: Main command of ConditionalEvents
+    aliases: ce

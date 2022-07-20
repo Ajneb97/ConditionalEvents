@@ -1,0 +1,103 @@
+Config:
+  update_notification: true
+Messages:
+  prefix: '&4[&bConditionalEvents&4] '
+  commandReload: '&aConfig Reloaded.'
+  commandNoPermissions: '&cYou don''t have permissions to use this command.'
+  commandResetError: '&cUse &7/ce reset <player> <event>'
+  eventDoesNotExists: '&cThat event doesn''t exists on the config.'
+  cooldownReset: '&aCooldown was reset for player &e%player% &aon event &e%event%&a!'
+  eventEnableError: '&cUse &7/ce enable <event>'
+  eventDisableError: '&cUse &7/ce disable <event>'
+  eventEnabled: '&aEvent &7%event% &aenabled.'
+  eventDisabled: '&aEvent &7%event% &adisabled.'
+  commandDebugError: '&cUse &7/ce debug <event>'
+  debugEnabled: '&aDebug now enabled for event &7%event%&a!'
+  debugDisabled: '&aDebug disabled for event &7%event%&a!'
+  onlyPlayerCommand: "&cThis command can be only used by a player."
+  playerDoesNotExists: '&cThat player doesn''t have any data.'
+  seconds: s
+  minutes: m
+  hours: h
+  days: d
+Events:
+  event1:
+    type: player_join
+    conditions:
+      - '%player% == Ajneb'
+    actions:
+      default:
+        - 'to_all: message: &e&l[ALERT] &f&lAjneb joined the game!'
+  event2:
+    type: block_interact
+    conditions:
+      - '%block_x% == 20'
+      - '%block_y% == 60'
+      - '%block_z% == 20'
+      - '%block_world% == lobby'
+      - '%block% == STONE_BUTTON'
+      - '%action_type% == RIGHT_CLICK'
+      - '%player_has_permission_conditionalevents.event.event2% == false execute actions2'
+    actions:
+      default:
+        - 'message: &aYou''ve received $500!'
+        - 'console_command: eco give %player% 500'
+        - 'playsound: ENTITY_PLAYER_LEVELUP;10;2'
+      actions2:
+        - 'message: &cYou need to have a rank to use this button.'
+    one_time: true
+    one_time_error_message: '&cYou can claim this reward just once!'
+  event3:
+    type: player_attack
+    conditions:
+      - '%victim% == PLAYER'
+      - '%item% == DIAMOND_SWORD'
+      - '%item_name% == Super Sword'
+      - '%random_1-10% >= 8'
+    actions:
+      default:
+        - 'message: &aYour diamond sword poison effect was activated! &6%target:player_name% &ais now poisoned!'
+        - 'to_target: give_potion_effect: POISON;120;1'
+        - 'to_target: message: &cYou were poisoned by &e%player%&c!'
+  event4:
+    type: block_break
+    conditions:
+      - '%block_world% == spawn'
+    actions:
+      default:
+        - 'cancel_event: true'
+        - 'message: &cYou can''t break blocks on this world.'
+        - 'playsound: BLOCK_NOTE_BLOCK_PLING;10;0.1'
+    ignore_with_permission: conditionalevents.ignore.event4
+  event5:
+    type: player_command
+    conditions:
+      - '%command% startsWith //calc or %command% startsWith //solve or %command% startsWith
+      //eval'
+    actions:
+      default:
+        - 'cancel_event: true'
+        - 'kick: &cWhat are you trying to do?'
+    ignore_with_permission: conditionalevents.ignore.event5
+    cooldown: 3600
+    cooldown_error_message: '&cYou need to wait &e%time% &cbefore claiming your reward
+      again.'
+  event6:
+    type: repetitive
+    repetitive_time: 10
+    conditions:
+      - '%player_world% == plotworld'
+      - '%player_gamemode% != CREATIVE'
+    actions:
+      default:
+        - 'gamemode: CREATIVE'
+        - 'actionbar: &6Changing gamemode to creative.;100'
+  event7:
+    type: player_command
+    conditions:
+      - '%command% == /hello'
+    actions:
+      default:
+        - 'cancel_event: true'
+        - "message: &7You said hello to nearby players!"
+        - 'to_range: 10;false: message: &e%player% &7says you hello!'
