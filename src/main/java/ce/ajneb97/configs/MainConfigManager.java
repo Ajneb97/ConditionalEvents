@@ -36,12 +36,12 @@ public class MainConfigManager {
         FileConfiguration config = configFile.getConfig();
 
         //Configure events
-        ArrayList<CEEvent> events = new ArrayList<CEEvent>();
+        ArrayList<CEEvent> events = new ArrayList<>();
         if(config.contains("Events")){
             for(String key : config.getConfigurationSection("Events").getKeys(false)){
                 String path = "Events."+key;
-                List<String> conditions = new ArrayList<String>();
-                List<ActionGroup> actionGroups = new ArrayList<ActionGroup>();
+                List<String> conditions = new ArrayList<>();
+                List<ActionGroup> actionGroups = new ArrayList<>();
                 boolean oneTime = false;
                 String oneTimeErrorMessage = null;
                 String ignoreWithPermission = null;
@@ -58,7 +58,7 @@ public class MainConfigManager {
                 if(config.contains(path+".actions")) {
                     for(String groupName : config.getConfigurationSection(path+".actions").getKeys(false)) {
                         List<String> actionsList = config.getStringList(path+".actions."+groupName);
-                        List<CEAction> ceActions = new ArrayList<CEAction>();
+                        List<CEAction> ceActions = new ArrayList<>();
                         for(String action : actionsList){
                             ActionTargeter targeter = ActionTargeter.NORMAL;
                             if(action.startsWith("to_all: ")){
@@ -102,7 +102,7 @@ public class MainConfigManager {
                     }
                 }
                 if(config.contains(path+".cooldown")) {
-                    cooldown = Long.valueOf(config.getString(path+".cooldown"));
+                    cooldown = Long.parseLong(config.getString(path+".cooldown"));
                 }
                 if(config.contains(path+".cooldown_error_message")) {
                     cooldownErrorMessage = config.getString(path+".cooldown_error_message");
@@ -111,13 +111,13 @@ public class MainConfigManager {
                     ignoreWithPermission = config.getString(path+".ignore_with_permission");
                 }
                 if(config.contains(path+".one_time")) {
-                    oneTime = Boolean.valueOf(config.getString(path+".one_time"));
+                    oneTime = Boolean.parseBoolean(config.getString(path+".one_time"));
                 }
                 if(config.contains(path+".one_time_error_message")) {
                     oneTimeErrorMessage = config.getString(path+".one_time_error_message");
                 }
                 if(config.contains(path+".enabled")) {
-                    enabled = Boolean.valueOf(config.getString(path+".enabled"));
+                    enabled = Boolean.parseBoolean(config.getString(path+".enabled"));
                 }
 
                 event.setEventType(eventType);
@@ -136,7 +136,7 @@ public class MainConfigManager {
                     if(config.contains(path+".custom_event_data.player_variable")) {
                         playerVariable = config.getString(path+".custom_event_data.player_variable");
                     }
-                    List<String> variablesToCapture = new ArrayList<String>();
+                    List<String> variablesToCapture = new ArrayList<>();
                     if(config.contains(path+".custom_event_data.variables_to_capture")) {
                         variablesToCapture = config.getStringList(path+".custom_event_data.variables_to_capture");
                     }

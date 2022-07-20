@@ -14,7 +14,7 @@ public class VerifyManager {
     private ArrayList<CEError> errors;
     public VerifyManager(ConditionalEvents plugin) {
         this.plugin = plugin;
-        this.errors = new ArrayList<CEError>();
+        this.errors = new ArrayList<>();
     }
 
     public void sendVerification(Player player) {
@@ -33,7 +33,7 @@ public class VerifyManager {
     }
 
     public void verifyEvents() {
-        this.errors = new ArrayList<CEError>();
+        this.errors = new ArrayList<>();
         ArrayList<CEEvent> events = plugin.getEventsManager().getEvents();
         for(CEEvent event : events) {
             verifyEvent(event);

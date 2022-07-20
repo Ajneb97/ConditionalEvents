@@ -13,7 +13,7 @@ public class DebugManager {
     private ArrayList<DebugSender> debugSenders;
     public DebugManager(ConditionalEvents plugin){
         this.plugin = plugin;
-        this.debugSenders = new ArrayList<DebugSender>();
+        this.debugSenders = new ArrayList<>();
     }
 
     public boolean setDebugSender(CommandSender sender,String event){

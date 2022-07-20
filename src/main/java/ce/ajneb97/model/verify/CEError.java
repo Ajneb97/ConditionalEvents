@@ -29,9 +29,9 @@ public class CEError {
     public void sendMessage(Player player) {
         String message = "&e⚠ ";
         JSONMessage jsonMessage = null;
-        List<String> hover = new ArrayList<String>();
+        List<String> hover = new ArrayList<>();
 
-        List<String> sepText = new ArrayList<String>();
+        List<String> sepText = new ArrayList<>();
         int currentPos = 0;
         for(int i=0;i<errorText.length();i++) {
             if(currentPos >= 35 && errorText.charAt(i) == ' ') {
@@ -47,22 +47,18 @@ public class CEError {
             }
         }
 
-        switch(type) {
-            case INVALID_CONDITION:
-                jsonMessage = new JSONMessage(player,message+"&7Condition &6"+errorLine+" &7on Event &6"+eventName+" &7is not valid.");
-                hover.add("&eTHIS IS A WARNING!");
-                hover.add("&fThe condition defined for this event");
-                hover.add("&fis probably not formatted correctly:");
-                for(String m : sepText) {
-                    hover.add("&c"+m);
-                }
-                hover.add(" ");
-                hover.add("&fRemember to use a valid condition from this list:");
-                hover.add("&ahttps://ajneb97.gitbook.io/conditionalevents/conditions");
-                jsonMessage.hover(hover).send();
-                break;
-            default:
-                break;
+        if(type == CEErrorType.INVALID_CONDITION) {
+            jsonMessage = new JSONMessage(player,message+"&7Condition &6"+errorLine+" &7on Event &6"+eventName+" &7is not valid.");
+            hover.add("&eTHIS IS A WARNING!");
+            hover.add("&fThe condition defined for this event");
+            hover.add("&fis probably not formatted correctly:");
+            for(String m : sepText) {
+                hover.add("&c"+m);
+            }
+            hover.add(" ");
+            hover.add("&fRemember to use a valid condition from this list:");
+            hover.add("&ahttps://ajneb97.gitbook.io/conditionalevents/conditions");
+            jsonMessage.hover(hover).send();
         }
     }
 }

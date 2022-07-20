@@ -34,7 +34,7 @@ public class ConditionalEvents extends JavaPlugin {
 	private VerifyManager verifyManager;
 	private UpdateCheckerManager updateCheckerManager;
 
-	
+	@Override
 	public void onEnable(){
 		this.eventsManager = new EventsManager(this);
 		this.dependencyManager = new DependencyManager();
@@ -55,7 +55,8 @@ public class ConditionalEvents extends JavaPlugin {
 		updateCheckerManager = new UpdateCheckerManager(version);
 		updateMessage(updateCheckerManager.check());
 	}
-	  
+	
+	@Override
 	public void onDisable(){
 		this.configsManager.getPlayerConfigsManager().savePlayerData();
 		Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &eHas been disabled! &fVersion: "+version));
@@ -65,7 +66,7 @@ public class ConditionalEvents extends JavaPlugin {
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PlayerEventsListener(this), this);
 		pm.registerEvents(new ItemEventsListener(this), this);
-		pm.registerEvents(new ArmorListener(new ArrayList<String>()), this);
+		pm.registerEvents(new ArmorListener(new ArrayList<>()), this);
 		pm.registerEvents(new ItemSelectListener(this), this);
 		pm.registerEvents(new OtherEventsListener(this), this);
 		pm.registerEvents(new CustomEventListener(this), this);

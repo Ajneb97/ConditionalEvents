@@ -53,7 +53,7 @@ public class ExecutedEvent {
 
     public void executeActions(boolean isPlaceholderAPI,boolean isAsync){
         ActionGroup actionGroup = event.getActionGroup(actionGroupName);
-        this.actions = new ArrayList<CEAction>(actionGroup.getActions());
+        this.actions = new ArrayList<>(actionGroup.getActions());
         this.isPlaceholderAPI = isPlaceholderAPI;
 
         ConditionalEventsEvent ceEvent = new ConditionalEventsEvent(player, event.getName(), actionGroupName);
@@ -104,9 +104,9 @@ public class ExecutedEvent {
                 }
             }else if(targeter.equals(ActionTargeter.TO_RANGE)){
                 String[] sep = targeter.getParameter().split(";");
-                double range = Double.valueOf(sep[0]);
-                boolean includePlayer = Boolean.valueOf(sep[1]);
-                ArrayList<Player> globalPlayers = new ArrayList<Player>();
+                double range = Double.parseDouble(sep[0]);
+                boolean includePlayer = Boolean.parseBoolean(sep[1]);
+                ArrayList<Player> globalPlayers = new ArrayList<>();
                 if(includePlayer){
                     globalPlayers.add(player);
                 }

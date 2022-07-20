@@ -13,15 +13,15 @@ public class MathUtils {
             if(!expression.validate().isValid()){
                 return str;
             }
-            return expression.evaluate()+"";
+            return Double.toString(expression.evaluate());
         }catch(Exception e){
             return str;
         }
     }
 
+    private static final Random r = new Random();
+
     public static int getRandomNumber(int min, int max) {
-        Random r = new Random();
-        int num = r.nextInt((max - min) + 1) + min;
-        return num;
+        return r.nextInt((max - min) + 1) + min;
     }
 }

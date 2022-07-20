@@ -5,25 +5,25 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class CEConfig {
 
     private String fileName;
     private FileConfiguration fileConfiguration = null;
-    private File file = null;
-    private String route;
+    private final Path file;
     private ConditionalEvents plugin;
     private boolean firstTime;
     public CEConfig(String fileName,ConditionalEvents plugin){
-        this.fileName = fileName;
+        this.file = plugin.getDataFolder().toPath().resolve(fileName);
         this.plugin = plugin;
         this.firstTime = false;
     }
 
     public void registerConfig(){
-        file = new File(plugin.getDataFolder(), fileName);
-        route = file.getPath();
-        if(!file.exists()){
+        if(Files.notExists(file)){
             firstTime = true;
             this.getConfig().options().copyDefaults(true);
             saveConfig();
@@ -31,7 +31,7 @@ public class CEConfig {
     }
     public void saveConfig() {
         try {
-            fileConfiguration.save(file);
+            fileConfiguration.save(file.toFile());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,27 +45,17 @@ public class CEConfig {
     }
 
     public void reloadConfig() {
-        if (fileConfiguration == null) {
-            file = new File(plugin.getDataFolder(), fileName);
-        }
-        fileConfiguration = YamlConfiguration.loadConfiguration(file);
+        fileConfiguration = YamlConfiguration.loadConfiguration(file.toFile());
 
         if(firstTime){
-            Reader defConfigStream;
-            try {
-                defConfigStream = new InputStreamReader(plugin.getResource(fileName), "UTF8");
-                if (defConfigStream != null) {
-                    YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-                    fileConfiguration.setDefaults(defConfig);
-                }
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            Reader defConfigStream = new InputStreamReader(plugin.getResource(fileName), StandardCharsets.UTF_8);
+            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+            fileConfiguration.setDefaults(defConfig);
         }
 
     }
 
     public String getRoute() {
-        return route;
+        return this.file.toString();
     }
 }

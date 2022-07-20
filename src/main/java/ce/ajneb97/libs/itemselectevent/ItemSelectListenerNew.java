@@ -12,16 +12,13 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemSelectListenerNew implements Listener{
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onChangeHand(PlayerSwapHandItemsEvent event) {
-		if(event.isCancelled()) {
-			return;
-		}
 		
 		Player player = event.getPlayer();
 		ItemStack itemMain = event.getMainHandItem();
 		ItemStack itemOff = event.getOffHandItem();
-		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+		ArrayList<ItemStack> items = new ArrayList<>();
 		items.add(itemMain);items.add(itemOff);
 		for(int i=0;i<items.size();i++) {
 			ItemStack item = items.get(i);

@@ -137,7 +137,7 @@ public class PlayerEventsListener implements Listener {
         Entity attacker = event.getDamager();
         Entity damaged = event.getEntity();
         Player player = null;
-        if(attacker == null || damaged == null) {
+        if(damaged == null) {
             return;
         }
 
@@ -160,10 +160,10 @@ public class PlayerEventsListener implements Listener {
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_ATTACK, target);
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.addVariables(
-                new StoredVariable("%damage%",event.getFinalDamage()+"")
-        ).setCommonItemVariables(player.getItemInHand())
-                .setCommonVictimVariables(damaged)
-                .checkEvent();
+                new StoredVariable("%damage%",Double.toString(event.getFinalDamage()))
+        ).setCommonVictimVariables(damaged);
+        if(target != null) conditionEvent.setCommonItemVariables(player.getItemInHand());
+        conditionEvent.checkEvent();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -174,15 +174,15 @@ public class PlayerEventsListener implements Listener {
                 .addVariables(
                         new StoredVariable("%world_from%",event.getFrom().getName()),
                         new StoredVariable("%world_to%",player.getWorld().getName()),
-                        new StoredVariable("%online_players_from%",event.getFrom().getPlayers().size()+""),
-                        new StoredVariable("%online_players_to%",player.getWorld().getPlayers().size()+"")
+                        new StoredVariable("%online_players_from%",Integer.toString(event.getFrom().getPlayers().size())),
+                        new StoredVariable("%online_players_to%",Integer.toString(player.getWorld().getPlayers().size()))
                 ).checkEvent();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDamaged(EntityDamageEvent event){
         Entity damaged = event.getEntity();
-        if(damaged == null || !(damaged instanceof Player) || event.getCause() == null) {
+        if(!(damaged instanceof Player) || event.getCause() == null) {
             return;
         }
 
@@ -204,7 +204,7 @@ public class PlayerEventsListener implements Listener {
                 .addVariables(
                         new StoredVariable("%damager_type%",damagerType),
                         new StoredVariable("%damager_name%",damagerName),
-                        new StoredVariable("%damage%",damage+""),
+                        new StoredVariable("%damage%",Double.toString(damage)),
                         new StoredVariable("%cause%",cause)
                 ).checkEvent();
     }
@@ -259,7 +259,7 @@ public class PlayerEventsListener implements Listener {
         String command = event.getMessage();
         String[] args = command.split(" ");
 
-        ArrayList<StoredVariable> eventVariables = new ArrayList<StoredVariable>();
+        ArrayList<StoredVariable> eventVariables = new ArrayList<>();
         for(int i=1;i<args.length;i++) {
             eventVariables.add(new StoredVariable("%arg_"+(i)+"%",args[i]));
         }
@@ -267,7 +267,7 @@ public class PlayerEventsListener implements Listener {
         new ConditionEvent(plugin, player, event, EventType.PLAYER_COMMAND, null)
                 .addVariables(
                         new StoredVariable("%command%",command),
-                        new StoredVariable("%args_length%",(args.length-1)+"")
+                        new StoredVariable("%args_length%",Integer.toString(args.length-1))
                 ).addVariables(eventVariables)
                 .checkEvent();
     }
@@ -288,8 +288,8 @@ public class PlayerEventsListener implements Listener {
 
         new ConditionEvent(plugin, player, event, EventType.PLAYER_LEVELUP, null)
                 .addVariables(
-                        new StoredVariable("%old_level%",event.getOldLevel()+""),
-                        new StoredVariable("%new_level%",event.getNewLevel()+"")
+                        new StoredVariable("%old_level%",Integer.toString(event.getOldLevel())),
+                        new StoredVariable("%new_level%",Integer.toString(event.getNewLevel()))
                 ).checkEvent();
     }
 

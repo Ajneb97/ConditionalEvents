@@ -1,8 +1,5 @@
 package ce.ajneb97;
 
-
-
-
 import ce.ajneb97.configs.MainConfigManager;
 import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.model.CEEvent;
@@ -17,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 public class MainCommand implements CommandExecutor, TabCompleter {
@@ -34,29 +32,26 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
 	   	if(sender.isOp() || sender.hasPermission("conditionalevents.admin")) {
 		   if(args.length >= 1) {
-			   if(args[0].equalsIgnoreCase("reload")) {
-				   plugin.getConfigsManager().reload();
-				   sender.sendMessage(prefix+MessagesManager.getColoredMessage(config.getString("Messages.commandReload")));
-			   }else if(args[0].equalsIgnoreCase("help")) {
-				   help(sender);
-			   }else if(args[0].equalsIgnoreCase("reset")) {
-				   reset(args,sender,config,prefix);
-			   }else if(args[0].equalsIgnoreCase("enable")) {
-				   enable(args,sender,config,prefix);
-			   }else if(args[0].equalsIgnoreCase("disable")) {
-				   disable(args,sender,config,prefix);
-			   }else if(args[0].equalsIgnoreCase("debug")) {
-				   debug(args,sender,config,prefix);
-			   }else if(args[0].equalsIgnoreCase("verify")) {
-				   if(sender instanceof Player){
-					   plugin.getVerifyManager().sendVerification((Player)sender);
-				   }else{
-					   sender.sendMessage(prefix+MessagesManager.getColoredMessage(config.getString("Messages.onlyPlayerCommand")));
-				   }
-			   }
-			   else {
-				   help(sender);
-			   }
+				String argument = args[0].toLowerCase(Locale.ROOT);
+				switch(argument) {
+					case "reload": 
+						plugin.getConfigsManager().reload();
+						sender.sendMessage(prefix+MessagesManager.getColoredMessage(config.getString("Messages.commandReload")));
+						break;
+					case "help": help(sender); break;
+					case "reset": reset(args,sender,config,prefix); break;
+					case "enable": enable(args,sender,config,prefix); break;
+					case "disable": disable(args,sender,config,prefix); break;
+					case "debug": debug(args,sender,config,prefix); break;
+					case "verify":
+						if(sender instanceof Player){
+							plugin.getVerifyManager().sendVerification((Player)sender);
+						}else{
+							sender.sendMessage(prefix+MessagesManager.getColoredMessage(config.getString("Messages.onlyPlayerCommand")));
+						}
+						break;
+					default: help(sender); break;
+				}
 		   }else {
 			   help(sender);
 		   }
@@ -174,13 +169,13 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
 		if(sender.isOp() || sender.hasPermission("conditionalevents.admin")) {
 			if(args.length == 1) {
-				List<String> completions = new ArrayList<String>();
-				List<String> commands = new ArrayList<String>();
+				List<String> completions = new ArrayList<>();
+				List<String> commands = new ArrayList<>();
 				commands.add("help");commands.add("reload");commands.add("verify");
 				commands.add("reset");commands.add("debug");commands.add("enable");
 				commands.add("disable");
 				for(String c : commands) {
-					if(args[0].isEmpty() || c.startsWith(args[0].toLowerCase())) {
+					if(args[0].isEmpty() || c.startsWith(args[0].toLowerCase(Locale.ROOT))) {
 						completions.add(c);
 					}
 				}
@@ -188,26 +183,23 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			}else {
 				if((args[0].equalsIgnoreCase("debug") || args[0].equalsIgnoreCase("enable")
 						|| args[0].equalsIgnoreCase("disable")) && args.length == 2) {
-					List<String> completions = getEventsCompletions(args,1);
-					return completions;
+					return getEventsCompletions(args,1);
 				}else if(args[0].equalsIgnoreCase("reset") && args.length == 3) {
-					List<String> completions = getEventsCompletions(args,2);
-					return completions;
+					return getEventsCompletions(args,2);
 				}
 			}
 		}
-
 
 		return null;
 	}
 
 	public List<String> getEventsCompletions(String[] args,int argEventPos){
-		List<String> completions = new ArrayList<String>();
+		List<String> completions = new ArrayList<>();
 
 		String argEvent = args[argEventPos];
 		ArrayList<CEEvent> events = plugin.getEventsManager().getEvents();
 		for(CEEvent event : events) {
-			if(argEvent.toLowerCase().isEmpty() || event.getName().toLowerCase().startsWith(argEvent.toLowerCase())) {
+			if(argEvent.isEmpty() || event.getName().toLowerCase().startsWith(argEvent.toLowerCase())) {
 				completions.add(event.getName());
 			}
 		}

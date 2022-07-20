@@ -2,35 +2,24 @@ package ce.ajneb97.listeners;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.libs.itemselectevent.ItemSelectEvent;
-import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-
 public class ItemEventsListener implements Listener {
 
-    public ConditionalEvents plugin;
+    public final ConditionalEvents plugin;
     public ItemEventsListener(ConditionalEvents plugin) {
         this.plugin = plugin;
     }
@@ -93,7 +82,7 @@ public class ItemEventsListener implements Listener {
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.addVariables(
                 new StoredVariable("%inventory_type%",inventoryType),
-                new StoredVariable("%slot%",slot+"")
+                new StoredVariable("%slot%",Integer.toString(slot))
         ).setCommonItemVariables(item)
                 .checkEvent();
     }

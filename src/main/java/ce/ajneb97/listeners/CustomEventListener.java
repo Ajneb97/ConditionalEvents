@@ -21,7 +21,7 @@ import java.util.List;
 
 public class CustomEventListener implements Listener {
 
-    public ConditionalEvents plugin;
+    public final ConditionalEvents plugin;
     public CustomEventListener(ConditionalEvents plugin) {
         this.plugin = plugin;
         configure();
@@ -56,7 +56,7 @@ public class CustomEventListener implements Listener {
 
         //Get variables
         List<String> variablesToCapture = properties.getVariablesToCapture();
-        ArrayList<StoredVariable> storedVariables = new ArrayList<StoredVariable>();
+        ArrayList<StoredVariable> storedVariables = new ArrayList<>();
         for(String line : variablesToCapture) {
             String[] sepLine = line.split(";");
             String variable = sepLine[0];
@@ -94,7 +94,6 @@ public class CustomEventListener implements Listener {
                     .addVariables(storedVariables);
             plugin.getEventsManager().checkSingularEvent(conditionEvent,ceEvent,false);
         }catch(Exception ex) {
-
         }
     }
 

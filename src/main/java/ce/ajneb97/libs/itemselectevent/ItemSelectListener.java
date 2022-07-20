@@ -19,7 +19,7 @@ import ce.ajneb97.ConditionalEvents;
 
 public class ItemSelectListener implements Listener{
 	
-	private ArrayList<Player> players = new ArrayList<Player>();
+	private ArrayList<Player> players = new ArrayList<>();
 	private ConditionalEvents plugin;
 	public ItemSelectListener(ConditionalEvents plugin) {
 		this.plugin = plugin;
@@ -37,7 +37,7 @@ public class ItemSelectListener implements Listener{
 		int newSlot = event.getNewSlot();
 		ItemStack newItem = player.getInventory().getItem(newSlot);
 		ItemStack previousItem = player.getInventory().getItem(previousSlot);
-		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+		ArrayList<ItemStack> items = new ArrayList<>();
 		items.add(newItem);items.add(previousItem);
 		for(int i=0;i<items.size();i++) {
 			ItemStack item = items.get(i);
@@ -109,11 +109,8 @@ public class ItemSelectListener implements Listener{
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onItemInventoryClick(InventoryClickEvent event) {
-		if(event.isCancelled()) {
-			return;
-		}
 		Player player = (Player) event.getWhoClicked();
 		InventoryAction action = event.getAction();
 		int slot = event.getSlot();
@@ -137,7 +134,7 @@ public class ItemSelectListener implements Listener{
 			}
 		}
 
-		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+		ArrayList<ItemStack> items = new ArrayList<>();
 		if(selectedSlot == slot) {
 			items.add(current);items.add(cursor);
 		}else if(selectedSlot == slotHotbar) {
