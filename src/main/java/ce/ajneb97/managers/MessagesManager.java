@@ -56,7 +56,7 @@ public class MessagesManager {
 			
 			while(match.find()) {
 				String color = message.substring(match.start(),match.end());
-				message = message.replace(color, ChatColor.of(color)+"");
+				message = message.replace(color, ChatColor.of(color).toString());
 				
 				match = pattern.matcher(message);
 			}
@@ -74,9 +74,9 @@ public class MessagesManager {
        
         for(char c : message.toCharArray()){
                 if(c == '§'){
-                        previousCode = true;
-                        continue;
-                }else if(previousCode == true){
+					previousCode = true;
+					continue;
+                }else if(previousCode){
                         previousCode = false;
                         if(c == 'l' || c == 'L'){
                                 isBold = true;

@@ -12,7 +12,7 @@ public class PlayerManager {
     private ArrayList<PlayerData> playerData;
     public PlayerManager(ConditionalEvents plugin){
         this.plugin = plugin;
-        this.playerData = new ArrayList<PlayerData>();
+        this.playerData = new ArrayList<>();
     }
 
     public ArrayList<PlayerData> getPlayerData() {

@@ -1,6 +1,5 @@
 package ce.ajneb97.libs.armorequipevent;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 /**

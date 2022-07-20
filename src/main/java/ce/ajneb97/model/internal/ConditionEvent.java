@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 // Represent an event that is being executed and conditions need
@@ -35,7 +36,7 @@ public class ConditionEvent {
         , Player target) {
         this.plugin = plugin;
         this.player = player;
-        this.eventVariables = new ArrayList<StoredVariable>();
+        this.eventVariables = new ArrayList<>();
         this.minecraftEvent = minecraftEvent;
         this.eventType = eventType;
         this.target = target;
@@ -75,16 +76,11 @@ public class ConditionEvent {
 
     public boolean containsValidEvents(){
         ArrayList<CEEvent> validEvents = plugin.getEventsManager().getValidEvents(eventType);
-        if(validEvents.size() == 0){
-            return false;
-        }
-        return true;
+        return !validEvents.isEmpty();
     }
 
     public ConditionEvent addVariables(StoredVariable... storedVariables){
-        for(StoredVariable v : storedVariables){
-            eventVariables.add(v);
-        }
+        Collections.addAll(eventVariables, storedVariables);
         return this;
     }
 
@@ -95,9 +91,9 @@ public class ConditionEvent {
 
     public ConditionEvent setCommonBlockVariables(Block block){
         Location l = block.getLocation();
-        eventVariables.add(new StoredVariable("%block_x%",l.getBlockX()+""));
-        eventVariables.add(new StoredVariable("%block_y%",l.getBlockY()+""));
-        eventVariables.add(new StoredVariable("%block_z%",l.getBlockZ()+""));
+        eventVariables.add(new StoredVariable("%block_x%",Integer.toString(l.getBlockX())));
+        eventVariables.add(new StoredVariable("%block_y%",Integer.toString(l.getBlockY())));
+        eventVariables.add(new StoredVariable("%block_z%",Integer.toString(l.getBlockZ())));
         eventVariables.add(new StoredVariable("%block_world%",l.getWorld().getName()));
         eventVariables.add(new StoredVariable("%block%",block.getType().name()));
         eventVariables.add(new StoredVariable("%block_head_texture%", BlockUtils.getHeadTextureData(block)));
@@ -138,9 +134,9 @@ public class ConditionEvent {
 
         eventVariables.add(new StoredVariable("%victim%",victimType));
         eventVariables.add(new StoredVariable("%victim_name%",victimName));
-        eventVariables.add(new StoredVariable("%victim_block_x%",location.getBlockX()+""));
-        eventVariables.add(new StoredVariable("%victim_block_y%",location.getBlockY()+""));
-        eventVariables.add(new StoredVariable("%victim_block_z%",location.getBlockZ()+""));
+        eventVariables.add(new StoredVariable("%victim_block_x%",Integer.toString(location.getBlockX())));
+        eventVariables.add(new StoredVariable("%victim_block_y%",Integer.toString(location.getBlockY())));
+        eventVariables.add(new StoredVariable("%victim_block_z%",Integer.toString(location.getBlockZ())));
         eventVariables.add(new StoredVariable("%victim_block_world%",location.getWorld().getName()));
         return this;
     }
@@ -148,9 +144,9 @@ public class ConditionEvent {
     public ConditionEvent setCommonItemVariables(ItemStack item){
         String name = "";
         String material = "";
-        String loreString = "";
+        StringBuilder loreString = new StringBuilder();
         short durability = 0;
-        List<String> loreList = new ArrayList<String>();
+        List<String> loreList = new ArrayList<>();
         int customModelData = 0;
 
         if(item != null) {
@@ -166,9 +162,9 @@ public class ConditionEvent {
                     for(int i=0;i<lore.size();i++) {
                         loreList.add(ChatColor.stripColor(lore.get(i)));
                         if(i == lore.size()-1) {
-                            loreString = loreString+ChatColor.stripColor(lore.get(i));
+                            loreString.append(ChatColor.stripColor(lore.get(i)));
                         }else {
-                            loreString = loreString+ChatColor.stripColor(lore.get(i))+" ";
+                            loreString.append(ChatColor.stripColor(lore.get(i))).append(' ');
                         }
                     }
                 }
@@ -180,9 +176,9 @@ public class ConditionEvent {
 
         eventVariables.add(new StoredVariable("%item%",material));
         eventVariables.add(new StoredVariable("%item_name%",name));
-        eventVariables.add(new StoredVariable("%item_durability%",durability+""));
-        eventVariables.add(new StoredVariable("%item_lore%",loreString));
-        eventVariables.add(new StoredVariable("%item_custom_model_data%",customModelData+""));
+        eventVariables.add(new StoredVariable("%item_durability%",Short.toString(durability)));
+        eventVariables.add(new StoredVariable("%item_lore%",loreString.toString()));
+        eventVariables.add(new StoredVariable("%item_custom_model_data%",Integer.toString(customModelData)));
         for(int i=0;i<loreList.size();i++) {
             eventVariables.add(new StoredVariable("%item_lore_line_"+(i+1)+"%", loreList.get(i)));
         }

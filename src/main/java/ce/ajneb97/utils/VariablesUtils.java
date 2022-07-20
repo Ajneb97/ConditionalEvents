@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 public class VariablesUtils {
+    private static final Random rm = new Random();
 
     public static String replaceAllVariablesInLine(String textLine, ArrayList<StoredVariable> eventVariables,
                                                    Player player, Player target, boolean isPlaceholderAPI){
@@ -61,7 +62,7 @@ public class VariablesUtils {
             String param1 = variableLRSplit[0];
             String param2 = variableLRSplit[1];
 
-            String finalSubstring = "";
+            StringBuilder finalSubstring = new StringBuilder();
             boolean started = false;
             for(StoredVariable storedVariable : eventVariables){
                 String name = storedVariable.getName();
@@ -71,14 +72,14 @@ public class VariablesUtils {
                 }
                 if(started){
                     if(name.equals("%arg_"+param2+"%")){
-                        finalSubstring = finalSubstring+value;
+                        finalSubstring.append(value);
                         started = false;
                     }else{
-                        finalSubstring = finalSubstring+value+" ";
+                        finalSubstring.append(value).append(' ');
                     }
                 }
             }
-            return finalSubstring;
+            return finalSubstring.toString();
         }
         return variable;
     }
@@ -103,9 +104,9 @@ public class VariablesUtils {
             }
             return blockType;
         }else if(variable.equals("%random_player%")) {
-            int random = new Random().nextInt(Bukkit.getOnlinePlayers().size());
-            ArrayList<Player> players = new ArrayList<Player>(Bukkit.getOnlinePlayers());
-            if(players.size() == 0) {
+            int random = rm.nextInt(Bukkit.getOnlinePlayers().size());
+            ArrayList<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+            if(players.isEmpty()) {
                 return "none";
             }else {
                 return players.get(random).getName();
@@ -116,10 +117,10 @@ public class VariablesUtils {
             try {
                 World world = Bukkit.getWorld(worldName);
                 List<Player> players = world.getPlayers();
-                if(players.size() == 0) {
+                if(players.isEmpty()) {
                     return "none";
                 }else {
-                    int random = new Random().nextInt(players.size());
+                    int random = rm.nextInt(players.size());
                     return players.get(random).getName();
                 }
             }catch(Exception e) {
@@ -129,10 +130,10 @@ public class VariablesUtils {
             // %random_min-max%
             String variableLR = variable.replace("random_", "").replace("%", "");
             String[] variableLRSplit = variableLR.split("-");
-            int num1 = Integer.valueOf(variableLRSplit[0]);
-            int num2 = Integer.valueOf(variableLRSplit[1]);
+            int num1 = Integer.parseInt(variableLRSplit[0]);
+            int num2 = Integer.parseInt(variableLRSplit[1]);
             int numFinal = MathUtils.getRandomNumber(num1, num2);
-            return numFinal+"";
+            return Integer.toString(numFinal);
         }else if(variable.startsWith("%armor_")) {
             // %armor_<type>%
             String armorType = variable.replace("%armor_", "").replace("%", "");
@@ -159,18 +160,18 @@ public class VariablesUtils {
             String variableLR = variable.replace("%block_at_", "").replace("%", "");
             String[] variableLRSplit = variableLR.split("_");
             try {
-                int x = Integer.valueOf(variableLRSplit[0]);
-                int y = Integer.valueOf(variableLRSplit[1]);
-                int z = Integer.valueOf(variableLRSplit[2]);
-                String worldName = "";
+                int x = Integer.parseInt(variableLRSplit[0]);
+                int y = Integer.parseInt(variableLRSplit[1]);
+                int z = Integer.parseInt(variableLRSplit[2]);
+                StringBuilder worldName = new StringBuilder();
                 for(int i=3;i<variableLRSplit.length;i++) {
                     if(i == variableLRSplit.length - 1) {
-                        worldName = worldName+variableLRSplit[i];
+                        worldName.append(variableLRSplit[i]);
                     }else {
-                        worldName = worldName+variableLRSplit[i]+"_";
+                        worldName.append(worldName+variableLRSplit[i]).append('_');
                     }
                 }
-                World world = Bukkit.getWorld(worldName);
+                World world = Bukkit.getWorld(worldName.toString());
                 return world.getBlockAt(x, y, z).getType().name();
             }catch(Exception e) {
                 return variable;
@@ -180,19 +181,19 @@ public class VariablesUtils {
             String variableLR = variable.replace("%is_nearby_", "").replace("%", "");
             String[] variableLRSplit = variableLR.split("_");
             try {
-                int x = Integer.valueOf(variableLRSplit[0]);
-                int y = Integer.valueOf(variableLRSplit[1]);
-                int z = Integer.valueOf(variableLRSplit[2]);
-                String worldName = "";
+                int x = Integer.parseInt(variableLRSplit[0]);
+                int y = Integer.parseInt(variableLRSplit[1]);
+                int z = Integer.parseInt(variableLRSplit[2]);
+                StringBuilder worldName = new StringBuilder();
                 for(int i=3;i<variableLRSplit.length-1;i++) {
                     if(i == variableLRSplit.length - 2) {
-                        worldName = worldName+variableLRSplit[i];
+                        worldName.append(variableLRSplit[i]);
                     }else {
-                        worldName = worldName+variableLRSplit[i]+"_";
+                        worldName.append(worldName+variableLRSplit[i]).append('_');
                     }
                 }
-                World world = Bukkit.getWorld(worldName);
-                double radius = Double.valueOf(variableLRSplit[variableLRSplit.length-1]);
+                World world = Bukkit.getWorld(worldName.toString());
+                double radius = Double.parseDouble(variableLRSplit[variableLRSplit.length-1]);
 
                 Location l1 = new Location(world,x,y,z);
                 Location l2 = finalPlayer.getLocation();
@@ -210,7 +211,7 @@ public class VariablesUtils {
             // %world_time_<world>%
             String variableLR = variable.replace("%world_time_", "").replace("%", "");
             World world = Bukkit.getWorld(variableLR);
-            return world.getTime()+"";
+            return Long.toString(world.getTime());
         }else if(variable.equals("%empty%")) {
             return "";
         }

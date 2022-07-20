@@ -33,7 +33,6 @@ public class PlayerCustomDropEvent extends PlayerEvent{
 
 	@Override
 	public HandlerList getHandlers() {
-		// TODO Auto-generated method stub
 		return handlers;
 	}
 	

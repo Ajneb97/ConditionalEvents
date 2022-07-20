@@ -1,7 +1,5 @@
 package ce.ajneb97.model.player;
 
-import org.bukkit.Bukkit;
-
 import java.util.ArrayList;
 
 public class PlayerData {
@@ -12,7 +10,7 @@ public class PlayerData {
     public PlayerData(String uuid, String name) {
         this.uuid = uuid;
         this.name = name;
-        this.eventData = new ArrayList<EventData>();
+        this.eventData = new ArrayList<>();
     }
 
     public String getUuid() {

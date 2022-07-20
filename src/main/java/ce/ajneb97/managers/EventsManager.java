@@ -1,7 +1,6 @@
 package ce.ajneb97.managers;
 
 import ce.ajneb97.ConditionalEvents;
-import ce.ajneb97.api.ConditionalEventsEvent;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.ConditionalType;
 import ce.ajneb97.model.EventType;
@@ -12,11 +11,11 @@ import ce.ajneb97.model.internal.ExecutedEvent;
 import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.TimeUtils;
 import ce.ajneb97.utils.VariablesUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class EventsManager {
 
@@ -24,7 +23,7 @@ public class EventsManager {
     private ArrayList<CEEvent> events;
     public EventsManager(ConditionalEvents plugin){
         this.plugin = plugin;
-        this.events = new ArrayList<CEEvent>();
+        this.events = new ArrayList<>();
     }
 
     public void setEvents(ArrayList<CEEvent> events) {
@@ -118,7 +117,7 @@ public class EventsManager {
     }
 
     public ArrayList<CEEvent> getValidEvents(EventType eventType){
-        ArrayList<CEEvent> validEvents = new ArrayList<CEEvent>();
+        ArrayList<CEEvent> validEvents = new ArrayList<>();
         for(CEEvent event : events){
             if(event.getEventType().equals(eventType) && event.isEnabled()){
                 validEvents.add(event);
@@ -141,7 +140,7 @@ public class EventsManager {
         - %statistic_jump% >= %player_level%+5
         - %player_has_permission_<something>% == yes or %player_is_op% == yes
         */
-        List<String> replacedConditions = new ArrayList<String>();
+        List<String> replacedConditions = new ArrayList<>();
         for(String conditionLine : conditions){
             //Bukkit.getConsoleSender().sendMessage("condicion antes: "+conditionLine);
             //Event variables
@@ -184,15 +183,17 @@ public class EventsManager {
                         int textToFindIndex = miniCondition.indexOf(textToFind);
                         String arg1 = miniCondition.substring(0, textToFindIndex);
                         String arg2 = miniCondition.substring(textToFindIndex+conditionalType.getText().length()+2);
-                        String firstArg = MathUtils.calculate(arg1);String secondArg = MathUtils.calculate(arg2);
+                        String firstArg = MathUtils.calculate(arg1);
+                        String secondArg = MathUtils.calculate(arg2);
                         //Bukkit.getConsoleSender().sendMessage("check1: "+firstArg);
                         //Bukkit.getConsoleSender().sendMessage("check2: "+secondArg);
-                        String firstArgLower = firstArg.toLowerCase();String secondArgLower = secondArg.toLowerCase();
+                        String firstArgLower = firstArg.toLowerCase(Locale.ROOT);
+                        String secondArgLower = secondArg.toLowerCase(Locale.ROOT);
                         double firstArgNum = 0;
                         double secondArgNum = 0;
                         try{
-                            firstArgNum = Double.valueOf(firstArg);
-                            secondArgNum = Double.valueOf(secondArg);
+                            firstArgNum = Double.parseDouble(firstArg);
+                            secondArgNum = Double.parseDouble(secondArg);
                         }catch(NumberFormatException e){
 
                         }

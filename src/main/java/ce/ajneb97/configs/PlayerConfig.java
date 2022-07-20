@@ -1,29 +1,24 @@
 package ce.ajneb97.configs;
 
-import ce.ajneb97.ConditionalEvents;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
 import java.io.IOException;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class PlayerConfig {
 
 	private FileConfiguration config;
-	private File configFile;
-	private String filePath;
-	private ConditionalEvents plugin;
+	private Path filePath;
 	
-	public PlayerConfig(String filePath, ConditionalEvents plugin){
+	public PlayerConfig(Path path){
 		this.config = null;
-		this.configFile = null;
-		this.filePath = filePath;
-		this.plugin = plugin;
+		this.filePath = path;
 	}
 	
-	public String getPath(){
+	public Path getPath(){
 		return this.filePath;
 	}
 	
@@ -35,43 +30,30 @@ public class PlayerConfig {
 	}
 	
 	public void registerPlayerConfig(){
-		  configFile = new File(plugin.getDataFolder() +File.separator + "players",filePath);
-		  if(!configFile.exists()){
-			  try {
-				configFile.createNewFile();
+		if(Files.notExists(filePath)){
+			try {
+				Files.createFile(filePath);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		  }		  
-		  config = new YamlConfiguration();
-		  try {
-	            config.load(configFile);
-	      } catch (IOException e) {
-	            e.printStackTrace();
-	      } catch (InvalidConfigurationException e) {
-			// TODO Auto-generated catch block
+		}	  
+		config = new YamlConfiguration();
+		try {
+			config.load(filePath.toFile());
+		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public void savePlayerConfig() {
 		 try {
-			 config.save(configFile);
+			 config.save(filePath.toFile());
 		 } catch (IOException e) {
 			 e.printStackTrace();
 	 	}
 	 }
 	  
 	public void reloadPlayerConfig() {
-		    if (config == null) {
-		    	configFile = new File(plugin.getDataFolder() +File.separator + "players", filePath);
-		    }
-		    config = YamlConfiguration.loadConfiguration(configFile);
-
-			if (configFile != null) {
-			    YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(configFile);
-			    config.setDefaults(defConfig);
-			}	    
-		}
+		config = YamlConfiguration.loadConfiguration(filePath.toFile());    
+	}
 }

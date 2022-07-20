@@ -27,7 +27,6 @@ public class ItemSelectEvent extends PlayerEvent{
 
 	@Override
 	public HandlerList getHandlers() {
-		// TODO Auto-generated method stub
 		return handlers;
 	}
 	

@@ -3,10 +3,12 @@ package ce.ajneb97.configs;
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.model.player.EventData;
 import ce.ajneb97.model.player.PlayerData;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class PlayerConfigsManager {
@@ -16,7 +18,7 @@ public class PlayerConfigsManager {
 	
 	public PlayerConfigsManager(ConditionalEvents plugin) {
 		this.plugin = plugin;
-		this.configPlayers = new ArrayList<PlayerConfig>();
+		this.configPlayers = new ArrayList<>();
 	}
 	
 	public void configure() {
@@ -26,14 +28,13 @@ public class PlayerConfigsManager {
 	}
 	
 	public void createPlayersFolder(){
-		File folder;
         try {
-            folder = new File(plugin.getDataFolder() + File.separator + "players");
-            if(!folder.exists()){
-                folder.mkdirs();
+            Path folder = plugin.getDataFolder().toPath().resolve("players");
+            if(Files.notExists(folder)){
+                Files.createDirectory(folder);
             }
-        } catch(SecurityException e) {
-            folder = null;
+        } catch(IOException | SecurityException e) {
+			e.printStackTrace();
         }
 	}
 	
@@ -44,16 +45,15 @@ public class PlayerConfigsManager {
 	}
 	
 	public void registerPlayers(){
-		String path = plugin.getDataFolder() + File.separator + "players";
-		File folder = new File(path);
-		File[] listOfFiles = folder.listFiles();
-		for (int i=0;i<listOfFiles.length;i++) {
-			if(listOfFiles[i].isFile()) {
-		        String pathName = listOfFiles[i].getName();
-		        PlayerConfig config = new PlayerConfig(pathName,plugin);
+		Path path = plugin.getDataFolder().toPath().resolve("players");
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, Files::isRegularFile)) {
+			for (Path file : stream) {
+		        PlayerConfig config = new PlayerConfig(file);
 		        config.registerPlayerConfig();
 		        configPlayers.add(config);
-		    }
+			}
+		} catch(IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -63,7 +63,7 @@ public class PlayerConfigsManager {
 	
 	public boolean fileAlreadyRegistered(String pathName) {
 		for(int i=0;i<configPlayers.size();i++) {
-			if(configPlayers.get(i).getPath().equals(pathName)) {
+			if(configPlayers.get(i).getPath().endsWith(pathName)) {
 				return true;
 			}
 		}
@@ -72,7 +72,7 @@ public class PlayerConfigsManager {
 	
 	public PlayerConfig getPlayerConfig(String pathName) {
 		for(int i=0;i<configPlayers.size();i++) {
-			if(configPlayers.get(i).getPath().equals(pathName)) {
+			if(configPlayers.get(i).getPath().endsWith(pathName)) {
 				return configPlayers.get(i);
 			}
 		}
@@ -85,7 +85,7 @@ public class PlayerConfigsManager {
 	
 	public boolean registerPlayer(String pathName) {
 		if(!fileAlreadyRegistered(pathName)) {
-			PlayerConfig config = new PlayerConfig(pathName,plugin);
+			PlayerConfig config = new PlayerConfig(plugin.getDataFolder().toPath().resolve("players").resolve(pathName));
 	        config.registerPlayerConfig();
 	        configPlayers.add(config);
 	        return true;
@@ -96,22 +96,22 @@ public class PlayerConfigsManager {
 	
 	public void removeConfigPlayer(String path) {
 		for(int i=0;i<configPlayers.size();i++) {
-			if(configPlayers.get(i).getPath().equals(path)) {
+			if(configPlayers.get(i).getPath().endsWith(path)) {
 				configPlayers.remove(i);
 			}
 		}
 	}
 	
 	public void loadPlayerData() {
-		ArrayList<PlayerData> playerData = new ArrayList<PlayerData>();
+		ArrayList<PlayerData> playerData = new ArrayList<>();
 		
 		for(PlayerConfig playerConfig : configPlayers) {
 			FileConfiguration players = playerConfig.getConfig();
 			String name = players.getString("name");
-			String uuid = playerConfig.getPath().replace(".yml", "");
+			String uuid = playerConfig.getPath().getFileName().toString().replace(".yml", "");
 
 			PlayerData p = new PlayerData(uuid,name);
-			ArrayList<EventData> eventData = new ArrayList<EventData>();
+			ArrayList<EventData> eventData = new ArrayList<>();
 
 			if(players.contains("events")){
 				for(String key : players.getConfigurationSection("events").getKeys(false)){

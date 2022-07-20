@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ActionUtils {
+    private ActionUtils() {}
 
     public static void message(Player player,String actionLine){
         player.sendMessage(MessagesManager.getColoredMessage(actionLine));
@@ -75,11 +76,11 @@ public class ActionUtils {
     public static void teleport(Player player, String actionLine, Event minecraftEvent){
         String[] sep = actionLine.split(";");
         World world = Bukkit.getWorld(sep[0]);
-        double x = Double.valueOf(sep[1]);
-        double y = Double.valueOf(sep[2]);
-        double z = Double.valueOf(sep[3]);
-        float yaw = Float.valueOf(sep[4]);
-        float pitch = Float.valueOf(sep[5]);
+        double x = Double.parseDouble(sep[1]);
+        double y = Double.parseDouble(sep[2]);
+        double z = Double.parseDouble(sep[3]);
+        float yaw = Float.parseFloat(sep[4]);
+        float pitch = Float.parseFloat(sep[5]);
         Location l = new Location(world,x,y,z,yaw,pitch);
 
         if(minecraftEvent instanceof PlayerRespawnEvent) {
@@ -100,14 +101,14 @@ public class ActionUtils {
 
         String[] sep = actionLine.split(";");
         String material = sep[0];
-        int amount = Integer.valueOf(sep[1]);
+        int amount = Integer.parseInt(sep[1]);
         short datavalue = 0;
         String name = null;
         String loreContainsLoreLine = null;
 
         for(String sepLine : sep) {
             if(sepLine.startsWith("datavalue: ")) {
-                datavalue = Short.valueOf(sepLine.replace("datavalue: ", ""));
+                datavalue = Short.parseShort(sepLine.replace("datavalue: ", ""));
             }else if(sepLine.startsWith("name: ")) {
                 name = sepLine.replace("name: ", "");
             }else if(sepLine.startsWith("lorecontains: ")) {
@@ -171,11 +172,11 @@ public class ActionUtils {
     public static void givePotionEffect(Player player,String actionLine){
         String[] sep = actionLine.split(";");
         PotionEffectType potionEffectType = PotionEffectType.getByName(sep[0]);
-        int duration = Integer.valueOf(sep[1]);
-        int level = Integer.valueOf(sep[2])-1;
+        int duration = Integer.parseInt(sep[1]);
+        int level = Integer.parseInt(sep[2])-1;
         boolean showParticles = true;
         if(sep.length >= 4) {
-            showParticles = Boolean.valueOf(sep[3]);
+            showParticles = Boolean.parseBoolean(sep[3]);
         }
         PotionEffect effect = new PotionEffect(potionEffectType,duration,level,false,showParticles);
         player.addPotionEffect(effect);
@@ -187,7 +188,7 @@ public class ActionUtils {
     }
 
     public static void cancelEvent(String actionLine,Event minecraftEvent){
-        boolean cancel = Boolean.valueOf(actionLine);
+        boolean cancel = Boolean.parseBoolean(actionLine);
         if(minecraftEvent instanceof Cancellable) {
             Cancellable cancellableEvent = (Cancellable) minecraftEvent;
             cancellableEvent.setCancelled(cancel);
@@ -205,8 +206,8 @@ public class ActionUtils {
         float pitch = 0;
         try {
             sound = Sound.valueOf(sep[0]);
-            volume = Integer.valueOf(sep[1]);
-            pitch = Float.valueOf(sep[2]);
+            volume = Integer.parseInt(sep[1]);
+            pitch = Float.parseFloat(sep[2]);
         }catch(Exception e ) {
             Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix+
                     MessagesManager.getColoredMessage(" &7Sound Name: &c"+sep[0]+" &7is not valid. Change it in the config!"));
@@ -219,23 +220,23 @@ public class ActionUtils {
     public static void playSoundResourcePack(Player player,String actionLine){
         String[] sep = actionLine.split(";");
         String sound = sep[0];
-        int volume = Integer.valueOf(sep[1]);
-        float pitch = Float.valueOf(sep[2]);
+        int volume = Integer.parseInt(sep[1]);
+        float pitch = Float.parseFloat(sep[2]);
         player.playSound(player.getLocation(), sound, volume, pitch);
     }
 
     public static void actionbar(Player player,String actionLine,ConditionalEvents plugin){
         String[] sep = actionLine.split(";");
         String text = sep[0];
-        int duration = Integer.valueOf(sep[1]);
+        int duration = Integer.parseInt(sep[1]);
         ActionBarAPI.sendActionBar(player,text,duration,plugin);
     }
 
     public static void title(Player player,String actionLine){
         String[] sep = actionLine.split(";");
-        int fadeIn = Integer.valueOf(sep[0]);
-        int stay = Integer.valueOf(sep[1]);
-        int fadeOut = Integer.valueOf(sep[2]);
+        int fadeIn = Integer.parseInt(sep[0]);
+        int stay = Integer.parseInt(sep[1]);
+        int fadeOut = Integer.parseInt(sep[2]);
 
         String title = sep[3];
         String subtitle = sep[4];
@@ -249,9 +250,9 @@ public class ActionUtils {
     }
 
     public static void firework(Player player,String actionLine){
-        ArrayList<Color> colors = new ArrayList<Color>();
+        ArrayList<Color> colors = new ArrayList<>();
         FireworkEffect.Type type = null;
-        ArrayList<Color> fadeColors = new ArrayList<Color>();
+        ArrayList<Color> fadeColors = new ArrayList<>();
         int power = 0;
 
         String[] sep = actionLine.split(" ");
@@ -273,7 +274,7 @@ public class ActionUtils {
                 }
             }else if(s.startsWith("power:")) {
                 s = s.replace("power:", "");
-                power = Integer.valueOf(s);
+                power = Integer.parseInt(s);
             }
         }
 
@@ -296,7 +297,7 @@ public class ActionUtils {
 
     public static void wait(String actionLine, ExecutedEvent executedEvent){
         executedEvent.setOnWait(true);
-        int timeSeconds = Integer.valueOf(actionLine);
+        int timeSeconds = Integer.parseInt(actionLine);
 
         new BukkitRunnable(){
             @Override
@@ -308,7 +309,7 @@ public class ActionUtils {
 
     public static void waitTicks(String actionLine, ExecutedEvent executedEvent){
         executedEvent.setOnWait(true);
-        long timeTicks = Long.valueOf(actionLine);
+        long timeTicks = Long.parseLong(actionLine);
 
         new BukkitRunnable(){
             @Override

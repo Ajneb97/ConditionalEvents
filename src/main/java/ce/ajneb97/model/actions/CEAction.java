@@ -1,10 +1,5 @@
 package ce.ajneb97.model.actions;
 
-import ce.ajneb97.utils.ActionUtils;
-import org.bukkit.entity.Player;
-
-import javax.swing.*;
-
 public class CEAction {
 
     private ActionType type;

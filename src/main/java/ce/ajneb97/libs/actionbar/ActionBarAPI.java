@@ -7,13 +7,11 @@ import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.utils.OtherUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import ce.ajneb97.ConditionalEvents;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class ActionBarAPI
-{
+public class ActionBarAPI {
 
 
     public static void sendActionBar(Player player, String message) {
@@ -42,7 +40,7 @@ public class ActionBarAPI
               Class<?> iChatBaseComponentClass = Class.forName("net.minecraft.server." + nmsver + ".IChatBaseComponent");
               Method m3 = chatSerializerClass.getDeclaredMethod("a", String.class);
               Object cbc = iChatBaseComponentClass.cast(m3.invoke(chatSerializerClass, "{\"text\": \"" + message + "\"}"));
-              packet = packetPlayOutChatClass.getConstructor(new Class<?>[]{iChatBaseComponentClass, byte.class}).newInstance(cbc, (byte) 2);
+              packet = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, byte.class).newInstance(cbc, (byte) 2);
           } else {
               Class<?> chatComponentTextClass = Class.forName("net.minecraft.server." + nmsver + ".ChatComponentText");
               Class<?> iChatBaseComponentClass = Class.forName("net.minecraft.server." + nmsver + ".IChatBaseComponent");
@@ -56,11 +54,11 @@ public class ActionBarAPI
                           chatMessageType = obj;
                       }
                   }
-                  Object chatCompontentText = chatComponentTextClass.getConstructor(new Class<?>[]{String.class}).newInstance(message);
-                  packet = packetPlayOutChatClass.getConstructor(new Class<?>[]{iChatBaseComponentClass, chatMessageTypeClass}).newInstance(chatCompontentText, chatMessageType);
+                  Object chatCompontentText = chatComponentTextClass.getConstructor(String.class).newInstance(message);
+                  packet = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, chatMessageTypeClass).newInstance(chatCompontentText, chatMessageType);
               } catch (ClassNotFoundException cnfe) {
-                  Object chatCompontentText = chatComponentTextClass.getConstructor(new Class<?>[]{String.class}).newInstance(message);
-                  packet = packetPlayOutChatClass.getConstructor(new Class<?>[]{iChatBaseComponentClass, byte.class}).newInstance(chatCompontentText, (byte) 2);
+                  Object chatCompontentText = chatComponentTextClass.getConstructor(String.class).newInstance(message);
+                  packet = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, byte.class).newInstance(chatCompontentText, (byte) 2);
               }
           }
           Method craftPlayerHandleMethod = craftPlayerClass.getDeclaredMethod("getHandle");
@@ -79,23 +77,13 @@ public class ActionBarAPI
 	  
       if (duration > 0) {
           // Sends empty message at the end of the duration. Allows messages shorter than 3 seconds, ensures precision.
-          new BukkitRunnable() {
-              @Override
-              public void run() {
-            	  sendActionBar(player, "");
-              }
-          }.runTaskLater(plugin, duration + 1);
+          Bukkit.getScheduler().runTaskLater(plugin, () -> sendActionBar(player, ""), duration + 1);
       }
 
       // Re-sends the messages every 3 seconds so it doesn't go away from the player's screen.
       while (duration > 40) {
           duration -= 40;
-          new BukkitRunnable() {
-              @Override
-              public void run() {
-                  sendActionBar(player, message);
-              }
-          }.runTaskLater(plugin, (long) duration);
+          Bukkit.getScheduler().runTaskLater(plugin, () -> sendActionBar(player, message), duration);
       }
   }
 
