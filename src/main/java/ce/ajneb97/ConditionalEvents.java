@@ -1,6 +1,7 @@
 package ce.ajneb97;
 
 
+import ce.ajneb97.api.ConditionalEventsAPI;
 import ce.ajneb97.configs.ConfigsManager;
 import ce.ajneb97.libs.armorequipevent.ArmorListener;
 import ce.ajneb97.libs.itemselectevent.ItemSelectListener;
@@ -11,6 +12,7 @@ import ce.ajneb97.listeners.OtherEventsListener;
 import ce.ajneb97.listeners.PlayerEventsListener;
 import ce.ajneb97.managers.*;
 import ce.ajneb97.model.internal.UpdateCheckerResult;
+import ce.ajneb97.tasks.PlayerDataSaveTask;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -34,6 +36,8 @@ public class ConditionalEvents extends JavaPlugin {
 	private VerifyManager verifyManager;
 	private UpdateCheckerManager updateCheckerManager;
 
+	private PlayerDataSaveTask playerDataSaveTask;
+
 	
 	public void onEnable(){
 		this.eventsManager = new EventsManager(this);
@@ -48,6 +52,10 @@ public class ConditionalEvents extends JavaPlugin {
 
 		this.verifyManager = new VerifyManager(this);
 		this.verifyManager.verifyEvents();
+
+		reloadPlayerDataSaveTask();
+
+		ConditionalEventsAPI api = new ConditionalEventsAPI(this);
 
 		Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &eHas been enabled! &fVersion: "+version));
         Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &eThanks for using my plugin!   &f~Ajneb97"));
@@ -77,6 +85,14 @@ public class ConditionalEvents extends JavaPlugin {
 	public void reloadEvents(){
 		HandlerList.unregisterAll(this);
 		registerEvents();
+	}
+
+	public void reloadPlayerDataSaveTask() {
+		if(playerDataSaveTask != null) {
+			playerDataSaveTask.end();
+		}
+		playerDataSaveTask = new PlayerDataSaveTask(this);
+		playerDataSaveTask.start(configsManager.getMainConfigManager().getConfig().getInt("Config.data_save_time"));
 	}
 
 	public void registerCommands(){

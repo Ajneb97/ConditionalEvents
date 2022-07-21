@@ -1,5 +1,6 @@
 Config:
   update_notification: true
+  data_save_time: 5
 Messages:
   prefix: '&4[&bConditionalEvents&4] '
   commandReload: '&aConfig Reloaded.'

@@ -96,12 +96,10 @@ public class VariablesUtils {
             return finalPlayer.getName();
         }else if(variable.equals("%block_below%")){
             Location l = finalPlayer.getLocation().clone().add(0, -1, 0);
-            Block block = l.getBlock();
-            String blockType = "AIR";
-            if(block != null) {
-                blockType = block.getType().name();
-            }
-            return blockType;
+            return getBlockTypeInLocation(l);
+        }else if(variable.equals("%block_inside%")){
+            Location l = finalPlayer.getLocation();
+            return getBlockTypeInLocation(l);
         }else if(variable.equals("%random_player%")) {
             int random = new Random().nextInt(Bukkit.getOnlinePlayers().size());
             ArrayList<Player> players = new ArrayList<Player>(Bukkit.getOnlinePlayers());
@@ -238,5 +236,14 @@ public class VariablesUtils {
             item = player.getEquipment().getBoots();
         }
         return item;
+    }
+
+    private static String getBlockTypeInLocation(Location location){
+        Block block = location.getBlock();
+        String blockType = "AIR";
+        if(block != null) {
+            blockType = block.getType().name();
+        }
+        return blockType;
     }
 }
