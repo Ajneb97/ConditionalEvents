@@ -106,16 +106,17 @@ public class ConditionEvent {
 
     public ConditionEvent setCommonActionVariables(Action action,Player player){
         String actionVariable = null;
+        String actionName = action.name();
         if(player.isSneaking()) {
-            if(action.equals(Action.RIGHT_CLICK_BLOCK)) {
+            if(actionName.contains("RIGHT_CLICK")) {
                 actionVariable = "SHIFT_RIGHT_CLICK";
-            }else if(action.equals(Action.LEFT_CLICK_BLOCK)) {
+            }else if(actionName.contains("LEFT_CLICK")) {
                 actionVariable = "SHIFT_LEFT_CLICK";
             }
         }else {
-            if(action.equals(Action.RIGHT_CLICK_BLOCK)) {
+            if(actionName.contains("RIGHT_CLICK")) {
                 actionVariable = "RIGHT_CLICK";
-            }else if(action.equals(Action.LEFT_CLICK_BLOCK)) {
+            }else if(actionName.contains("LEFT_CLICK")) {
                 actionVariable = "LEFT_CLICK";
             }else if(action.equals(Action.PHYSICAL)) {
                 actionVariable = "PHYSICAL";

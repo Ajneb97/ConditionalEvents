@@ -319,4 +319,24 @@ public class PlayerEventsListener implements Listener {
         ).setCommonItemVariables(selectedItem)
                 .checkEvent();
     }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        Player player = event.getPlayer();
+
+        new ConditionEvent(plugin, player, event, EventType.PLAYER_TELEPORT, null)
+                .addVariables(
+                        new StoredVariable("%cause%",event.getCause()+"")
+                ).checkEvent();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBedEnter(PlayerBedEnterEvent event) {
+        Player player = event.getPlayer();
+
+        new ConditionEvent(plugin, player, event, EventType.PLAYER_BED_ENTER, null)
+                .addVariables(
+                        new StoredVariable("%result%",event.getBedEnterResult()+"")
+                ).checkEvent();
+    }
 }
