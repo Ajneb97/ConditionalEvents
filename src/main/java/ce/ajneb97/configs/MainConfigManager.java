@@ -10,6 +10,7 @@ import ce.ajneb97.model.actions.ActionGroup;
 import ce.ajneb97.model.actions.ActionTargeter;
 import ce.ajneb97.model.actions.ActionType;
 import ce.ajneb97.model.actions.CEAction;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.IOException;
@@ -190,6 +191,10 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("data_save_time:")){
+                getConfig().set("Config.data_save_time", 5);
+                saveConfig();
+            }
             if(!text.contains("commandDebugError:")){
                 getConfig().set("Messages.commandDebugError", "&cUse &7/ce debug <event>");
                 getConfig().set("Messages.debugEnabled", "&aDebug now enabled for event &7%event%&a!");

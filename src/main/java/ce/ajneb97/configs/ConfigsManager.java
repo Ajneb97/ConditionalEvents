@@ -38,5 +38,6 @@ public class ConfigsManager {
         mainConfigManager.reloadConfig();
         plugin.reloadEvents();
         plugin.getVerifyManager().verifyEvents();
+        plugin.reloadPlayerDataSaveTask();
     }
 }

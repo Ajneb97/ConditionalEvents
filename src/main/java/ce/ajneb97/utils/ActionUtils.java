@@ -291,6 +291,10 @@ public class ActionUtils {
         firework.setFireworkMeta(fireworkMeta);
     }
 
+    public static void particle(Player player,String actionLine){
+
+    }
+
     public static void gamemode(Player player,String actionLine){
         player.setGameMode(GameMode.valueOf(actionLine));
     }

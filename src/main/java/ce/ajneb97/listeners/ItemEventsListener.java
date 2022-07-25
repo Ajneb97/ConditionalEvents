@@ -28,6 +28,12 @@ public class ItemEventsListener implements Listener {
     public void onItemInteract(PlayerInteractEvent event){
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
+        if(!Bukkit.getVersion().contains("1.8") && !event.getHand().equals(EquipmentSlot.HAND)) {
+            return;
+        }
+        if(item == null){
+            return;
+        }
 
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.ITEM_INTERACT, null);
         if(!conditionEvent.containsValidEvents()) return;
