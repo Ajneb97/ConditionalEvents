@@ -188,7 +188,7 @@ public class ActionUtils {
 
     public static void cancelEvent(String actionLine,Event minecraftEvent){
         boolean cancel = Boolean.valueOf(actionLine);
-        if(minecraftEvent instanceof Cancellable) {
+        if(minecraftEvent != null && minecraftEvent instanceof Cancellable) {
             Cancellable cancellableEvent = (Cancellable) minecraftEvent;
             cancellableEvent.setCancelled(cancel);
         }

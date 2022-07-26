@@ -2,8 +2,14 @@ package ce.ajneb97.managers;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.model.CEEvent;
+import ce.ajneb97.model.EventType;
+import ce.ajneb97.model.actions.ActionTargeter;
+import ce.ajneb97.model.actions.ActionType;
 import ce.ajneb97.model.verify.CEError;
-import ce.ajneb97.model.verify.CEErrorType;
+import ce.ajneb97.model.verify.CEErrorAction;
+import ce.ajneb97.model.verify.CEErrorCondition;
+import ce.ajneb97.model.verify.CEErrorEventType;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -35,8 +41,57 @@ public class VerifyManager {
     public void verifyEvents() {
         this.errors = new ArrayList<CEError>();
         ArrayList<CEEvent> events = plugin.getEventsManager().getEvents();
+
+        //Loaded events
         for(CEEvent event : events) {
             verifyEvent(event);
+        }
+
+        //Unloaded events
+        FileConfiguration config = plugin.getConfigsManager().getMainConfigManager().getConfig();
+        if(!config.contains("Events")){
+            return;
+        }
+        for (String key : config.getConfigurationSection("Events").getKeys(false)) {
+            String eventType = config.getString("Events."+key+".type");
+            try{
+                EventType.valueOf(eventType.toUpperCase());
+            }catch(Exception e){
+                errors.add(new CEErrorEventType(key, eventType));
+            }
+
+            String pathActions = "Events."+key+".actions";
+            if(!config.contains(pathActions)) {
+                continue;
+            }
+            for (String groupName : config.getConfigurationSection(pathActions).getKeys(false)) {
+                String path = pathActions+"."+groupName;
+                List<String> actionsList = config.getStringList(path);
+                for(int i=0;i<actionsList.size();i++){
+                    String action = actionsList.get(i);
+                    String actionOriginal = action;
+                    if(action.startsWith("to_all: ")){
+                        action = action.replace("to_all: ","");
+                    }else if(action.startsWith("to_target: ")){
+                        action = action.replace("to_target: ","");
+                    }else if(action.startsWith("to_world: ")){
+                        action = action.replace("to_world: ","");
+                        String replace = action.substring(0, action.indexOf(":")+2);
+                        action = action.replace(replace, "");
+                    }else if(action.startsWith("to_range: ")){
+                        action = action.replace("to_range: ", "");
+                        String replace = action.substring(0, action.indexOf(":")+2);
+                        action = action.replace(replace, "");
+                    }
+
+                    try{
+                        String actionTypeText = action.substring(0,action.indexOf(":"));
+                        ActionType.valueOf(actionTypeText.toUpperCase());
+                    }catch(Exception e){
+                        errors.add(new CEErrorAction(key, actionOriginal, (i+1), groupName));
+                    }
+                }
+            }
         }
     }
 
@@ -44,7 +99,7 @@ public class VerifyManager {
         List<String> conditions = event.getConditions();
         for(int i=0;i<conditions.size();i++) {
             if(!verifyCondition(conditions.get(i))) {
-                errors.add(new CEError(CEErrorType.INVALID_CONDITION, event.getName(), (i+1),conditions.get(i)));
+                errors.add(new CEErrorCondition(event.getName(),conditions.get(i), (i+1)));
             }
         }
     }

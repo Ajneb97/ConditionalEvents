@@ -92,7 +92,7 @@ public class CustomEventListener implements Listener {
 
             ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.CUSTOM, null)
                     .addVariables(storedVariables);
-            plugin.getEventsManager().checkSingularEvent(conditionEvent,ceEvent,false);
+            plugin.getEventsManager().checkSingularEvent(conditionEvent,ceEvent);
         }catch(Exception ex) {
 
         }

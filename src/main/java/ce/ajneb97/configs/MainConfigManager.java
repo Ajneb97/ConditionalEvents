@@ -51,7 +51,12 @@ public class MainConfigManager {
                 boolean enabled = true;
 
                 CEEvent event = new CEEvent(key);
-                EventType eventType = EventType.valueOf(config.getString(path+".type").toUpperCase());
+                EventType eventType = null;
+                try{
+                    eventType = EventType.valueOf(config.getString(path+".type").toUpperCase());
+                }catch(Exception e){
+                    continue;
+                }
 
                 if(config.contains(path+".conditions")) {
                     conditions = config.getStringList(path+".conditions");
@@ -90,10 +95,16 @@ public class MainConfigManager {
                                 targeter.setParameter(parameter);
                             }
 
-                            String actionTypeText = action.substring(0,action.indexOf(":"));
-                            ActionType actionType = ActionType.valueOf(actionTypeText.toUpperCase());
-                            String actionLine = action.replace(actionTypeText+": ","");
+                            String actionTypeText = null;
+                            ActionType actionType = null;
+                            try{
+                                actionTypeText = action.substring(0,action.indexOf(":"));
+                                actionType = ActionType.valueOf(actionTypeText.toUpperCase());
+                            }catch(Exception e){
+                                continue;
+                            }
 
+                            String actionLine = action.replace(actionTypeText+": ","");
                             CEAction ceAction = new CEAction(actionType,actionLine,targeter);
                             ceActions.add(ceAction);
                         }

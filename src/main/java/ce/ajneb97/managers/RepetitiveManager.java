@@ -53,12 +53,14 @@ public class RepetitiveManager {
         if(ceEvent.getEventType().equals(EventType.REPETITIVE)){
             for(Player player : Bukkit.getOnlinePlayers()){
                 ConditionEvent conditionEvent = new ConditionEvent(plugin, player, null, EventType.REPETITIVE, null);
-                eventsManager.checkSingularEvent(conditionEvent,ceEvent,true);
+                conditionEvent.setAsync(true);
+                eventsManager.checkSingularEvent(conditionEvent,ceEvent);
             }
         }else{
             //Repetitive server
             ConditionEvent conditionEvent = new ConditionEvent(plugin, null, null, EventType.REPETITIVE_SERVER, null);
-            eventsManager.checkSingularEvent(conditionEvent,ceEvent,true);
+            conditionEvent.setAsync(true);
+            eventsManager.checkSingularEvent(conditionEvent,ceEvent);
         }
         return true;
     }

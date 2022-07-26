@@ -31,6 +31,8 @@ public class ConditionEvent {
     private EventType eventType;
     private CEEvent currentEvent; //The current event that is being checked
 
+    private boolean async;
+
     public ConditionEvent(ConditionalEvents plugin,Player player, Event minecraftEvent, EventType eventType
         , Player target) {
         this.plugin = plugin;
@@ -39,6 +41,7 @@ public class ConditionEvent {
         this.minecraftEvent = minecraftEvent;
         this.eventType = eventType;
         this.target = target;
+        this.async = false;
     }
 
     public Player getPlayer() {
@@ -188,6 +191,15 @@ public class ConditionEvent {
             eventVariables.add(new StoredVariable("%item_lore_line_"+(i+1)+"%", loreList.get(i)));
         }
 
+        return this;
+    }
+
+    public boolean isAsync() {
+        return async;
+    }
+
+    public ConditionEvent setAsync(boolean async) {
+        this.async = async;
         return this;
     }
 }

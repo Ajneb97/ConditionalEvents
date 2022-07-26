@@ -1,7 +1,6 @@
 package ce.ajneb97.managers;
 
 import ce.ajneb97.ConditionalEvents;
-import ce.ajneb97.api.ConditionalEventsEvent;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.ConditionalType;
 import ce.ajneb97.model.EventType;
@@ -47,11 +46,11 @@ public class EventsManager {
     public void checkEvent(ConditionEvent conditionEvent){
         ArrayList<CEEvent> validEvents = getValidEvents(conditionEvent.getEventType());
         for(CEEvent event : validEvents){
-            checkSingularEvent(conditionEvent,event,false);
+            checkSingularEvent(conditionEvent,event);
         }
     }
 
-    public void checkSingularEvent(ConditionEvent conditionEvent,CEEvent event,boolean isAsync){
+    public void checkSingularEvent(ConditionEvent conditionEvent,CEEvent event){
         Player player = conditionEvent.getPlayer();
         boolean isPlaceholderAPI = plugin.getDependencyManager().isPlaceholderAPI();
         conditionEvent.setCurrentEvent(event);
@@ -114,7 +113,7 @@ public class EventsManager {
         //Execute actions
         ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
                conditionsResult.getExecuteActionGroup(), conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
-        executedEvent.executeActions(isPlaceholderAPI,isAsync);
+        executedEvent.executeActions(isPlaceholderAPI,conditionEvent.isAsync());
     }
 
     public ArrayList<CEEvent> getValidEvents(EventType eventType){

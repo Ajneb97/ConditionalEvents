@@ -1,36 +1,21 @@
 package ce.ajneb97.model.verify;
 
-import ce.ajneb97.utils.JSONMessage;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CEError {
-    private CEErrorType type;
-    private List<String> tooltip;
+public abstract class CEError {
 
-    private String eventName;
-    private int errorLine;
-    private String errorText;
+    protected String event;
+    protected String errorText;
 
-    public CEError(CEErrorType type,String eventName,int errorLine,String errorText) {
-        this.type = type;
-        this.eventName = eventName;
-        this.errorLine = errorLine;
+    public CEError(String event,String errorText){
+        this.event = event;
         this.errorText = errorText;
     }
-    public List<String> getTooltip() {
-        return tooltip;
-    }
-    public void setTooltip(List<String> tooltip) {
-        this.tooltip = tooltip;
-    }
-    public void sendMessage(Player player) {
-        String message = "&e⚠ ";
-        JSONMessage jsonMessage = null;
-        List<String> hover = new ArrayList<String>();
 
+    public List<String> getFixedErrorText(){
         List<String> sepText = new ArrayList<String>();
         int currentPos = 0;
         for(int i=0;i<errorText.length();i++) {
@@ -46,23 +31,8 @@ public class CEError {
                 sepText.add(m);
             }
         }
-
-        switch(type) {
-            case INVALID_CONDITION:
-                jsonMessage = new JSONMessage(player,message+"&7Condition &6"+errorLine+" &7on Event &6"+eventName+" &7is not valid.");
-                hover.add("&eTHIS IS A WARNING!");
-                hover.add("&fThe condition defined for this event");
-                hover.add("&fis probably not formatted correctly:");
-                for(String m : sepText) {
-                    hover.add("&c"+m);
-                }
-                hover.add(" ");
-                hover.add("&fRemember to use a valid condition from this list:");
-                hover.add("&ahttps://ajneb97.gitbook.io/conditionalevents/conditions");
-                jsonMessage.hover(hover).send();
-                break;
-            default:
-                break;
-        }
+        return sepText;
     }
+
+    public abstract void sendMessage(Player player);
 }

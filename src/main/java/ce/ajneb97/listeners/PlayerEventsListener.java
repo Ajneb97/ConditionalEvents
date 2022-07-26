@@ -145,6 +145,8 @@ public class PlayerEventsListener implements Listener {
             Arrow arrow = (Arrow) attacker;
             if(arrow.getShooter() instanceof Player) {
                 player = (Player) arrow.getShooter();
+            }else{
+                return;
             }
         }else if(attacker instanceof Player) {
             player = (Player) attacker;
@@ -279,7 +281,7 @@ public class PlayerEventsListener implements Listener {
         new ConditionEvent(plugin, player, event, EventType.PLAYER_CHAT, null)
                 .addVariables(
                         new StoredVariable("%message%",event.getMessage())
-                ).checkEvent();
+                ).setAsync(true).checkEvent();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

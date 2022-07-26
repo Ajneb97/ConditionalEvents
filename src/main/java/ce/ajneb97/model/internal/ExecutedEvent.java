@@ -53,10 +53,16 @@ public class ExecutedEvent {
 
     public void executeActions(boolean isPlaceholderAPI,boolean isAsync){
         ActionGroup actionGroup = event.getActionGroup(actionGroupName);
+        if(actionGroup == null){
+            return;
+        }
         this.actions = new ArrayList<CEAction>(actionGroup.getActions());
         this.isPlaceholderAPI = isPlaceholderAPI;
 
         ConditionalEventsEvent ceEvent = new ConditionalEventsEvent(player, event.getName(), actionGroupName);
+
+        //Check cancel event, always first to prevent issues with async events.
+        executeCancelEventAction();
 
         if(isAsync){
             new BukkitRunnable(){
@@ -69,6 +75,15 @@ public class ExecutedEvent {
         }else{
             plugin.getServer().getPluginManager().callEvent(ceEvent);
             executeActionsFinal();
+        }
+    }
+
+    public void executeCancelEventAction(){
+        for(CEAction ceAction : actions){
+            if(ceAction.getType().equals(ActionType.CANCEL_EVENT)){
+                ActionUtils.cancelEvent(ceAction.getActionLine(),minecraftEvent);
+                return;
+            }
         }
     }
 
@@ -140,9 +155,6 @@ public class ExecutedEvent {
                 return;
             case CONSOLE_COMMAND:
                 ActionUtils.consoleCommand(actionLine);
-                return;
-            case CANCEL_EVENT:
-                ActionUtils.cancelEvent(actionLine,minecraftEvent);
                 return;
             case WAIT:
                 ActionUtils.wait(actionLine,this);
