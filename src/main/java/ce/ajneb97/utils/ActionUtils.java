@@ -14,6 +14,7 @@ import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -332,6 +333,20 @@ public class ActionUtils {
             if(actionLine.equals("xp") || actionLine.equals("all")) {
                 deathEvent.setKeepLevel(true);
                 deathEvent.setDroppedExp(0);
+            }
+        }
+    }
+
+    public static void cancelDrop(String actionLine,Event minecraftEvent){
+        if(OtherUtils.isLegacy()){
+            return;
+        }
+        if(minecraftEvent instanceof BlockBreakEvent) {
+            BlockBreakEvent blockBreakEvent = (BlockBreakEvent) minecraftEvent;
+            boolean cancel = Boolean.valueOf(actionLine);
+            if(cancel){
+                blockBreakEvent.setDropItems(false);
+                blockBreakEvent.setExpToDrop(0);
             }
         }
     }

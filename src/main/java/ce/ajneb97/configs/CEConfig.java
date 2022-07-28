@@ -27,6 +27,7 @@ public class CEConfig {
             firstTime = true;
             this.getConfig().options().copyDefaults(true);
             saveConfig();
+            firstTime = false;
         }
     }
     public void saveConfig() {

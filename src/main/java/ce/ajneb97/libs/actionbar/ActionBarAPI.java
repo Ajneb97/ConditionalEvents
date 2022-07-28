@@ -21,6 +21,7 @@ public class ActionBarAPI
 		  player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(MessagesManager.getColoredMessage(message)));
 		  return;
 	  }
+      message = MessagesManager.getColoredMessage(message);
 	  boolean useOldMethods = false;
 	  String nmsver = Bukkit.getServer().getClass().getPackage().getName();
       nmsver = nmsver.substring(nmsver.lastIndexOf(".") + 1);

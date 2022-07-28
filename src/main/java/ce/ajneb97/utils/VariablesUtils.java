@@ -55,7 +55,7 @@ public class VariablesUtils {
     public static String replaceEventVariablesPost(String variable,ArrayList<StoredVariable> eventVariables){
         //PLAYER_COMMAND:
         if(variable.startsWith("%args_substring_")){
-            //%args_substring_<param1>_<param2>%
+            //%args_substring_<param1>-<param2>%
             String variableLR = variable.replace("args_substring_", "").replace("%", "");
             String[] variableLRSplit = variableLR.split("-");
             String param1 = variableLRSplit[0];
