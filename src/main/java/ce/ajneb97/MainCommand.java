@@ -30,7 +30,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 	
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
 		FileConfiguration config = mainConfigManager.getConfig();
-	   	String prefix = MessagesManager.getColoredMessage(config.getString("Messages.prefix"));
+	   	String prefix = plugin.getMessagesManager().getPrefix();
 
 	   	if(sender.isOp() || sender.hasPermission("conditionalevents.admin")) {
 		   if(args.length >= 1) {

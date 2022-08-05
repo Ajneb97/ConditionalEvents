@@ -13,6 +13,7 @@ public class MessagesManager {
 	private String timeMinutes;
 	private String timeHours;
 	private String timeDays;
+	private String prefix;
 
 
 	public String getTimeSeconds() {
@@ -47,8 +48,14 @@ public class MessagesManager {
 		this.timeDays = timeDays;
 	}
 
+	public String getPrefix() {
+		return getColoredMessage(prefix);
+	}
 
-	
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
 	public static String getColoredMessage(String message) {
 		if(OtherUtils.isNew()) {
 			Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");

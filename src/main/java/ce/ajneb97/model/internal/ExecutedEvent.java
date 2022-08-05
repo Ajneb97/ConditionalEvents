@@ -51,7 +51,7 @@ public class ExecutedEvent {
         this.currentActionPos = 0;
     }
 
-    public void executeActions(boolean isPlaceholderAPI,boolean isAsync){
+    public void executeActions(boolean isPlaceholderAPI){
         ActionGroup actionGroup = event.getActionGroup(actionGroupName);
         if(actionGroup == null){
             return;
@@ -64,7 +64,7 @@ public class ExecutedEvent {
         //Check cancel event, always first to prevent issues with async events.
         executeCancelEventAction();
 
-        if(isAsync){
+        if(!Bukkit.isPrimaryThread()){
             new BukkitRunnable(){
                 @Override
                 public void run() {

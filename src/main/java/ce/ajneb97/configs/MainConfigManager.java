@@ -181,6 +181,7 @@ public class MainConfigManager {
         msgManager.setTimeMinutes(config.getString("Messages.minutes"));
         msgManager.setTimeHours(config.getString("Messages.hours"));
         msgManager.setTimeDays(config.getString("Messages.days"));
+        msgManager.setPrefix(config.getString("Messages.prefix"));
 
         this.plugin.setMessagesManager(msgManager);
     }

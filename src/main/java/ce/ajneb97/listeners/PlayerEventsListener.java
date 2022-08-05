@@ -7,6 +7,7 @@ import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.model.player.PlayerData;
+import ce.ajneb97.utils.MathUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
@@ -162,7 +163,7 @@ public class PlayerEventsListener implements Listener {
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_ATTACK, target);
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.addVariables(
-                new StoredVariable("%damage%",event.getFinalDamage()+"")
+                new StoredVariable("%damage%",MathUtils.truncate(event.getFinalDamage())+"")
         ).setCommonItemVariables(player.getItemInHand())
                 .setCommonVictimVariables(damaged)
                 .checkEvent();
@@ -190,7 +191,6 @@ public class PlayerEventsListener implements Listener {
 
         Player player = (Player) damaged;
         String cause = event.getCause().toString();
-        double damage = event.getFinalDamage();
         String damagerType = "";
         String damagerName = "";
         if(event instanceof EntityDamageByEntityEvent) {
@@ -206,7 +206,7 @@ public class PlayerEventsListener implements Listener {
                 .addVariables(
                         new StoredVariable("%damager_type%",damagerType),
                         new StoredVariable("%damager_name%",damagerName),
-                        new StoredVariable("%damage%",damage+""),
+                        new StoredVariable("%damage%", MathUtils.truncate(event.getFinalDamage())+""),
                         new StoredVariable("%cause%",cause)
                 ).checkEvent();
     }

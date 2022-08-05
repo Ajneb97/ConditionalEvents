@@ -131,18 +131,9 @@ public class VariablesUtils {
             int num2 = Integer.valueOf(variableLRSplit[1]);
             int numFinal = MathUtils.getRandomNumber(num1, num2);
             return numFinal+"";
-        }else if(variable.startsWith("%armor_")) {
-            // %armor_<type>%
-            String armorType = variable.replace("%armor_", "").replace("%", "");
-            ItemStack item = getArmorItem(finalPlayer,armorType);
-            String material = "AIR";
-            if(item != null) {
-                material = item.getType().name();
-            }
-            return material;
-        }else if(variable.startsWith("%armor_name_")) {
-            // %armor_name_<type>%
-            String armorType = variable.replace("%armor_name_", "").replace("%", "");
+        }else if(variable.startsWith("%playerarmor_name_")) {
+            // %playerarmor_name_<type>%
+            String armorType = variable.replace("%playerarmor_name_", "").replace("%", "");
             ItemStack item = getArmorItem(finalPlayer,armorType);
             String name = "";
             if(item.hasItemMeta()){
@@ -152,6 +143,15 @@ public class VariablesUtils {
                 }
             }
             return name;
+        }else if(variable.startsWith("%playerarmor_")) {
+            // %playerarmor_<type>%
+            String armorType = variable.replace("%playerarmor_", "").replace("%", "");
+            ItemStack item = getArmorItem(finalPlayer,armorType);
+            String material = "AIR";
+            if(item != null) {
+                material = item.getType().name();
+            }
+            return material;
         }else if(variable.startsWith("%block_at_")) {
             // %block_at_x_y_z_world%
             String variableLR = variable.replace("%block_at_", "").replace("%", "");
@@ -232,7 +232,7 @@ public class VariablesUtils {
             item = player.getEquipment().getChestplate();
         }else if(armorType.equals("leggings")) {
             item = player.getEquipment().getLeggings();
-        }else {
+        }else if(armorType.equals("boots")){
             item = player.getEquipment().getBoots();
         }
         return item;

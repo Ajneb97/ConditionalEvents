@@ -113,7 +113,7 @@ public class EventsManager {
         //Execute actions
         ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
                conditionsResult.getExecuteActionGroup(), conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
-        executedEvent.executeActions(isPlaceholderAPI,conditionEvent.isAsync());
+        executedEvent.executeActions(isPlaceholderAPI);
     }
 
     public ArrayList<CEEvent> getValidEvents(EventType eventType){
