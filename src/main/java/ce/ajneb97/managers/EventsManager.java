@@ -127,55 +127,34 @@ public class EventsManager {
     }
 
     private CheckConditionsResult checkConditions(ConditionEvent conditionEvent, boolean isPlaceholderAPI){
-        List<String> conditions = conditionEvent.getCurrentEvent().getConditions();
+        List<String> conditions = new ArrayList<String>(conditionEvent.getCurrentEvent().getConditions());
         String eventName = conditionEvent.getCurrentEvent().getName();
         Player player = conditionEvent.getPlayer();
         Player target = conditionEvent.getTarget();
         DebugManager debugManager = plugin.getDebugManager();
 
-        //Replace variables
-        /*
-        Before:
-        - %player_world% == plotworld
-        - %statistic_jump% >= %player_level%+5
-        - %player_has_permission_<something>% == yes or %player_is_op% == yes
-        */
-        List<String> replacedConditions = new ArrayList<String>();
-        for(String conditionLine : conditions){
-            //Bukkit.getConsoleSender().sendMessage("condicion antes: "+conditionLine);
-            //Event variables
-            ArrayList<StoredVariable> storedVariables = conditionEvent.getEventVariables();
-
-            conditionLine =  VariablesUtils.replaceAllVariablesInLine(conditionLine,storedVariables,player
-                ,target,isPlaceholderAPI);
-
-            //Bukkit.getConsoleSender().sendMessage("condicion despues: "+conditionLine);
-            replacedConditions.add(conditionLine);
-        }
-
         //Check condition lines
-        /*
-        Now:
-        - world == plotworld
-        - 1060 >= 10+5
-        - yes == yes or no == yes
-        */
-        for(int i=0;i<replacedConditions.size();i++){
-            String conditionLine = replacedConditions.get(i);
+        ArrayList<StoredVariable> storedVariables = conditionEvent.getEventVariables();
+
+        for(int i=0;i<conditions.size();i++) {
+            String conditionLine = conditions.get(i);
             boolean approvedLine = false;
             String executedActionGroup = null;
-            if(conditionLine.contains(" execute ")){
+            if (conditionLine.contains(" execute ")) {
                 String[] sep = conditionLine.split(" execute ");
                 conditionLine = sep[0];
                 executedActionGroup = sep[1];
             }
 
+            String conditionLineWithReplacements = "";
             String[] orConditions = conditionLine.split(" or ");
-            for(String miniCondition : orConditions){
+
+            for(int c=0;c<orConditions.length;c++){
                 //If a miniCondition is NOT accomplished, it will check the next.
                 //If a miniCondition IS accomplished, it will finish this cycle.
                 //If this cycle is finished with NO accomplished miniConditions, the
                 // whole condition was not satisfied so the checkConditions method returns FALSE.
+                String miniCondition = orConditions[c];
 
                 for(ConditionalType conditionalType : ConditionalType.values()){
                     String textToFind = " "+conditionalType.getText()+" ";
@@ -183,9 +162,17 @@ public class EventsManager {
                         int textToFindIndex = miniCondition.indexOf(textToFind);
                         String arg1 = miniCondition.substring(0, textToFindIndex);
                         String arg2 = miniCondition.substring(textToFindIndex+conditionalType.getText().length()+2);
+                        //Replace variables
+                        arg1 = VariablesUtils.replaceAllVariablesInLine(arg1,storedVariables,player,target,isPlaceholderAPI);
+                        arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,storedVariables,player,target,isPlaceholderAPI);
+
+                        conditionLineWithReplacements = conditionLineWithReplacements+"'"+arg1+"'"+textToFind+"'"+arg2+"'";
+                        if(c != orConditions.length-1){
+                            conditionLineWithReplacements = conditionLineWithReplacements+" or ";
+                        }
+
                         String firstArg = MathUtils.calculate(arg1);String secondArg = MathUtils.calculate(arg2);
-                        //Bukkit.getConsoleSender().sendMessage("check1: "+firstArg);
-                        //Bukkit.getConsoleSender().sendMessage("check2: "+secondArg);
+                        //Bukkit.getConsoleSender().sendMessage("check1: '"+firstArg+"' '"+textToFind+"' check2: '"+secondArg+"'");
                         String firstArgLower = firstArg.toLowerCase();String secondArgLower = secondArg.toLowerCase();
                         double firstArgNum = 0;
                         double secondArgNum = 0;
@@ -235,7 +222,7 @@ public class EventsManager {
                 }
             }
             //Bukkit.getConsoleSender().sendMessage(conditionLine+" -> ¿aprobada? "+approvedLine);
-            debugManager.sendConditionMessage(eventName,conditionLine,approvedLine,conditionEvent.getPlayer(),i==0);
+            debugManager.sendConditionMessage(eventName,conditionLineWithReplacements,approvedLine,conditionEvent.getPlayer(),i==0);
             //If approvedLine is false, the conditions are not satisfied. Returns FALSE.
             //If approvedLine is false, but there is an executedActionGroup, it will continue with the next
             // condition line.

@@ -101,9 +101,13 @@ public class ExecutedEvent {
             String actionLine = action.getActionLine();
             actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,eventVariables,player
                     ,target,isPlaceholderAPI);
-
-
             ActionTargeter targeter = action.getTargeter();
+            String parametersLine = targeter.getParameter();
+            if(parametersLine != null){
+                parametersLine = VariablesUtils.replaceAllVariablesInLine(parametersLine,eventVariables,player
+                        ,target,isPlaceholderAPI);
+            }
+
             if(targeter.equals(ActionTargeter.TO_ALL)) {
                 for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
                     executeAction(globalPlayer,actionType,actionLine);
@@ -111,14 +115,14 @@ public class ExecutedEvent {
             }else if(targeter.equals(ActionTargeter.TO_TARGET)){
                 executeAction(target,actionType,actionLine);
             }else if(targeter.equals(ActionTargeter.TO_WORLD)){
-                String world = targeter.getParameter();
+                String world = parametersLine;
                 for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
                     if(globalPlayer.getWorld().getName().equals(world)){
                         executeAction(globalPlayer,actionType,actionLine);
                     }
                 }
             }else if(targeter.equals(ActionTargeter.TO_RANGE)){
-                String[] sep = targeter.getParameter().split(";");
+                String[] sep = parametersLine.split(";");
                 double range = Double.valueOf(sep[0]);
                 boolean includePlayer = Boolean.valueOf(sep[1]);
                 ArrayList<Player> globalPlayers = new ArrayList<Player>();

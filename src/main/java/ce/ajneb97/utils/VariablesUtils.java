@@ -46,7 +46,9 @@ public class VariablesUtils {
 
         //Event variables
         for(StoredVariable variable : eventVariables){
-            auxTextLine = auxTextLine.replace(variable.getName(), variable.getValue());
+            if(variable.getValue() != null){
+                auxTextLine = auxTextLine.replace(variable.getName(), variable.getValue());
+            }
         }
 
         return auxTextLine;
