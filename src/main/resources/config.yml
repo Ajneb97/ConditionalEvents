@@ -7,7 +7,7 @@ Messages:
   commandNoPermissions: '&cYou don''t have permissions to use this command.'
   commandResetError: '&cUse &7/ce reset <player> <event>'
   eventDoesNotExists: '&cThat event doesn''t exists on the config.'
-  cooldownReset: '&aCooldown was reset for player &e%player% &aon event &e%event%&a!'
+  eventDataReset: '&aData reset for player &e%player% &aon event &e%event%&a!'
   eventEnableError: '&cUse &7/ce enable <event>'
   eventDisableError: '&cUse &7/ce disable <event>'
   eventEnabled: '&aEvent &7%event% &aenabled.'
@@ -31,6 +31,7 @@ Events:
         - 'to_all: message: &e&l[ALERT] &f&lAjneb joined the game!'
   event2:
     type: block_interact
+    one_time: true
     conditions:
       - '%block_x% == 20'
       - '%block_y% == 60'
@@ -38,7 +39,7 @@ Events:
       - '%block_world% == lobby'
       - '%block% == STONE_BUTTON'
       - '%action_type% == RIGHT_CLICK'
-      - '%player_has_permission_conditionalevents.event.event2% == false execute actions2'
+      - '%player_has_permission_conditionalevents.event.event2% == no execute actions2'
     actions:
       default:
         - 'message: &aYou''ve received $500!'
@@ -46,8 +47,8 @@ Events:
         - 'playsound: ENTITY_PLAYER_LEVELUP;10;2'
       actions2:
         - 'message: &cYou need to have a rank to use this button.'
-    one_time: true
-    one_time_error_message: '&cYou can claim this reward just once!'
+      one_time:
+        - 'message: &cYou can claim this reward just once!'
   event3:
     type: player_attack
     conditions:
@@ -62,6 +63,7 @@ Events:
         - 'to_target: message: &cYou were poisoned by &e%player%&c!'
   event4:
     type: block_break
+    ignore_with_permission: conditionalevents.ignore.event4
     conditions:
       - '%block_world% == spawn'
     actions:
@@ -69,9 +71,9 @@ Events:
         - 'cancel_event: true'
         - 'message: &cYou can''t break blocks on this world.'
         - 'playsound: BLOCK_NOTE_BLOCK_PLING;10;0.1'
-    ignore_with_permission: conditionalevents.ignore.event4
   event5:
     type: player_command
+    ignore_with_permission: conditionalevents.ignore.event5
     conditions:
       - '%command% startsWith //calc or %command% startsWith //solve or %command% startsWith
       //eval'
@@ -79,10 +81,6 @@ Events:
       default:
         - 'cancel_event: true'
         - 'kick: &cWhat are you trying to do?'
-    ignore_with_permission: conditionalevents.ignore.event5
-    cooldown: 3600
-    cooldown_error_message: '&cYou need to wait &e%time% &cbefore claiming your reward
-      again.'
   event6:
     type: repetitive
     repetitive_time: 10

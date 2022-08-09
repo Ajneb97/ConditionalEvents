@@ -86,7 +86,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
 			playerData.resetCooldown(eventName);
 			playerData.setOneTime(eventName,false);
-			sender.sendMessage(prefix+MessagesManager.getColoredMessage(config.getString("Messages.cooldownReset")
+			sender.sendMessage(prefix+MessagesManager.getColoredMessage(config.getString("Messages.eventDataReset")
 					.replace("%player%", player).replace("%event%", eventName)));
 		}else {
 			sender.sendMessage(prefix+MessagesManager.getColoredMessage(config.getString("Messages.commandResetError")));

@@ -14,12 +14,10 @@ public class CEEvent {
     private List<ActionGroup> actionGroups;
 
     private boolean oneTime;
-    private String oneTimeErrorMessage;
 
     private String ignoreWithPermission;
 
     private long cooldown;
-    private String cooldownErrorMessage;
 
     private boolean enabled;
 
@@ -71,14 +69,6 @@ public class CEEvent {
         this.oneTime = oneTime;
     }
 
-    public String getOneTimeErrorMessage() {
-        return oneTimeErrorMessage;
-    }
-
-    public void setOneTimeErrorMessage(String oneTimeErrorMessage) {
-        this.oneTimeErrorMessage = oneTimeErrorMessage;
-    }
-
     public String getIgnoreWithPermission() {
         return ignoreWithPermission;
     }
@@ -93,14 +83,6 @@ public class CEEvent {
 
     public void setCooldown(long cooldown) {
         this.cooldown = cooldown;
-    }
-
-    public String getCooldownErrorMessage() {
-        return cooldownErrorMessage;
-    }
-
-    public void setCooldownErrorMessage(String cooldownErrorMessage) {
-        this.cooldownErrorMessage = cooldownErrorMessage;
     }
 
     public boolean isEnabled() {

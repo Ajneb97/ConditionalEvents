@@ -44,10 +44,8 @@ public class MainConfigManager {
                 List<String> conditions = new ArrayList<String>();
                 List<ActionGroup> actionGroups = new ArrayList<ActionGroup>();
                 boolean oneTime = false;
-                String oneTimeErrorMessage = null;
                 String ignoreWithPermission = null;
                 long cooldown = 0;
-                String cooldownErrorMessage = null;
                 boolean enabled = true;
 
                 CEEvent event = new CEEvent(key);
@@ -116,17 +114,11 @@ public class MainConfigManager {
                 if(config.contains(path+".cooldown")) {
                     cooldown = Long.valueOf(config.getString(path+".cooldown"));
                 }
-                if(config.contains(path+".cooldown_error_message")) {
-                    cooldownErrorMessage = config.getString(path+".cooldown_error_message");
-                }
                 if(config.contains(path+".ignore_with_permission")) {
                     ignoreWithPermission = config.getString(path+".ignore_with_permission");
                 }
                 if(config.contains(path+".one_time")) {
                     oneTime = Boolean.valueOf(config.getString(path+".one_time"));
-                }
-                if(config.contains(path+".one_time_error_message")) {
-                    oneTimeErrorMessage = config.getString(path+".one_time_error_message");
                 }
                 if(config.contains(path+".enabled")) {
                     enabled = Boolean.valueOf(config.getString(path+".enabled"));
@@ -136,10 +128,8 @@ public class MainConfigManager {
                 event.setConditions(conditions);
                 event.setActionGroups(actionGroups);
                 event.setCooldown(cooldown);
-                event.setCooldownErrorMessage(cooldownErrorMessage);
                 event.setIgnoreWithPermission(ignoreWithPermission);
                 event.setOneTime(oneTime);
-                event.setOneTimeErrorMessage(oneTimeErrorMessage);
                 event.setEnabled(enabled);
 
                 if(event.getEventType().equals(EventType.CUSTOM)) {
@@ -203,6 +193,10 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("eventDataReset:")){
+                getConfig().set("Messages.eventDataReset", "&aData reset for player &e%player% &aon event &e%event%&a!");
+                saveConfig();
+            }
             if(!text.contains("data_save_time:")){
                 getConfig().set("Config.data_save_time", 5);
                 saveConfig();

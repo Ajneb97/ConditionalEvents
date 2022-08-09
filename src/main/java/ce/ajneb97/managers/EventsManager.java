@@ -5,6 +5,7 @@ import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.ConditionalType;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
+import ce.ajneb97.model.actions.ActionGroup;
 import ce.ajneb97.model.internal.CheckConditionsResult;
 import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.model.internal.ExecutedEvent;
@@ -74,10 +75,9 @@ public class EventsManager {
             if(event.isOneTime()){
                 boolean isOneTime = playerManager.getEventOneTime(event.getName(),player);
                 if(isOneTime){
-                    String errorMessage = event.getOneTimeErrorMessage();
-                    if(errorMessage != null){
-                        player.sendMessage(MessagesManager.getColoredMessage(errorMessage));
-                    }
+                    ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
+                         "one_time", conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
+                    executedEvent.executeActions(isPlaceholderAPI);
                     return;
                 }
             }
@@ -88,15 +88,14 @@ public class EventsManager {
                 long currentTimeMillis = System.currentTimeMillis();
                 if(eventCooldownMillis > currentTimeMillis){
                     String timeString = TimeUtils.getTime((eventCooldownMillis-currentTimeMillis)/1000,messagesManager);
-                    String errorMessage = event.getCooldownErrorMessage();
-                    if(errorMessage != null){
-                        player.sendMessage(MessagesManager.getColoredMessage(errorMessage.replace("%time%",timeString)));
-                    }
+                    conditionEvent.getEventVariables().add(new StoredVariable("%time%",timeString));
+                    ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
+                          "cooldown", conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
+                    executedEvent.executeActions(isPlaceholderAPI);
                     return;
                 }
             }
         }
-
 
         if(player != null){
             //Set One Time
