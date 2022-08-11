@@ -25,7 +25,7 @@ public class TimeUtils {
 			time = totalMin+msgManager.getTimeMinutes()+" "+time;
 		}
 		if(totalHour > 24) {
-			totalHour = totalHour - 24*totalHour;
+			totalHour = totalHour - 24*totalDay;
 		}
 		if(totalHour > 0){
 			time = totalHour+msgManager.getTimeHours()+" " + time;

@@ -6,10 +6,7 @@ import ce.ajneb97.configs.ConfigsManager;
 import ce.ajneb97.libs.armorequipevent.ArmorListener;
 import ce.ajneb97.libs.itemselectevent.ItemSelectListener;
 import ce.ajneb97.libs.itemselectevent.ItemSelectListenerNew;
-import ce.ajneb97.listeners.CustomEventListener;
-import ce.ajneb97.listeners.ItemEventsListener;
-import ce.ajneb97.listeners.OtherEventsListener;
-import ce.ajneb97.listeners.PlayerEventsListener;
+import ce.ajneb97.listeners.*;
 import ce.ajneb97.managers.*;
 import ce.ajneb97.model.internal.UpdateCheckerResult;
 import ce.ajneb97.tasks.PlayerDataSaveTask;
@@ -79,6 +76,7 @@ public class ConditionalEvents extends JavaPlugin {
 		pm.registerEvents(new CustomEventListener(this), this);
 		if(!Bukkit.getVersion().contains("1.8")) {
 			pm.registerEvents(new ItemSelectListenerNew(), this);
+			pm.registerEvents(new PlayerEventsListenerNew(this), this);
 		}
 	}
 
