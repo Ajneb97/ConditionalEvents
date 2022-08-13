@@ -5,6 +5,7 @@ public enum ActionTargeter {
     TO_TARGET,
     TO_WORLD,
     TO_RANGE,
+    TO_CONDITION,
     NORMAL;
 
     private String parameter;

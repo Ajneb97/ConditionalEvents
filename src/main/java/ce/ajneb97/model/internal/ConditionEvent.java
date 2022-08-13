@@ -104,6 +104,12 @@ public class ConditionEvent {
         eventVariables.add(new StoredVariable("%block_world%",l.getWorld().getName()));
         eventVariables.add(new StoredVariable("%block%",block.getType().name()));
         eventVariables.add(new StoredVariable("%block_head_texture%", BlockUtils.getHeadTextureData(block)));
+        if(OtherUtils.isLegacy()){
+            eventVariables.add(new StoredVariable("%block_data%",block.getData()+""));
+        }else{
+            eventVariables.add(new StoredVariable("%block_data%",block.getBlockData().getAsString()));
+        }
+
         return this;
     }
 
@@ -154,12 +160,14 @@ public class ConditionEvent {
         String material = "";
         String loreString = "";
         short durability = 0;
+        int amount = 0;
         List<String> loreList = new ArrayList<String>();
         int customModelData = 0;
 
         if(item != null) {
             durability = item.getDurability();
             material = item.getType().name();
+            amount = item.getAmount();
             if(item.hasItemMeta()) {
                 ItemMeta meta = item.getItemMeta();
                 if(meta.hasDisplayName()) {
@@ -185,6 +193,7 @@ public class ConditionEvent {
         eventVariables.add(new StoredVariable("%item%",material));
         eventVariables.add(new StoredVariable("%item_name%",name));
         eventVariables.add(new StoredVariable("%item_durability%",durability+""));
+        eventVariables.add(new StoredVariable("%item_amount%",amount+""));
         eventVariables.add(new StoredVariable("%item_lore%",loreString));
         eventVariables.add(new StoredVariable("%item_custom_model_data%",customModelData+""));
         for(int i=0;i<loreList.size();i++) {
