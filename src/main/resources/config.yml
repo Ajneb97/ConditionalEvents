@@ -1,6 +1,9 @@
 Config:
   update_notification: true
   data_save_time: 5
+  to_condition_groups:
+    group1:
+      - "%player_has_permission_conditionalevents.somepermission% == yes"
 Messages:
   prefix: '&4[&bConditionalEvents&4] '
   commandReload: '&aConfig Reloaded.'

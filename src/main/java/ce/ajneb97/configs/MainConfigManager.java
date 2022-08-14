@@ -6,6 +6,7 @@ import ce.ajneb97.managers.RepetitiveManager;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.CustomEventProperties;
 import ce.ajneb97.model.EventType;
+import ce.ajneb97.model.ToConditionGroup;
 import ce.ajneb97.model.actions.ActionGroup;
 import ce.ajneb97.model.actions.ActionTargeter;
 import ce.ajneb97.model.actions.ActionType;
@@ -26,6 +27,7 @@ public class MainConfigManager {
     private ConditionalEvents plugin;
 
     private boolean updateNotifications;
+    private ArrayList<ToConditionGroup> toConditionGroups;
     public MainConfigManager(ConditionalEvents plugin){
         this.plugin = plugin;
         this.configFile = new CEConfig("config.yml",plugin);
@@ -73,23 +75,24 @@ public class MainConfigManager {
                                 // to_target: message: hi
                                 action = action.replace("to_target: ","");
                                 targeter = ActionTargeter.TO_TARGET;
-                            }else if(action.startsWith("to_world: ")){
+                            }else if(action.startsWith("to_world: ") || action.startsWith("to_range: ")
+                                    || action.startsWith("to_condition: ")){
                                 // to_world: parkour: message: hi
-                                action = action.replace("to_world: ","");
-                                String parameter = action.substring(0, action.indexOf(":"));
-                                String replace = action.substring(0, action.indexOf(":")+2);
-                                action = action.replace(replace, "");
-
-                                targeter = ActionTargeter.TO_WORLD;
-                                targeter.setParameter(parameter);
-                            }else if(action.startsWith("to_range: ")){
                                 // to_range: 5;true: message: hi
-                                action = action.replace("to_range: ", "");
+                                // to_condition: toConditionGroup1: message: hi
+                                if(action.startsWith("to_world: ")){
+                                    targeter = ActionTargeter.TO_WORLD;
+                                }else if(action.startsWith("to_range: ")){
+                                    targeter = ActionTargeter.TO_RANGE;
+                                }else if(action.startsWith("to_condition: ")){
+                                    targeter = ActionTargeter.TO_CONDITION;
+                                }
+
+                                action = action.replace(targeter.name().toLowerCase()+": ","");
                                 String parameter = action.substring(0, action.indexOf(":"));
                                 String replace = action.substring(0, action.indexOf(":")+2);
                                 action = action.replace(replace, "");
 
-                                targeter = ActionTargeter.TO_RANGE;
                                 targeter.setParameter(parameter);
                             }
 
@@ -164,6 +167,14 @@ public class MainConfigManager {
         plugin.getEventsManager().setEvents(events);
 
         updateNotifications = config.getBoolean("Config.update_notification");
+        toConditionGroups = new ArrayList<ToConditionGroup>();
+        String path = "Config.to_condition_groups";
+        if(config.contains(path)){
+            for(String key : config.getConfigurationSection(path).getKeys(false)){
+                ToConditionGroup group = new ToConditionGroup(key,config.getStringList(path+"."+key));
+                toConditionGroups.add(group);
+            }
+        }
 
         //Configure messages
         MessagesManager msgManager = new MessagesManager();
@@ -216,5 +227,14 @@ public class MainConfigManager {
 
     public boolean isUpdateNotifications() {
         return updateNotifications;
+    }
+
+    public ToConditionGroup getToConditionGroup(String name){
+        for(ToConditionGroup group : toConditionGroups){
+            if(group.getName().equals(name)) {
+                return group;
+            }
+        }
+        return null;
     }
 }

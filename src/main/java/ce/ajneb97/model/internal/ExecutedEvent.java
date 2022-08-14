@@ -2,8 +2,10 @@ package ce.ajneb97.model.internal;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.api.ConditionalEventsEvent;
+import ce.ajneb97.managers.EventsManager;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.StoredVariable;
+import ce.ajneb97.model.ToConditionGroup;
 import ce.ajneb97.model.actions.ActionGroup;
 import ce.ajneb97.model.actions.ActionTargeter;
 import ce.ajneb97.model.actions.ActionType;
@@ -140,7 +142,27 @@ public class ExecutedEvent {
                 for(Player globalPlayer : globalPlayers){
                     executeAction(globalPlayer,actionType,actionLine);
                 }
-            }else {
+            }else if(targeter.equals(ActionTargeter.TO_CONDITION)) {
+                String toConditionGroup = parametersLine;
+                ToConditionGroup group = plugin.getConfigsManager().getMainConfigManager().getToConditionGroup(toConditionGroup);
+                if(group == null){
+                    continue;
+                }
+                EventsManager eventsManager = plugin.getEventsManager();
+                ArrayList<Player> players = new ArrayList<Player>();
+                for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
+                    //Check for conditions
+                    boolean accomplishesConditions = eventsManager.checkToConditionAction(group.getConditions(),globalPlayer,isPlaceholderAPI);
+                    if(accomplishesConditions){
+                        players.add(globalPlayer);
+                    }
+                }
+
+                for(Player globalPlayer : players){
+                    executeAction(globalPlayer,actionType,actionLine);
+                }
+            }
+            else {
                 executeAction(player,actionType,actionLine);
             }
 

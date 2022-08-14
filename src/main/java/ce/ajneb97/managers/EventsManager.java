@@ -5,7 +5,6 @@ import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.ConditionalType;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
-import ce.ajneb97.model.actions.ActionGroup;
 import ce.ajneb97.model.internal.CheckConditionsResult;
 import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.model.internal.ExecutedEvent;
@@ -243,5 +242,84 @@ public class EventsManager {
         //If all condition lines are approved, the event is executed with the default actions.
         debugManager.sendActionsMessage(eventName,"default",conditionEvent.getPlayer());
         return new CheckConditionsResult(true,null);
+    }
+
+    public boolean checkToConditionAction(List<String> conditionGroup, Player player, boolean isPlaceholderAPI){
+        for(int i=0;i<conditionGroup.size();i++) {
+            String conditionLine = conditionGroup.get(i);
+            boolean approvedLine = false;
+            ArrayList<StoredVariable> storedVariables = new ArrayList<StoredVariable>();
+
+            String[] orConditions = conditionLine.split(" or ");
+
+            for(int c=0;c<orConditions.length;c++){
+                String miniCondition = orConditions[c];
+
+                for(ConditionalType conditionalType : ConditionalType.values()){
+                    String textToFind = " "+conditionalType.getText()+" ";
+                    if(miniCondition.contains(textToFind)){
+                        int textToFindIndex = miniCondition.indexOf(textToFind);
+                        String arg1 = miniCondition.substring(0, textToFindIndex);
+                        String arg2 = miniCondition.substring(textToFindIndex+conditionalType.getText().length()+2);
+
+                        arg1 = VariablesUtils.replaceAllVariablesInLine(arg1,storedVariables,player,null,isPlaceholderAPI);
+                        arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,storedVariables,player,null,isPlaceholderAPI);
+
+                        String firstArg = MathUtils.calculate(arg1);String secondArg = MathUtils.calculate(arg2);
+
+                        String firstArgLower = firstArg.toLowerCase();String secondArgLower = secondArg.toLowerCase();
+                        double firstArgNum = 0;
+                        double secondArgNum = 0;
+                        try{
+                            firstArgNum = Double.valueOf(firstArg);
+                            secondArgNum = Double.valueOf(secondArg);
+                        }catch(NumberFormatException e){
+
+                        }
+
+                        switch(conditionalType){
+                            case EQUALS:
+                            case EQUALS_LEGACY:
+                                if(firstArg.equals(secondArg)) approvedLine = true;break;
+                            case NOT_EQUALS:
+                            case NOT_EQUALS_LEGACY:
+                                if(!firstArg.equals(secondArg)) approvedLine = true;break;
+                            case EQUALS_IGNORE_CASE:
+                                if(firstArg.equalsIgnoreCase(secondArg)) approvedLine = true;break;
+                            case NOT_EQUALS_IGNORE_CASE:
+                                if(!firstArg.equalsIgnoreCase(secondArg)) approvedLine = true;break;
+                            case STARTS_WITH:
+                                if(firstArgLower.startsWith(secondArgLower)) approvedLine = true;break;
+                            case NOT_STARTS_WITH:
+                                if(!firstArgLower.startsWith(secondArgLower)) approvedLine = true;break;
+                            case CONTAINS:
+                                if(firstArgLower.contains(secondArgLower)) approvedLine = true;break;
+                            case NOT_CONTAINS:
+                                if(!firstArgLower.contains(secondArgLower)) approvedLine = true;break;
+                            case GREATER:
+                                if(firstArgNum > secondArgNum) approvedLine = true;break;
+                            case GREATER_EQUALS:
+                                if(firstArgNum >= secondArgNum) approvedLine = true;break;
+                            case LOWER:
+                                if(firstArgNum < secondArgNum) approvedLine = true;break;
+                            case LOWER_EQUALS:
+                                if(firstArgNum <= secondArgNum) approvedLine = true;break;
+                        }
+                    }
+                    if(approvedLine){
+                        break;
+                    }
+                }
+
+                if(approvedLine){
+                    break;
+                }
+            }
+
+            if(!approvedLine){
+                return false;
+            }
+        }
+        return true;
     }
 }
