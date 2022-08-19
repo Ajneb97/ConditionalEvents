@@ -82,6 +82,10 @@ public class VerifyManager {
                         action = action.replace("to_range: ", "");
                         String replace = action.substring(0, action.indexOf(":")+2);
                         action = action.replace(replace, "");
+                    }else if(action.startsWith("to_condition: ")){
+                        action = action.replace("to_condition: ", "");
+                        String replace = action.substring(0, action.indexOf(":")+2);
+                        action = action.replace(replace, "");
                     }
 
                     try{

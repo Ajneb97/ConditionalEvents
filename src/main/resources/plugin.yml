@@ -1,8 +1,8 @@
 main: ce.ajneb97.ConditionalEvents
-version: 4.5.1
+version: 4.6.1
 name: ConditionalEvents
 api-version: 1.13
-softdepend: [PlaceholderAPI]
+softdepend: [PlaceholderAPI,Citizens,WorldGuardEvents,WorldGuard]
 author: Ajneb97
 
 commands:

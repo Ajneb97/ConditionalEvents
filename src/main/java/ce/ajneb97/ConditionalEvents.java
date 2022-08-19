@@ -7,6 +7,8 @@ import ce.ajneb97.libs.armorequipevent.ArmorListener;
 import ce.ajneb97.libs.itemselectevent.ItemSelectListener;
 import ce.ajneb97.libs.itemselectevent.ItemSelectListenerNew;
 import ce.ajneb97.listeners.*;
+import ce.ajneb97.listeners.dependencies.CitizensListener;
+import ce.ajneb97.listeners.dependencies.WGRegionEventsListener;
 import ce.ajneb97.managers.*;
 import ce.ajneb97.model.internal.UpdateCheckerResult;
 import ce.ajneb97.tasks.PlayerDataSaveTask;
@@ -77,6 +79,13 @@ public class ConditionalEvents extends JavaPlugin {
 		if(!Bukkit.getVersion().contains("1.8")) {
 			pm.registerEvents(new ItemSelectListenerNew(), this);
 			pm.registerEvents(new PlayerEventsListenerNew(this), this);
+		}
+
+		if(dependencyManager.isCitizens()){
+			pm.registerEvents(new CitizensListener(this), this);
+		}
+		if(dependencyManager.isWorldGuardEvents()){
+			pm.registerEvents(new WGRegionEventsListener(this), this);
 		}
 	}
 
