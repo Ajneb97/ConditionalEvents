@@ -1,23 +1,26 @@
 package ce.ajneb97.model.actions;
 
-public enum ActionTargeter {
-    TO_ALL,
-    TO_TARGET,
-    TO_WORLD,
-    TO_RANGE,
-    TO_CONDITION,
-    NORMAL;
-
+public class ActionTargeter {
+    private ActionTargeterType type;
     private String parameter;
 
-    ActionTargeter() {
+    public ActionTargeter(ActionTargeterType type) {
+        this.type = type;
     }
 
-    public String getParameter(){
-        return this.parameter;
+    public ActionTargeterType getType() {
+        return type;
     }
 
-    public void setParameter(String parameter){
+    public void setType(ActionTargeterType type) {
+        this.type = type;
+    }
+
+    public String getParameter() {
+        return parameter;
+    }
+
+    public void setParameter(String parameter) {
         this.parameter = parameter;
     }
 }

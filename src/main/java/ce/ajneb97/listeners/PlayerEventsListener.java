@@ -238,7 +238,7 @@ public class PlayerEventsListener implements Listener {
 
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.BLOCK_PLACE, null);
         if(!conditionEvent.containsValidEvents()) return;
-        conditionEvent.setCommonItemVariables(player.getItemOnCursor())
+        conditionEvent.setCommonItemVariables(player.getItemInHand())
                 .setCommonBlockVariables(block)
                 .checkEvent();
     }
@@ -250,7 +250,7 @@ public class PlayerEventsListener implements Listener {
 
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.BLOCK_BREAK, null);
         if(!conditionEvent.containsValidEvents()) return;
-        conditionEvent.setCommonItemVariables(player.getItemOnCursor())
+        conditionEvent.setCommonItemVariables(player.getItemInHand())
                 .setCommonBlockVariables(block)
                 .checkEvent();
     }

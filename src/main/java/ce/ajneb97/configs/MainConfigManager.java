@@ -7,10 +7,7 @@ import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.CustomEventProperties;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.ToConditionGroup;
-import ce.ajneb97.model.actions.ActionGroup;
-import ce.ajneb97.model.actions.ActionTargeter;
-import ce.ajneb97.model.actions.ActionType;
-import ce.ajneb97.model.actions.CEAction;
+import ce.ajneb97.model.actions.*;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -66,29 +63,32 @@ public class MainConfigManager {
                         List<String> actionsList = config.getStringList(path+".actions."+groupName);
                         List<CEAction> ceActions = new ArrayList<CEAction>();
                         for(String action : actionsList){
-                            ActionTargeter targeter = ActionTargeter.NORMAL;
+                            ActionTargeter targeter = new ActionTargeter(ActionTargeterType.NORMAL);
+
                             if(action.startsWith("to_all: ")){
                                 // to_all: message: hi
                                 action = action.replace("to_all: ","");
-                                targeter = ActionTargeter.TO_ALL;
+                                targeter.setType(ActionTargeterType.TO_ALL);
                             }else if(action.startsWith("to_target: ")){
                                 // to_target: message: hi
                                 action = action.replace("to_target: ","");
-                                targeter = ActionTargeter.TO_TARGET;
+                                targeter.setType(ActionTargeterType.TO_TARGET);
                             }else if(action.startsWith("to_world: ") || action.startsWith("to_range: ")
                                     || action.startsWith("to_condition: ")){
                                 // to_world: parkour: message: hi
                                 // to_range: 5;true: message: hi
                                 // to_condition: toConditionGroup1: message: hi
+                                ActionTargeterType targeterType = null;
                                 if(action.startsWith("to_world: ")){
-                                    targeter = ActionTargeter.TO_WORLD;
+                                    targeterType = ActionTargeterType.TO_WORLD;
                                 }else if(action.startsWith("to_range: ")){
-                                    targeter = ActionTargeter.TO_RANGE;
+                                    targeterType = ActionTargeterType.TO_RANGE;
                                 }else if(action.startsWith("to_condition: ")){
-                                    targeter = ActionTargeter.TO_CONDITION;
+                                    targeterType = ActionTargeterType.TO_CONDITION;
                                 }
+                                targeter.setType(targeterType);
 
-                                action = action.replace(targeter.name().toLowerCase()+": ","");
+                                action = action.replace(targeterType.name().toLowerCase()+": ","");
                                 String parameter = action.substring(0, action.indexOf(":"));
                                 String replace = action.substring(0, action.indexOf(":")+2);
                                 action = action.replace(replace, "");
@@ -106,6 +106,7 @@ public class MainConfigManager {
                             }
 
                             String actionLine = action.replace(actionTypeText+": ","");
+
                             CEAction ceAction = new CEAction(actionType,actionLine,targeter);
                             ceActions.add(ceAction);
                         }

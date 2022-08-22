@@ -6,10 +6,7 @@ import ce.ajneb97.managers.EventsManager;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.ToConditionGroup;
-import ce.ajneb97.model.actions.ActionGroup;
-import ce.ajneb97.model.actions.ActionTargeter;
-import ce.ajneb97.model.actions.ActionType;
-import ce.ajneb97.model.actions.CEAction;
+import ce.ajneb97.model.actions.*;
 import ce.ajneb97.utils.ActionUtils;
 import ce.ajneb97.utils.VariablesUtils;
 import org.bukkit.Bukkit;
@@ -103,27 +100,30 @@ public class ExecutedEvent {
             String actionLine = action.getActionLine();
             actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,eventVariables,player
                     ,target,isPlaceholderAPI);
+
             ActionTargeter targeter = action.getTargeter();
+            ActionTargeterType targeterType = targeter.getType();
+
             String parametersLine = targeter.getParameter();
             if(parametersLine != null){
                 parametersLine = VariablesUtils.replaceAllVariablesInLine(parametersLine,eventVariables,player
                         ,target,isPlaceholderAPI);
             }
 
-            if(targeter.equals(ActionTargeter.TO_ALL)) {
+            if(targeterType.equals(ActionTargeterType.TO_ALL)) {
                 for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
                     executeAction(globalPlayer,actionType,actionLine);
                 }
-            }else if(targeter.equals(ActionTargeter.TO_TARGET)){
+            }else if(targeterType.equals(ActionTargeterType.TO_TARGET)){
                 executeAction(target,actionType,actionLine);
-            }else if(targeter.equals(ActionTargeter.TO_WORLD)){
+            }else if(targeterType.equals(ActionTargeterType.TO_WORLD)){
                 String world = parametersLine;
                 for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
                     if(globalPlayer.getWorld().getName().equals(world)){
                         executeAction(globalPlayer,actionType,actionLine);
                     }
                 }
-            }else if(targeter.equals(ActionTargeter.TO_RANGE)){
+            }else if(targeterType.equals(ActionTargeterType.TO_RANGE)){
                 String[] sep = parametersLine.split(";");
                 double range = Double.valueOf(sep[0]);
                 boolean includePlayer = Boolean.valueOf(sep[1]);
@@ -142,7 +142,7 @@ public class ExecutedEvent {
                 for(Player globalPlayer : globalPlayers){
                     executeAction(globalPlayer,actionType,actionLine);
                 }
-            }else if(targeter.equals(ActionTargeter.TO_CONDITION)) {
+            }else if(targeterType.equals(ActionTargeterType.TO_CONDITION)) {
                 String toConditionGroup = parametersLine;
                 ToConditionGroup group = plugin.getConfigsManager().getMainConfigManager().getToConditionGroup(toConditionGroup);
                 if(group == null){
