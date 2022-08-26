@@ -1,10 +1,15 @@
 package ce.ajneb97.configs;
 
 import ce.ajneb97.ConditionalEvents;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.util.logging.Level;
 
 public class CEConfig {
 
@@ -45,11 +50,14 @@ public class CEConfig {
         return fileConfiguration;
     }
 
-    public void reloadConfig() {
+    public boolean reloadConfig() {
         if (fileConfiguration == null) {
             file = new File(plugin.getDataFolder(), fileName);
         }
-        fileConfiguration = YamlConfiguration.loadConfiguration(file);
+        fileConfiguration = loadConfiguration(file);
+        if(fileConfiguration == null){
+            return false;
+        }
 
         if(firstTime){
             Reader defConfigStream;
@@ -64,6 +72,27 @@ public class CEConfig {
             }
         }
 
+        return true;
+    }
+
+    public static YamlConfiguration loadConfiguration(@NotNull File file) {
+        Validate.notNull(file, "File cannot be null");
+
+        YamlConfiguration config = new YamlConfiguration();
+
+        try {
+            config.load(file);
+        } catch (FileNotFoundException ex) {
+            return null;
+        } catch (IOException ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Cannot load " + file, ex);
+            return null;
+        } catch (InvalidConfigurationException ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Cannot load " + file, ex);
+            return null;
+        }
+
+        return config;
     }
 
     public String getRoute() {

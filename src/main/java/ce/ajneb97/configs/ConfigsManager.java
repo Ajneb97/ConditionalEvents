@@ -27,7 +27,7 @@ public class ConfigsManager {
         return playerConfigsManager;
     }
 
-    public void reload(){
+    public boolean reload(){
         for(CEEvent event : plugin.getEventsManager().getEvents()){
             if(event.getRepetitiveManager() != null){
                 event.getRepetitiveManager().end();
@@ -35,9 +35,12 @@ public class ConfigsManager {
         }
 
         playerConfigsManager.savePlayerData();
-        mainConfigManager.reloadConfig();
+        if(!mainConfigManager.reloadConfig()){
+            return false;
+        }
         plugin.reloadEvents();
         plugin.getVerifyManager().verifyEvents();
         plugin.reloadPlayerDataSaveTask();
+        return true;
     }
 }

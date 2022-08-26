@@ -69,7 +69,9 @@ public class CustomEventListener implements Listener {
                 objectFinal = obtainObjectFromEvent(m,event);
             }
 
-            storedVariables.add(new StoredVariable(variable,objectFinal.toString()));
+            if(objectFinal != null){
+                storedVariables.add(new StoredVariable(variable,objectFinal.toString()));
+            }
         }
 
         //Get player
@@ -102,16 +104,20 @@ public class CustomEventListener implements Listener {
         Object objectFinal = null;
         String[] methods = method.split("\\.");
         Class<?> newClass = classObject;
-        for(int i=0;i<methods.length;i++) {
-            String currentMethod = methods[i];
+        try{
+            for(int i=0;i<methods.length;i++) {
+                String currentMethod = methods[i];
 
-            Method m = obtainMethod(newClass, currentMethod);
-            if(i == 0) {
-                objectFinal = obtainObjectFromEvent(m,event);
-            }else {
-                objectFinal = obtainObjectFromObject(m,objectFinal);
+                Method m = obtainMethod(newClass, currentMethod);
+                if(i == 0) {
+                    objectFinal = obtainObjectFromEvent(m,event);
+                }else {
+                    objectFinal = obtainObjectFromObject(m,objectFinal);
+                }
+                newClass = objectFinal.getClass();
             }
-            newClass = objectFinal.getClass();
+        }catch(Exception e){
+
         }
         return objectFinal;
     }

@@ -49,7 +49,7 @@ public class MessagesManager {
 	}
 
 	public String getPrefix() {
-		return getColoredMessage(prefix);
+		return prefix;
 	}
 
 	public void setPrefix(String prefix) {

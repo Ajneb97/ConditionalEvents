@@ -188,9 +188,12 @@ public class MainConfigManager {
         this.plugin.setMessagesManager(msgManager);
     }
 
-    public void reloadConfig(){
-        configFile.reloadConfig();
+    public boolean reloadConfig(){
+        if(!configFile.reloadConfig()){
+            return false;
+        }
         configure();
+        return true;
     }
 
     public FileConfiguration getConfig(){
