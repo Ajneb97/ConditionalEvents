@@ -227,7 +227,7 @@ public class PlayerEventsListener implements Listener {
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_KILL, target);
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.setCommonVictimVariables(entity).
-                setCommonItemVariables(player.getItemOnCursor())
+                setCommonItemVariables(player.getItemInHand())
                 .checkEvent();
     }
 
