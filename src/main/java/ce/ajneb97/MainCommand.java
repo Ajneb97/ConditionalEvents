@@ -71,28 +71,35 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 	}
 
 	public void reset(String[] args,CommandSender sender,FileConfiguration config,String prefix){
-		if(args.length >= 3) {
-			// /ce reset <player> <event>
-			String player = args[1];
-			String eventName = args[2];
+		// /ce reset <player> <event>
+		if(args.length <= 2){
+			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.commandResetError")));
+			return;
+		}
+
+		String player = args[1];
+		String eventName = args[2];
+
+		PlayerData playerData = plugin.getPlayerManager().getPlayerDataByName(player);
+		if(playerData == null){
+			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.playerDoesNotExists")));
+			return;
+		}
+
+		if(eventName.equals("all")){
+			playerData.resetAll();
+			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventDataResetAll")
+					.replace("%player%", player)));
+		}else{
 			CEEvent e = plugin.getEventsManager().getEvent(eventName);
 			if(e == null){
 				sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventDoesNotExists")));
 				return;
 			}
-
-			PlayerData playerData = plugin.getPlayerManager().getPlayerDataByName(player);
-			if(playerData == null){
-				sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.playerDoesNotExists")));
-				return;
-			}
-
 			playerData.resetCooldown(eventName);
 			playerData.setOneTime(eventName,false);
 			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventDataReset")
 					.replace("%player%", player).replace("%event%", eventName)));
-		}else {
-			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.commandResetError")));
 		}
 	}
 	
@@ -167,7 +174,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce reload &8Reloads the config."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce verify &8Checks ALL events for errors."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce debug <event> &8Enables/disables debug information for an event."));
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce reset <player> <event> &8Resets an event data for a player."));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce reset <player> <event>/all &8Resets an event data for a player."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce enable/disable <event> &8Enable or disables an event."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',""));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&7[ [ &8[&bConditionalEvents&8] &7] ]"));

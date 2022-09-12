@@ -140,6 +140,7 @@ public class PlayerConfigsManager {
 			FileConfiguration players = playerConfig.getConfig();
 			
 			players.set("name", playerName);
+			players.set("events", null);
 
 			for(EventData event : player.getEventData()){
 				String path = "events."+event.getName();

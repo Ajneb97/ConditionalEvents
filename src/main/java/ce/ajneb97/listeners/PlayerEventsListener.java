@@ -8,6 +8,7 @@ import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.model.player.PlayerData;
 import ce.ajneb97.utils.MathUtils;
+import ce.ajneb97.utils.OtherUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
@@ -335,6 +336,10 @@ public class PlayerEventsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBedEnter(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
+
+        if(OtherUtils.isLegacy()){
+            return;
+        }
 
         new ConditionEvent(plugin, player, event, EventType.PLAYER_BED_ENTER, null)
                 .addVariables(

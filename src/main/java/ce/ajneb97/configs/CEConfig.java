@@ -55,9 +55,6 @@ public class CEConfig {
             file = new File(plugin.getDataFolder(), fileName);
         }
         fileConfiguration = loadConfiguration(file);
-        if(fileConfiguration == null){
-            return false;
-        }
 
         if(firstTime){
             Reader defConfigStream;
@@ -72,6 +69,10 @@ public class CEConfig {
             }
         }
 
+        if(fileConfiguration == null){
+            return false;
+        }
+
         return true;
     }
 
@@ -83,7 +84,7 @@ public class CEConfig {
         try {
             config.load(file);
         } catch (FileNotFoundException ex) {
-            return null;
+
         } catch (IOException ex) {
             Bukkit.getLogger().log(Level.SEVERE, "Cannot load " + file, ex);
             return null;

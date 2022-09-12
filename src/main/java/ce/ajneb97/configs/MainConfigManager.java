@@ -208,6 +208,10 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("eventDataResetAll:")){
+                getConfig().set("Messages.eventDataResetAll", "&aAll data reset for player &e%player%&a!");
+                saveConfig();
+            }
             if(!text.contains("eventDataReset:")){
                 getConfig().set("Messages.eventDataReset", "&aData reset for player &e%player% &aon event &e%event%&a!");
                 saveConfig();

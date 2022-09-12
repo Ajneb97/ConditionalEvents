@@ -48,6 +48,10 @@ public class PlayerData {
         return null;
     }
 
+    public void resetAll(){
+        eventData.clear();
+    }
+
     public void resetCooldown(String eventName){
         setCooldown(eventName,0);
     }
