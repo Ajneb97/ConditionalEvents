@@ -118,8 +118,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		}
 		
 		e.enable();
-		config.set("Events."+eventName+".enabled", true);
-		mainConfigManager.saveConfig();
+		plugin.getConfigsManager().saveEvent(e);
 		
 		sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventEnabled").replace("%event%", eventName)));
 	}
@@ -139,8 +138,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		}
 
 		e.disable();
-		config.set("Events."+eventName+".enabled", false);
-		mainConfigManager.saveConfig();
+		plugin.getConfigsManager().saveEvent(e);
 
 		sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventDisabled").replace("%event%", eventName)));
 	}
@@ -202,6 +200,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 					return completions;
 				}else if(args[0].equalsIgnoreCase("reset") && args.length == 3) {
 					List<String> completions = getEventsCompletions(args,2);
+					completions.add("all");
 					return completions;
 				}
 			}

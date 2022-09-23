@@ -1,0 +1,9 @@
+Events:
+  event8:
+    type: player_command
+    conditions:
+      - "%command% == /discord"
+    actions:
+      default:
+        - 'cancel_event: true'
+        - "message: &7Check the Discord: &b<link>"

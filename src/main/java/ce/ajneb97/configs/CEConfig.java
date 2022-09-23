@@ -18,15 +18,27 @@ public class CEConfig {
     private File file = null;
     private String route;
     private ConditionalEvents plugin;
+    private String folderName;
     private boolean firstTime;
-    public CEConfig(String fileName,ConditionalEvents plugin){
+
+    public CEConfig(String fileName,ConditionalEvents plugin, String folderName){
         this.fileName = fileName;
         this.plugin = plugin;
         this.firstTime = false;
+        this.folderName = folderName;
+    }
+
+    public String getPath(){
+        return this.fileName;
     }
 
     public void registerConfig(){
-        file = new File(plugin.getDataFolder(), fileName);
+        if(folderName != null){
+            file = new File(plugin.getDataFolder() +File.separator + folderName,fileName);
+        }else{
+            file = new File(plugin.getDataFolder(), fileName);
+        }
+
         route = file.getPath();
         if(!file.exists()){
             firstTime = true;
@@ -34,6 +46,7 @@ public class CEConfig {
             saveConfig();
             firstTime = false;
         }
+
     }
     public void saveConfig() {
         try {
@@ -52,14 +65,24 @@ public class CEConfig {
 
     public boolean reloadConfig() {
         if (fileConfiguration == null) {
-            file = new File(plugin.getDataFolder(), fileName);
+            if(folderName != null){
+                file = new File(plugin.getDataFolder() +File.separator + folderName, fileName);
+            }else{
+                file = new File(plugin.getDataFolder(), fileName);
+            }
+
         }
         fileConfiguration = loadConfiguration(file);
 
         if(firstTime){
             Reader defConfigStream;
             try {
-                defConfigStream = new InputStreamReader(plugin.getResource(fileName), "UTF8");
+                if(folderName != null){
+                    defConfigStream = new InputStreamReader(plugin.getResource(folderName+"/"+fileName), "UTF8");
+                }else{
+                    defConfigStream = new InputStreamReader(plugin.getResource(fileName), "UTF8");
+                }
+
                 if (defConfigStream != null) {
                     YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
                     fileConfiguration.setDefaults(defConfig);
