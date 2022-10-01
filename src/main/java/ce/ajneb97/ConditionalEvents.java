@@ -2,6 +2,7 @@ package ce.ajneb97;
 
 
 import ce.ajneb97.api.ConditionalEventsAPI;
+import ce.ajneb97.api.ExpansionCE;
 import ce.ajneb97.configs.ConfigsManager;
 import ce.ajneb97.libs.armorequipevent.ArmorListener;
 import ce.ajneb97.libs.itemselectevent.ItemSelectListener;
@@ -55,6 +56,9 @@ public class ConditionalEvents extends JavaPlugin {
 		reloadPlayerDataSaveTask();
 
 		ConditionalEventsAPI api = new ConditionalEventsAPI(this);
+		if(getServer().getPluginManager().getPlugin("PlaceholderAPI") != null){
+			new ExpansionCE(this).register();
+		}
 
 		Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &eHas been enabled! &fVersion: "+version));
         Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &eThanks for using my plugin!   &f~Ajneb97"));

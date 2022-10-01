@@ -52,6 +52,8 @@ public class MainConfigManager {
         msgManager.setTimeHours(config.getString("Messages.hours"));
         msgManager.setTimeDays(config.getString("Messages.days"));
         msgManager.setPrefix(config.getString("Messages.prefix"));
+        msgManager.setPlaceholderAPICooldownNameError(config.getString("Messages.placeholderAPICooldownNameError"));
+        msgManager.setPlaceholderAPICooldownReady(config.getString("Messages.placeholderAPICooldownReady"));
 
         this.plugin.setMessagesManager(msgManager);
     }
@@ -80,6 +82,11 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("placeholderAPICooldownReady:")){
+                getConfig().set("Messages.placeholderAPICooldownReady", "Ready!");
+                getConfig().set("Messages.placeholderAPICooldownNameError", "No event with that name!");
+                saveConfig();
+            }
             if(!text.contains("eventDataResetAll:")){
                 getConfig().set("Messages.eventDataResetAll", "&aAll data reset for player &e%player%&a!");
                 saveConfig();

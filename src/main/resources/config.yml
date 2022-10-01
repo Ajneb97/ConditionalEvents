@@ -25,6 +25,8 @@ Messages:
   minutes: m
   hours: h
   days: d
+  placeholderAPICooldownReady: "Ready!"
+  placeholderAPICooldownNameError: "No event with that name!"
 Events:
   event1:
     type: player_join

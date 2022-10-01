@@ -14,6 +14,8 @@ public class MessagesManager {
 	private String timeHours;
 	private String timeDays;
 	private String prefix;
+	private String placeholderAPICooldownReady;
+	private String placeholderAPICooldownNameError;
 
 
 	public String getTimeSeconds() {
@@ -54,6 +56,22 @@ public class MessagesManager {
 
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
+	}
+
+	public String getPlaceholderAPICooldownReady() {
+		return placeholderAPICooldownReady;
+	}
+
+	public void setPlaceholderAPICooldownReady(String placeholderAPICooldownReady) {
+		this.placeholderAPICooldownReady = placeholderAPICooldownReady;
+	}
+
+	public String getPlaceholderAPICooldownNameError() {
+		return placeholderAPICooldownNameError;
+	}
+
+	public void setPlaceholderAPICooldownNameError(String placeholderAPICooldownNameError) {
+		this.placeholderAPICooldownNameError = placeholderAPICooldownNameError;
 	}
 
 	public static String getColoredMessage(String message) {
