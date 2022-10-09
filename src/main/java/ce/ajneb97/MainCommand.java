@@ -30,7 +30,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 	
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
 		FileConfiguration config = mainConfigManager.getConfig();
-	   	String prefix = plugin.getMessagesManager().getPrefix();
+		MessagesManager msgManager = plugin.getMessagesManager();
 
 	   	if(sender.isOp() || sender.hasPermission("conditionalevents.admin")) {
 		   if(args.length >= 1) {
@@ -39,22 +39,22 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 					   sender.sendMessage(ConditionalEvents.prefix+MessagesManager.getColoredMessage(" &cThere was an error reloading the config, check the console."));
 					   return true;
 				   }
-				   sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.commandReload")));
+				   msgManager.sendMessage(sender,config.getString("Messages.commandReload"),true);
 			   }else if(args[0].equalsIgnoreCase("help")) {
 				   help(sender);
 			   }else if(args[0].equalsIgnoreCase("reset")) {
-				   reset(args,sender,config,prefix);
+				   reset(args,sender,config,msgManager);
 			   }else if(args[0].equalsIgnoreCase("enable")) {
-				   enable(args,sender,config,prefix);
+				   enable(args,sender,config,msgManager);
 			   }else if(args[0].equalsIgnoreCase("disable")) {
-				   disable(args,sender,config,prefix);
+				   disable(args,sender,config,msgManager);
 			   }else if(args[0].equalsIgnoreCase("debug")) {
-				   debug(args,sender,config,prefix);
+				   debug(args,sender,config,msgManager);
 			   }else if(args[0].equalsIgnoreCase("verify")) {
 				   if(sender instanceof Player){
 					   plugin.getVerifyManager().sendVerification((Player)sender);
 				   }else{
-					   sender.sendMessage(prefix+MessagesManager.getColoredMessage(config.getString("Messages.onlyPlayerCommand")));
+					   msgManager.sendMessage(sender,config.getString("Messages.onlyPlayerCommand"),true);
 				   }
 			   }
 			   else {
@@ -64,16 +64,16 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			   help(sender);
 		   }
 	   	}else {
-		   sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.commandNoPermissions")));
+			msgManager.sendMessage(sender,config.getString("Messages.commandNoPermissions"),true);
 	   	}
 	   
 	   	return true;
 	}
 
-	public void reset(String[] args,CommandSender sender,FileConfiguration config,String prefix){
+	public void reset(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager){
 		// /ce reset <player> <event>
 		if(args.length <= 2){
-			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.commandResetError")));
+			msgManager.sendMessage(sender,config.getString("Messages.commandResetError"),true);
 			return;
 		}
 
@@ -82,86 +82,87 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
 		PlayerData playerData = plugin.getPlayerManager().getPlayerDataByName(player);
 		if(playerData == null){
-			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.playerDoesNotExists")));
+			msgManager.sendMessage(sender,config.getString("Messages.playerDoesNotExists"),true);
 			return;
 		}
 
 		if(eventName.equals("all")){
 			playerData.resetAll();
-			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventDataResetAll")
-					.replace("%player%", player)));
+			msgManager.sendMessage(sender,config.getString("Messages.playerDoesNotExists")
+					.replace("%player%", player),true);
 		}else{
 			CEEvent e = plugin.getEventsManager().getEvent(eventName);
 			if(e == null){
-				sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventDoesNotExists")));
+				msgManager.sendMessage(sender,config.getString("Messages.eventDoesNotExists"),true);
 				return;
 			}
 			playerData.resetCooldown(eventName);
 			playerData.setOneTime(eventName,false);
-			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventDataReset")
-					.replace("%player%", player).replace("%event%", eventName)));
+			msgManager.sendMessage(sender,config.getString("Messages.eventDataReset")
+					.replace("%player%", player).replace("%event%", eventName),true);
 		}
 	}
 	
-	public void enable(String[] args,CommandSender sender,FileConfiguration config,String prefix) {
+	public void enable(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager) {
 		// /ce enable <event>
 		if(args.length <= 1) {
-			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventEnableError")));
+			msgManager.sendMessage(sender,config.getString("Messages.eventEnableError"),true);
 			return;
 		}
 
 		String eventName = args[1];
 		CEEvent e = plugin.getEventsManager().getEvent(eventName);
 		if(e == null) {
-			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventDoesNotExists")));
+			msgManager.sendMessage(sender,config.getString("Messages.eventDoesNotExists"),true);
 			return;
 		}
 		
 		e.enable();
 		plugin.getConfigsManager().saveEvent(e);
-		
-		sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventEnabled").replace("%event%", eventName)));
+
+		msgManager.sendMessage(sender,config.getString("Messages.eventEnabled")
+				.replace("%event%", eventName),true);
 	}
 	
-	public void disable(String[] args,CommandSender sender,FileConfiguration config,String prefix) {
+	public void disable(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager) {
 		// /ce disable <event>
 		if(args.length <= 1) {
-			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventDisableError")));
+			msgManager.sendMessage(sender,config.getString("Messages.eventDisableError"),true);
 			return;
 		}
 
 		String eventName = args[1];
 		CEEvent e = plugin.getEventsManager().getEvent(eventName);
 		if(e == null) {
-			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventDoesNotExists")));
+			msgManager.sendMessage(sender,config.getString("Messages.eventDoesNotExists"),true);
 			return;
 		}
 
 		e.disable();
 		plugin.getConfigsManager().saveEvent(e);
 
-		sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventDisabled").replace("%event%", eventName)));
+		msgManager.sendMessage(sender,config.getString("Messages.eventDisabled").replace("%event%", eventName),true);
 	}
 
-	public void debug(String[] args,CommandSender sender,FileConfiguration config,String prefix) {
+	public void debug(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager) {
 		// /ce debug <event>
 		if(args.length <= 1) {
-			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.commandDebugError")));
+			msgManager.sendMessage(sender,config.getString("Messages.commandDebugError"),true);
 			return;
 		}
 
 		String eventName = args[1];
 		CEEvent e = plugin.getEventsManager().getEvent(eventName);
 		if(e == null) {
-			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.eventDoesNotExists")));
+			msgManager.sendMessage(sender,config.getString("Messages.eventDoesNotExists"),true);
 			return;
 		}
 
 		boolean result = plugin.getDebugManager().setDebugSender(sender,eventName);
 		if(result){
-			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.debugEnabled").replace("%event%", eventName)));
+			msgManager.sendMessage(sender,config.getString("Messages.debugEnabled").replace("%event%", eventName),true);
 		}else{
-			sender.sendMessage(MessagesManager.getColoredMessage(prefix+config.getString("Messages.debugDisabled").replace("%event%", eventName)));
+			msgManager.sendMessage(sender,config.getString("Messages.debugDisabled").replace("%event%", eventName),true);
 		}
 	}
 	

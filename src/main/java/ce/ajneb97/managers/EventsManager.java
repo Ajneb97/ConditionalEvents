@@ -11,7 +11,6 @@ import ce.ajneb97.model.internal.ExecutedEvent;
 import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.TimeUtils;
 import ce.ajneb97.utils.VariablesUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -69,6 +68,8 @@ public class EventsManager {
         PlayerManager playerManager = plugin.getPlayerManager();
         MessagesManager messagesManager = plugin.getMessagesManager();
 
+        boolean bypassCooldown = player.hasPermission("conditionalevents.bypasscooldown."+event.getName());
+
         if(player != null){
             //Check One time
             if(event.isOneTime()){
@@ -82,7 +83,7 @@ public class EventsManager {
             }
 
             //Check Cooldown
-            if(event.getCooldown() != 0){
+            if(event.getCooldown() != 0 && !bypassCooldown){
                 long eventCooldownMillis = playerManager.getEventCooldown(event.getName(),player)+(event.getCooldown()*1000);
                 long currentTimeMillis = System.currentTimeMillis();
                 if(eventCooldownMillis > currentTimeMillis){
@@ -103,7 +104,7 @@ public class EventsManager {
             }
 
             //Set Cooldown
-            if(event.getCooldown() != 0){
+            if(event.getCooldown() != 0 && !bypassCooldown){
                 playerManager.setEventCooldown(event.getName(),player);
             }
         }

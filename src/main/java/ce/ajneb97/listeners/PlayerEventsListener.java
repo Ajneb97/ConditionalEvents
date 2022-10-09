@@ -203,6 +203,8 @@ public class PlayerEventsListener implements Listener {
             }
         }
 
+
+
         new ConditionEvent(plugin, player, event, EventType.PLAYER_DAMAGE, null)
                 .addVariables(
                         new StoredVariable("%damager_type%",damagerType),

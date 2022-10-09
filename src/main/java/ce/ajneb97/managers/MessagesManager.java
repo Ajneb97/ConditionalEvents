@@ -3,6 +3,7 @@ package ce.ajneb97.managers;
 import ce.ajneb97.libs.centeredmessages.DefaultFontInfo;
 import ce.ajneb97.utils.OtherUtils;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.command.CommandSender;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -72,6 +73,16 @@ public class MessagesManager {
 
 	public void setPlaceholderAPICooldownNameError(String placeholderAPICooldownNameError) {
 		this.placeholderAPICooldownNameError = placeholderAPICooldownNameError;
+	}
+
+	public void sendMessage(CommandSender sender, String message, boolean prefix){
+		if(!message.isEmpty()){
+			if(prefix){
+				sender.sendMessage(getColoredMessage(this.prefix+message));
+			}else{
+				sender.sendMessage(getColoredMessage(message));
+			}
+		}
 	}
 
 	public static String getColoredMessage(String message) {
