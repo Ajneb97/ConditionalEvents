@@ -96,10 +96,18 @@ public class VariablesUtils {
         //Global variables
         if(variable.equals("%player%")){
             return finalPlayer.getName();
-        }else if(variable.equals("%block_below%")){
-            Location l = finalPlayer.getLocation().clone().add(0, -1, 0);
+        }else if(variable.startsWith("%playerblock_below_")){
+            // %playerblock_below_<distance>%
+            int distance = Integer.parseInt(variable.replace("%playerblock_below_", "").replace("%", ""));
+            Location l = finalPlayer.getLocation().clone().add(0, -distance, 0);
             return getBlockTypeInLocation(l);
-        }else if(variable.equals("%block_inside%")){
+        }else if(variable.startsWith("%playerblock_above_")){
+            // %playerblock_above_<distance>%
+            int distance = Integer.parseInt(variable.replace("%playerblock_above_", "").replace("%", ""));
+            Location l = finalPlayer.getLocation().clone().add(0, distance, 0);
+            return getBlockTypeInLocation(l);
+        }else if(variable.equals("%playerblock_inside%")){
+            // %playerblock_inside%
             Location l = finalPlayer.getLocation();
             return getBlockTypeInLocation(l);
         }else if(variable.equals("%random_player%")) {

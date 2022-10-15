@@ -68,9 +68,11 @@ public class EventsManager {
         PlayerManager playerManager = plugin.getPlayerManager();
         MessagesManager messagesManager = plugin.getMessagesManager();
 
-        boolean bypassCooldown = player.hasPermission("conditionalevents.bypasscooldown."+event.getName());
+        boolean bypassCooldown = false;
 
         if(player != null){
+            bypassCooldown = player.hasPermission("conditionalevents.bypasscooldown."+event.getName());
+
             //Check One time
             if(event.isOneTime()){
                 boolean isOneTime = playerManager.getEventOneTime(event.getName(),player);
