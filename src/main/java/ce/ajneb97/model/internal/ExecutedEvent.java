@@ -98,16 +98,18 @@ public class ExecutedEvent {
 
             //Replace variables
             String actionLine = action.getActionLine();
-            actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,eventVariables,player
-                    ,target,isPlaceholderAPI);
+            VariablesProperties variablesProperties = new VariablesProperties(
+                eventVariables,player,target,isPlaceholderAPI,event,minecraftEvent
+            );
+
+            actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties);
 
             ActionTargeter targeter = action.getTargeter();
             ActionTargeterType targeterType = targeter.getType();
 
             String parametersLine = targeter.getParameter();
             if(parametersLine != null){
-                parametersLine = VariablesUtils.replaceAllVariablesInLine(parametersLine,eventVariables,player
-                        ,target,isPlaceholderAPI);
+                parametersLine = VariablesUtils.replaceAllVariablesInLine(parametersLine,variablesProperties);
             }
 
             if(targeterType.equals(ActionTargeterType.TO_ALL)) {
@@ -152,7 +154,8 @@ public class ExecutedEvent {
                 ArrayList<Player> players = new ArrayList<Player>();
                 for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
                     //Check for conditions
-                    boolean accomplishesConditions = eventsManager.checkToConditionAction(group.getConditions(),globalPlayer,isPlaceholderAPI);
+                    boolean accomplishesConditions = eventsManager.checkToConditionAction(group.getConditions()
+                            ,globalPlayer,isPlaceholderAPI,event,minecraftEvent);
                     if(accomplishesConditions){
                         players.add(globalPlayer);
                     }

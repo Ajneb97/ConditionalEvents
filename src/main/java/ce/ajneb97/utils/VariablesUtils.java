@@ -1,6 +1,8 @@
 package ce.ajneb97.utils;
 
+import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
+import ce.ajneb97.model.internal.VariablesProperties;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -8,6 +10,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -17,8 +22,9 @@ import java.util.Random;
 
 public class VariablesUtils {
 
-    public static String replaceAllVariablesInLine(String textLine, ArrayList<StoredVariable> eventVariables,
-                                                   Player player, Player target, boolean isPlaceholderAPI){
+    public static String replaceAllVariablesInLine(String textLine,VariablesProperties variablesProperties){
+
+        ArrayList<StoredVariable> eventVariables = variablesProperties.getEventVariables();
 
         //Separate line into only variables
         String auxTextLine = textLine;
@@ -35,10 +41,7 @@ public class VariablesUtils {
                     }
 
                     String variable = textLine.substring(c,lastPos+1);
-                    //Bukkit.getConsoleSender().sendMessage("found variable: "+variable);
-                    auxTextLine = auxTextLine.replace(variable,replaceVariable(variable,player,target,isPlaceholderAPI
-                        ,eventVariables));
-                    //Bukkit.getConsoleSender().sendMessage("fixed variable: "+auxTextLine);
+                    auxTextLine = auxTextLine.replace(variable,replaceVariable(variable,variablesProperties));
                     c = lastPos;
                 }
             }
@@ -54,8 +57,19 @@ public class VariablesUtils {
         return auxTextLine;
     }
 
-    public static String replaceEventVariablesPost(String variable,ArrayList<StoredVariable> eventVariables){
-        //PLAYER_COMMAND:
+    //Post-Event variables
+    public static String replaceEventVariablesPost(String variable,VariablesProperties variablesProperties){
+        EventType eventType = variablesProperties.getEvent().getEventType();
+        if(eventType.equals(EventType.PLAYER_COMMAND) || eventType.equals(EventType.CONSOLE_COMMAND)){
+            return replaceCommandEventsVariables(variable,variablesProperties);
+        }else if(eventType.name().startsWith("BLOCK_")){
+            return replaceBlockEventsVariables(variable,variablesProperties,eventType);
+        }
+
+        return variable;
+    }
+
+    public static String replaceCommandEventsVariables(String variable,VariablesProperties variablesProperties){
         if(variable.startsWith("%args_substring_")){
             //%args_substring_<param1>-<param2>%
             String variableLR = variable.replace("args_substring_", "").replace("%", "");
@@ -65,7 +79,7 @@ public class VariablesUtils {
 
             String finalSubstring = "";
             boolean started = false;
-            for(StoredVariable storedVariable : eventVariables){
+            for(StoredVariable storedVariable : variablesProperties.getEventVariables()){
                 String name = storedVariable.getName();
                 String value = storedVariable.getValue();
                 if(name.equals("%arg_"+param1+"%")){
@@ -85,9 +99,40 @@ public class VariablesUtils {
         return variable;
     }
 
-    public static String replaceVariable(String variable,Player originalPlayer, Player target, boolean isPlaceholderAPI
-        ,ArrayList<StoredVariable> eventVariables){
-        Player finalPlayer = originalPlayer;
+    public static String replaceBlockEventsVariables(String variable,VariablesProperties variablesProperties,EventType eventType){
+        Event minecraftEvent = variablesProperties.getMinecraftEvent();
+        if(minecraftEvent == null){
+            return variable;
+        }
+
+        Block block = null;
+        if(eventType.equals(EventType.BLOCK_INTERACT)){
+            block = ((PlayerInteractEvent) minecraftEvent).getClickedBlock();
+        }else{
+            block = ((BlockEvent) minecraftEvent).getBlock();
+        }
+
+        if(block != null){
+            if(variable.startsWith("%block_below_")){
+                // %block_below_<distance>%
+                int distance = Integer.parseInt(variable.replace("%block_below_", "").replace("%", ""));
+                Location l = block.getLocation().clone().add(0, -distance, 0);
+                return getBlockTypeInLocation(l);
+            }else if(variable.startsWith("%block_above_")){
+                // block_above_<distance>%
+                int distance = Integer.parseInt(variable.replace("%block_above_", "").replace("%", ""));
+                Location l = block.getLocation().clone().add(0, distance, 0);
+                return getBlockTypeInLocation(l);
+            }
+        }
+
+        return variable;
+    }
+
+    //Global ConditionalEvents variables
+    public static String replaceVariable(String variable,VariablesProperties variablesProperties){
+        Player finalPlayer = variablesProperties.getPlayer();
+        Player target = variablesProperties.getTarget();
         if(variable.startsWith("%target:") && target != null){
             finalPlayer = target;
             variable = variable.replace("target:","");
@@ -223,11 +268,11 @@ public class VariablesUtils {
             return "";
         }
 
-        //Post variables
-        variable = replaceEventVariablesPost(variable,eventVariables);
+        //Post-Event variables
+        variable = replaceEventVariablesPost(variable,variablesProperties);
 
         //PlaceholderAPI variables
-        if(isPlaceholderAPI){
+        if(variablesProperties.isPlaceholderAPI()){
             variable = PlaceholderAPI.setPlaceholders(finalPlayer,variable);
         }
 

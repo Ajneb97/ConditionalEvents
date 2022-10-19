@@ -8,10 +8,12 @@ import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.CheckConditionsResult;
 import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.model.internal.ExecutedEvent;
+import ce.ajneb97.model.internal.VariablesProperties;
 import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.TimeUtils;
 import ce.ajneb97.utils.VariablesUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,6 +134,8 @@ public class EventsManager {
         String eventName = conditionEvent.getCurrentEvent().getName();
         Player player = conditionEvent.getPlayer();
         Player target = conditionEvent.getTarget();
+        CEEvent event = conditionEvent.getCurrentEvent();
+        Event minecraftEvent = conditionEvent.getMinecraftEvent();
         DebugManager debugManager = plugin.getDebugManager();
 
         //Check condition lines
@@ -164,8 +168,11 @@ public class EventsManager {
                         String arg1 = miniCondition.substring(0, textToFindIndex);
                         String arg2 = miniCondition.substring(textToFindIndex+conditionalType.getText().length()+2);
                         //Replace variables
-                        arg1 = VariablesUtils.replaceAllVariablesInLine(arg1,storedVariables,player,target,isPlaceholderAPI);
-                        arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,storedVariables,player,target,isPlaceholderAPI);
+                        VariablesProperties variablesProperties = new VariablesProperties(
+                                storedVariables,player,target,isPlaceholderAPI,event,minecraftEvent
+                        );
+                        arg1 = VariablesUtils.replaceAllVariablesInLine(arg1,variablesProperties);
+                        arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,variablesProperties);
 
                         conditionLineWithReplacements = conditionLineWithReplacements+"'"+arg1+"'"+textToFind+"'"+arg2+"'";
                         if(c != orConditions.length-1){
@@ -247,7 +254,8 @@ public class EventsManager {
         return new CheckConditionsResult(true,null);
     }
 
-    public boolean checkToConditionAction(List<String> conditionGroup, Player player, boolean isPlaceholderAPI){
+    public boolean checkToConditionAction(List<String> conditionGroup, Player player, boolean isPlaceholderAPI,
+                                          CEEvent event, Event minecraftEvent){
         for(int i=0;i<conditionGroup.size();i++) {
             String conditionLine = conditionGroup.get(i);
             boolean approvedLine = false;
@@ -265,8 +273,11 @@ public class EventsManager {
                         String arg1 = miniCondition.substring(0, textToFindIndex);
                         String arg2 = miniCondition.substring(textToFindIndex+conditionalType.getText().length()+2);
 
-                        arg1 = VariablesUtils.replaceAllVariablesInLine(arg1,storedVariables,player,null,isPlaceholderAPI);
-                        arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,storedVariables,player,null,isPlaceholderAPI);
+                        VariablesProperties variablesProperties = new VariablesProperties(
+                                storedVariables,player,null,isPlaceholderAPI,event,minecraftEvent
+                        );
+                        arg1 = VariablesUtils.replaceAllVariablesInLine(arg1,variablesProperties);
+                        arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,variablesProperties);
 
                         String firstArg = MathUtils.calculate(arg1);String secondArg = MathUtils.calculate(arg2);
 

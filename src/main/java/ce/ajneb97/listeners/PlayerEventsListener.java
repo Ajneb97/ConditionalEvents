@@ -108,7 +108,7 @@ public class PlayerEventsListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onEntityInteract(PlayerInteractEntityEvent event){
+    public void onEntityInteract(PlayerInteractAtEntityEvent event){
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();
         if(!Bukkit.getVersion().contains("1.8") && !event.getHand().equals(EquipmentSlot.HAND)) {
