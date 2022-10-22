@@ -25,6 +25,11 @@ public class CEEvent {
 
     private CustomEventProperties customEventProperties;
 
+    private List<String> preventCooldownActivationActionGroups;
+    private List<String> preventOneTimeActivationActionGroups;
+
+
+
     public CEEvent(String name){
         this.name = name;
     }
@@ -92,6 +97,24 @@ public class CEEvent {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    public List<String> getPreventCooldownActivationActionGroups() {
+        return preventCooldownActivationActionGroups;
+    }
+
+    public void setPreventCooldownActivationActionGroups(List<String> preventCooldownActivationActionGroups) {
+        this.preventCooldownActivationActionGroups = preventCooldownActivationActionGroups;
+    }
+
+    public List<String> getPreventOneTimeActivationActionGroups() {
+        return preventOneTimeActivationActionGroups;
+    }
+
+    public void setPreventOneTimeActivationActionGroups(List<String> preventOneTimeActivationActionGroups) {
+        this.preventOneTimeActivationActionGroups = preventOneTimeActivationActionGroups;
+    }
+
+
 
     public void enable(){
         this.enabled = true;

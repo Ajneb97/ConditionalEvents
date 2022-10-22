@@ -57,6 +57,9 @@ public class ConfigsManager {
                     long cooldown = 0;
                     boolean enabled = true;
 
+                    List<String> preventCooldownActivationActionGroups = new ArrayList<String>();
+                    List<String> preventOneTimeActivationActionGroups = new ArrayList<String>();
+
                     CEEvent event = new CEEvent(key);
                     EventType eventType = null;
                     try{
@@ -137,6 +140,12 @@ public class ConfigsManager {
                     if(config.contains(path+".enabled")) {
                         enabled = Boolean.valueOf(config.getString(path+".enabled"));
                     }
+                    if(config.contains(path+".prevent_cooldown_activation")){
+                        preventCooldownActivationActionGroups = config.getStringList(path+".prevent_cooldown_activation");
+                    }
+                    if(config.contains(path+".prevent_one_time_activation")){
+                        preventOneTimeActivationActionGroups = config.getStringList(path+".prevent_one_time_activation");
+                    }
 
                     event.setEventType(eventType);
                     event.setConditions(conditions);
@@ -145,6 +154,8 @@ public class ConfigsManager {
                     event.setIgnoreWithPermission(ignoreWithPermission);
                     event.setOneTime(oneTime);
                     event.setEnabled(enabled);
+                    event.setPreventCooldownActivationActionGroups(preventCooldownActivationActionGroups);
+                    event.setPreventOneTimeActivationActionGroups(preventOneTimeActivationActionGroups);
 
                     if(event.getEventType().equals(EventType.CUSTOM)) {
                         String eventPackage = config.getString(path+".custom_event_data.event");

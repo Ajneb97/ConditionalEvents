@@ -66,6 +66,7 @@ public class EventsManager {
         if(!conditionsResult.isConditionsAccomplished()){
             return;
         }
+        String executeActionGroup = conditionsResult.getExecuteActionGroup();
 
         PlayerManager playerManager = plugin.getPlayerManager();
         MessagesManager messagesManager = plugin.getMessagesManager();
@@ -104,18 +105,22 @@ public class EventsManager {
         if(player != null){
             //Set One Time
             if(event.isOneTime()){
-                playerManager.setEventOneTime(event.getName(),player);
+                if(!event.getPreventOneTimeActivationActionGroups().contains(executeActionGroup)){
+                    playerManager.setEventOneTime(event.getName(),player);
+                }
             }
 
             //Set Cooldown
             if(event.getCooldown() != 0 && !bypassCooldown){
-                playerManager.setEventCooldown(event.getName(),player);
+                if(!event.getPreventCooldownActivationActionGroups().contains(executeActionGroup)){
+                    playerManager.setEventCooldown(event.getName(),player);
+                }
             }
         }
 
         //Execute actions
         ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
-               conditionsResult.getExecuteActionGroup(), conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
+                executeActionGroup, conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
         executedEvent.executeActions(isPlaceholderAPI);
     }
 
