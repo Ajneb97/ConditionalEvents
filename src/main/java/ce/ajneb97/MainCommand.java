@@ -197,11 +197,10 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			}else {
 				if((args[0].equalsIgnoreCase("debug") || args[0].equalsIgnoreCase("enable")
 						|| args[0].equalsIgnoreCase("disable")) && args.length == 2) {
-					List<String> completions = getEventsCompletions(args,1);
+					List<String> completions = getEventsCompletions(args,1,false);
 					return completions;
 				}else if(args[0].equalsIgnoreCase("reset") && args.length == 3) {
-					List<String> completions = getEventsCompletions(args,2);
-					completions.add("all");
+					List<String> completions = getEventsCompletions(args,2,true);
 					return completions;
 				}
 			}
@@ -211,13 +210,20 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		return null;
 	}
 
-	public List<String> getEventsCompletions(String[] args,int argEventPos){
+	public List<String> getEventsCompletions(String[] args,int argEventPos,boolean addAll){
 		List<String> completions = new ArrayList<String>();
 
 		String argEvent = args[argEventPos];
+
+		if(addAll) {
+			if(argEvent.isEmpty() || "all".startsWith(argEvent.toLowerCase())) {
+				completions.add("all");
+			}
+		}
+
 		ArrayList<CEEvent> events = plugin.getEventsManager().getEvents();
 		for(CEEvent event : events) {
-			if(argEvent.toLowerCase().isEmpty() || event.getName().toLowerCase().startsWith(argEvent.toLowerCase())) {
+			if(argEvent.isEmpty() || event.getName().toLowerCase().startsWith(argEvent.toLowerCase())) {
 				completions.add(event.getName());
 			}
 		}
