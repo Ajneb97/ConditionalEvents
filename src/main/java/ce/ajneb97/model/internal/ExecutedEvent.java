@@ -102,14 +102,14 @@ public class ExecutedEvent {
                 eventVariables,player,target,isPlaceholderAPI,event,minecraftEvent
             );
 
-            actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties);
+            actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties,false);
 
             ActionTargeter targeter = action.getTargeter();
             ActionTargeterType targeterType = targeter.getType();
 
             String parametersLine = targeter.getParameter();
             if(parametersLine != null){
-                parametersLine = VariablesUtils.replaceAllVariablesInLine(parametersLine,variablesProperties);
+                parametersLine = VariablesUtils.replaceAllVariablesInLine(parametersLine,variablesProperties,false);
             }
 
             if(targeterType.equals(ActionTargeterType.TO_ALL)) {

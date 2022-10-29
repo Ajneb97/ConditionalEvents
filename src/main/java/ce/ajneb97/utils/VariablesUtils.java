@@ -22,35 +22,48 @@ import java.util.Random;
 
 public class VariablesUtils {
 
-    public static String replaceAllVariablesInLine(String textLine,VariablesProperties variablesProperties){
-
-        ArrayList<StoredVariable> eventVariables = variablesProperties.getEventVariables();
-
-        //Separate line into only variables
+    public static String replaceAllVariablesInLine(String textLine,VariablesProperties variablesProperties,boolean smallVariables){
         String auxTextLine = textLine;
+
+        char startChar = '%';
+        char endChar = '%';
+        if(smallVariables){
+            startChar = '{';
+            endChar = '}';
+        }
+
         for(int c=0;c<textLine.length();c++) {
-            if(textLine.charAt(c) == '%') {
+            if(textLine.charAt(c) == startChar) {
                 if(c+1 < textLine.length()) {
-                    int lastPos = textLine.indexOf("%", c+1);
+                    int lastPos = textLine.indexOf(endChar, c+1);
                     if(lastPos == -1) {
                         continue;
                     }
+
                     //Must not be an empty space at start and end.
                     if(textLine.charAt(c+1) == ' ' || textLine.charAt(lastPos-1) == ' ') {
                         continue;
                     }
 
-                    String variable = textLine.substring(c,lastPos+1);
-                    auxTextLine = auxTextLine.replace(variable,replaceVariable(variable,variablesProperties));
+                    String bigVariable = textLine.substring(c,lastPos+1);
+                    String auxBigVariable = null;
+                    if(!smallVariables){
+                        auxBigVariable = replaceAllVariablesInLine(bigVariable,variablesProperties,true);
+                    }else{
+                        auxBigVariable = bigVariable;
+                    }
+
+                    String auxBigVariableWithoutChars = auxBigVariable.replace(startChar+"","").replace(endChar+"","");
+
+                    String replaceVariableResult = replaceVariable(auxBigVariableWithoutChars,variablesProperties);
+                    if(replaceVariableResult.equals(auxBigVariableWithoutChars)){
+                        auxTextLine = auxTextLine.replace(bigVariable,startChar+replaceVariableResult+endChar);
+                    }else{
+                        auxTextLine = auxTextLine.replace(bigVariable,replaceVariableResult);
+                    }
+
                     c = lastPos;
                 }
-            }
-        }
-
-        //Event variables
-        for(StoredVariable variable : eventVariables){
-            if(variable.getValue() != null){
-                auxTextLine = auxTextLine.replace(variable.getName(), variable.getValue());
             }
         }
 
@@ -70,9 +83,9 @@ public class VariablesUtils {
     }
 
     public static String replaceCommandEventsVariables(String variable,VariablesProperties variablesProperties){
-        if(variable.startsWith("%args_substring_")){
+        if(variable.startsWith("args_substring_")){
             //%args_substring_<param1>-<param2>%
-            String variableLR = variable.replace("args_substring_", "").replace("%", "");
+            String variableLR = variable.replace("args_substring_", "");
             String[] variableLRSplit = variableLR.split("-");
             String param1 = variableLRSplit[0];
             String param2 = variableLRSplit[1];
@@ -113,14 +126,14 @@ public class VariablesUtils {
         }
 
         if(block != null){
-            if(variable.startsWith("%block_below_")){
+            if(variable.startsWith("block_below_")){
                 // %block_below_<distance>%
-                int distance = Integer.parseInt(variable.replace("%block_below_", "").replace("%", ""));
+                int distance = Integer.parseInt(variable.replace("block_below_", ""));
                 Location l = block.getLocation().clone().add(0, -distance, 0);
                 return getBlockTypeInLocation(l);
-            }else if(variable.startsWith("%block_above_")){
+            }else if(variable.startsWith("block_above_")){
                 // block_above_<distance>%
-                int distance = Integer.parseInt(variable.replace("%block_above_", "").replace("%", ""));
+                int distance = Integer.parseInt(variable.replace("block_above_", ""));
                 Location l = block.getLocation().clone().add(0, distance, 0);
                 return getBlockTypeInLocation(l);
             }
@@ -133,29 +146,37 @@ public class VariablesUtils {
     public static String replaceVariable(String variable,VariablesProperties variablesProperties){
         Player finalPlayer = variablesProperties.getPlayer();
         Player target = variablesProperties.getTarget();
-        if(variable.startsWith("%target:") && target != null){
+        if(variable.startsWith("target:") && target != null){
             finalPlayer = target;
             variable = variable.replace("target:","");
         }
 
+        //Event variables
+        ArrayList<StoredVariable> eventVariables = variablesProperties.getEventVariables();
+        for(StoredVariable storedVariable : eventVariables){
+            if(storedVariable.getValue() != null && variable.equals(storedVariable.getName().replace("%",""))){
+                return storedVariable.getValue();
+            }
+        }
+
         //Global variables
-        if(variable.equals("%player%")){
+        if(variable.equals("player")){
             return finalPlayer.getName();
-        }else if(variable.startsWith("%playerblock_below_")){
+        }else if(variable.startsWith("playerblock_below_")){
             // %playerblock_below_<distance>%
-            int distance = Integer.parseInt(variable.replace("%playerblock_below_", "").replace("%", ""));
+            int distance = Integer.parseInt(variable.replace("playerblock_below_", ""));
             Location l = finalPlayer.getLocation().clone().add(0, -distance, 0);
             return getBlockTypeInLocation(l);
         }else if(variable.startsWith("%playerblock_above_")){
             // %playerblock_above_<distance>%
-            int distance = Integer.parseInt(variable.replace("%playerblock_above_", "").replace("%", ""));
+            int distance = Integer.parseInt(variable.replace("playerblock_above_", ""));
             Location l = finalPlayer.getLocation().clone().add(0, distance, 0);
             return getBlockTypeInLocation(l);
-        }else if(variable.equals("%playerblock_inside%")){
+        }else if(variable.equals("playerblock_inside")){
             // %playerblock_inside%
             Location l = finalPlayer.getLocation();
             return getBlockTypeInLocation(l);
-        }else if(variable.equals("%random_player%")) {
+        }else if(variable.equals("random_player")) {
             int random = new Random().nextInt(Bukkit.getOnlinePlayers().size());
             ArrayList<Player> players = new ArrayList<Player>(Bukkit.getOnlinePlayers());
             if(players.size() == 0) {
@@ -163,9 +184,9 @@ public class VariablesUtils {
             }else {
                 return players.get(random).getName();
             }
-        }else if(variable.startsWith("%random_player_")) {
+        }else if(variable.startsWith("random_player_")) {
             // %random_player_<world>%
-            String worldName = variable.replace("%random_player_", "").replace("%", "");
+            String worldName = variable.replace("random_player_", "");
             try {
                 World world = Bukkit.getWorld(worldName);
                 List<Player> players = world.getPlayers();
@@ -178,17 +199,17 @@ public class VariablesUtils {
             }catch(Exception e) {
                 return "none";
             }
-        }else if(variable.startsWith("%random_")) {
+        }else if(variable.startsWith("random_")) {
             // %random_min-max%
-            String variableLR = variable.replace("random_", "").replace("%", "");
+            String variableLR = variable.replace("random_", "");
             String[] variableLRSplit = variableLR.split("-");
             int num1 = Integer.valueOf(variableLRSplit[0]);
             int num2 = Integer.valueOf(variableLRSplit[1]);
             int numFinal = MathUtils.getRandomNumber(num1, num2);
             return numFinal+"";
-        }else if(variable.startsWith("%playerarmor_name_")) {
+        }else if(variable.startsWith("playerarmor_name_")) {
             // %playerarmor_name_<type>%
-            String armorType = variable.replace("%playerarmor_name_", "").replace("%", "");
+            String armorType = variable.replace("playerarmor_name_", "");
             ItemStack item = getArmorItem(finalPlayer,armorType);
             String name = "";
             if(item.hasItemMeta()){
@@ -198,18 +219,18 @@ public class VariablesUtils {
                 }
             }
             return name;
-        }else if(variable.startsWith("%playerarmor_")) {
+        }else if(variable.startsWith("playerarmor_")) {
             // %playerarmor_<type>%
-            String armorType = variable.replace("%playerarmor_", "").replace("%", "");
+            String armorType = variable.replace("playerarmor_", "");
             ItemStack item = getArmorItem(finalPlayer,armorType);
             String material = "AIR";
             if(item != null) {
                 material = item.getType().name();
             }
             return material;
-        }else if(variable.startsWith("%block_at_")) {
+        }else if(variable.startsWith("block_at_")) {
             // %block_at_x_y_z_world%
-            String variableLR = variable.replace("%block_at_", "").replace("%", "");
+            String variableLR = variable.replace("block_at_", "");
             String[] variableLRSplit = variableLR.split("_");
             try {
                 int x = Integer.valueOf(variableLRSplit[0]);
@@ -228,9 +249,9 @@ public class VariablesUtils {
             }catch(Exception e) {
                 return variable;
             }
-        }else if(variable.startsWith("%is_nearby_")) {
+        }else if(variable.startsWith("is_nearby_")) {
             // %is_nearby_x_y_z_world_radius%
-            String variableLR = variable.replace("%is_nearby_", "").replace("%", "");
+            String variableLR = variable.replace("is_nearby_", "");
             String[] variableLRSplit = variableLR.split("_");
             try {
                 int x = Integer.valueOf(variableLRSplit[0]);
@@ -259,12 +280,12 @@ public class VariablesUtils {
             }catch(Exception e) {
                 return "false";
             }
-        }else if(variable.startsWith("%world_time_")) {
+        }else if(variable.startsWith("world_time_")) {
             // %world_time_<world>%
-            String variableLR = variable.replace("%world_time_", "").replace("%", "");
+            String variableLR = variable.replace("world_time_", "");
             World world = Bukkit.getWorld(variableLR);
             return world.getTime()+"";
-        }else if(variable.equals("%empty%")) {
+        }else if(variable.equals("empty")) {
             return "";
         }
 
@@ -273,7 +294,7 @@ public class VariablesUtils {
 
         //PlaceholderAPI variables
         if(variablesProperties.isPlaceholderAPI()){
-            variable = PlaceholderAPI.setPlaceholders(finalPlayer,variable);
+            variable = PlaceholderAPI.setPlaceholders(finalPlayer,"%"+variable+"%");
         }
 
         return variable;

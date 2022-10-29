@@ -176,8 +176,8 @@ public class EventsManager {
                         VariablesProperties variablesProperties = new VariablesProperties(
                                 storedVariables,player,target,isPlaceholderAPI,event,minecraftEvent
                         );
-                        arg1 = VariablesUtils.replaceAllVariablesInLine(arg1,variablesProperties);
-                        arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,variablesProperties);
+                        arg1 = VariablesUtils.replaceAllVariablesInLine(arg1,variablesProperties,false);
+                        arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,variablesProperties,false);
 
                         conditionLineWithReplacements = conditionLineWithReplacements+"'"+arg1+"'"+textToFind+"'"+arg2+"'";
                         if(c != orConditions.length-1){
@@ -281,8 +281,8 @@ public class EventsManager {
                         VariablesProperties variablesProperties = new VariablesProperties(
                                 storedVariables,player,null,isPlaceholderAPI,event,minecraftEvent
                         );
-                        arg1 = VariablesUtils.replaceAllVariablesInLine(arg1,variablesProperties);
-                        arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,variablesProperties);
+                        arg1 = VariablesUtils.replaceAllVariablesInLine(arg1,variablesProperties,false);
+                        arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,variablesProperties,false);
 
                         String firstArg = MathUtils.calculate(arg1);String secondArg = MathUtils.calculate(arg2);
 
