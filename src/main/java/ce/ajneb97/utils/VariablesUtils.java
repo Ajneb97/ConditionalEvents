@@ -2,6 +2,7 @@ package ce.ajneb97.utils;
 
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
+import ce.ajneb97.model.internal.PostEventVariableResult;
 import ce.ajneb97.model.internal.VariablesProperties;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -71,7 +72,7 @@ public class VariablesUtils {
     }
 
     //Post-Event variables
-    public static String replaceEventVariablesPost(String variable,VariablesProperties variablesProperties){
+    public static PostEventVariableResult replaceEventVariablesPost(String variable, VariablesProperties variablesProperties){
         EventType eventType = variablesProperties.getEvent().getEventType();
         if(eventType.equals(EventType.PLAYER_COMMAND) || eventType.equals(EventType.CONSOLE_COMMAND)){
             return replaceCommandEventsVariables(variable,variablesProperties);
@@ -79,10 +80,10 @@ public class VariablesUtils {
             return replaceBlockEventsVariables(variable,variablesProperties,eventType);
         }
 
-        return variable;
+        return PostEventVariableResult.noReplaced();
     }
 
-    public static String replaceCommandEventsVariables(String variable,VariablesProperties variablesProperties){
+    public static PostEventVariableResult replaceCommandEventsVariables(String variable,VariablesProperties variablesProperties){
         if(variable.startsWith("args_substring_")){
             //%args_substring_<param1>-<param2>%
             String variableLR = variable.replace("args_substring_", "");
@@ -107,15 +108,15 @@ public class VariablesUtils {
                     }
                 }
             }
-            return finalSubstring;
+            return PostEventVariableResult.replaced(finalSubstring);
         }
-        return variable;
+        return PostEventVariableResult.noReplaced();
     }
 
-    public static String replaceBlockEventsVariables(String variable,VariablesProperties variablesProperties,EventType eventType){
+    public static PostEventVariableResult replaceBlockEventsVariables(String variable,VariablesProperties variablesProperties,EventType eventType){
         Event minecraftEvent = variablesProperties.getMinecraftEvent();
         if(minecraftEvent == null){
-            return variable;
+            return PostEventVariableResult.noReplaced();
         }
 
         Block block = null;
@@ -130,16 +131,16 @@ public class VariablesUtils {
                 // %block_below_<distance>%
                 int distance = Integer.parseInt(variable.replace("block_below_", ""));
                 Location l = block.getLocation().clone().add(0, -distance, 0);
-                return getBlockTypeInLocation(l);
+                return PostEventVariableResult.replaced(getBlockTypeInLocation(l));
             }else if(variable.startsWith("block_above_")){
                 // block_above_<distance>%
                 int distance = Integer.parseInt(variable.replace("block_above_", ""));
                 Location l = block.getLocation().clone().add(0, distance, 0);
-                return getBlockTypeInLocation(l);
+                return PostEventVariableResult.replaced(getBlockTypeInLocation(l));
             }
         }
 
-        return variable;
+        return PostEventVariableResult.noReplaced();
     }
 
     //Global ConditionalEvents variables
@@ -290,7 +291,10 @@ public class VariablesUtils {
         }
 
         //Post-Event variables
-        variable = replaceEventVariablesPost(variable,variablesProperties);
+        PostEventVariableResult result = replaceEventVariablesPost(variable,variablesProperties);
+        if(result.isReplaced()){
+            return result.getVariable();
+        }
 
         //PlaceholderAPI variables
         if(variablesProperties.isPlaceholderAPI()){
