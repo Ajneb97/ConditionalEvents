@@ -54,6 +54,7 @@ public class OtherEventsListener implements Listener {
         new ConditionEvent(plugin, null, event, EventType.CONSOLE_COMMAND, null)
                 .addVariables(
                         new StoredVariable("%command%",command),
+                        new StoredVariable("%main_command%",args[0]),
                         new StoredVariable("%args_length%",(args.length-1)+"")
                 ).addVariables(eventVariables)
                 .checkEvent();

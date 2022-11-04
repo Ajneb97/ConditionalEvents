@@ -81,8 +81,7 @@ Events:
     type: player_command
     ignore_with_permission: conditionalevents.ignore.event5
     conditions:
-      - '%command% startsWith //calc or %command% startsWith //solve or %command% startsWith
-      //eval'
+      - '%main_command% equalsIgnoreCase //calc or %main_command% equalsIgnoreCase //solve or %main_command% equalsIgnoreCase //eval'
     actions:
       default:
         - 'cancel_event: true'

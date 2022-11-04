@@ -48,7 +48,7 @@ public class VariablesUtils {
 
                     String bigVariable = textLine.substring(c,lastPos+1);
                     String auxBigVariable = null;
-                    if(!smallVariables){
+                    if(!smallVariables && !bigVariable.startsWith("%parseother_")){
                         auxBigVariable = replaceAllVariablesInLine(bigVariable,variablesProperties,true);
                     }else{
                         auxBigVariable = bigVariable;
@@ -133,7 +133,7 @@ public class VariablesUtils {
                 Location l = block.getLocation().clone().add(0, -distance, 0);
                 return PostEventVariableResult.replaced(getBlockTypeInLocation(l));
             }else if(variable.startsWith("block_above_")){
-                // block_above_<distance>%
+                // %block_above_<distance>%
                 int distance = Integer.parseInt(variable.replace("block_above_", ""));
                 Location l = block.getLocation().clone().add(0, distance, 0);
                 return PostEventVariableResult.replaced(getBlockTypeInLocation(l));
