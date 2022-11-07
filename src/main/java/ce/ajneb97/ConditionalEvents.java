@@ -11,6 +11,7 @@ import ce.ajneb97.listeners.*;
 import ce.ajneb97.listeners.dependencies.CitizensListener;
 import ce.ajneb97.listeners.dependencies.WGRegionEventsListener;
 import ce.ajneb97.managers.*;
+import ce.ajneb97.managers.commandregister.CommandRegisterManager;
 import ce.ajneb97.model.internal.UpdateCheckerResult;
 import ce.ajneb97.tasks.PlayerDataSaveTask;
 import org.bukkit.Bukkit;
@@ -35,6 +36,7 @@ public class ConditionalEvents extends JavaPlugin {
 	private MessagesManager messagesManager;
 	private VerifyManager verifyManager;
 	private UpdateCheckerManager updateCheckerManager;
+	private CommandRegisterManager commandRegisterManager;
 
 	private PlayerDataSaveTask playerDataSaveTask;
 
@@ -52,6 +54,9 @@ public class ConditionalEvents extends JavaPlugin {
 
 		this.verifyManager = new VerifyManager(this);
 		this.verifyManager.verifyEvents();
+
+		this.commandRegisterManager = new CommandRegisterManager(this);
+		commandRegisterManager.registerCommands();
 
 		reloadPlayerDataSaveTask();
 
@@ -148,6 +153,10 @@ public class ConditionalEvents extends JavaPlugin {
 
 	public UpdateCheckerManager getUpdateCheckerManager() {
 		return updateCheckerManager;
+	}
+
+	public CommandRegisterManager getCommandRegisterManager() {
+		return commandRegisterManager;
 	}
 
 	public void updateMessage(UpdateCheckerResult result){

@@ -203,6 +203,23 @@ public class ConditionEvent {
         return this;
     }
 
+    public ConditionEvent setCommonEntityVariables(Entity entity){
+        String entityType = entity.getType().name();
+        String entityName = "";
+        if(entity.getCustomName() != null) {
+            entityName = entity.getCustomName();
+        }
+        Location location = entity.getLocation();
+
+        eventVariables.add(new StoredVariable("%entity%",entityType));
+        eventVariables.add(new StoredVariable("%entity_name%",entityName));
+        eventVariables.add(new StoredVariable("%entity_x%",location.getBlockX()+""));
+        eventVariables.add(new StoredVariable("%entity_y%",location.getBlockY()+""));
+        eventVariables.add(new StoredVariable("%entity_z%",location.getBlockZ()+""));
+        eventVariables.add(new StoredVariable("%entity_world%",location.getWorld().getName()));
+        return this;
+    }
+
     public boolean isAsync() {
         return async;
     }

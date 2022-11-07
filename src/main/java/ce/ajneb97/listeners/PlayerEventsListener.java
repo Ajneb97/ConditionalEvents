@@ -117,20 +117,15 @@ public class PlayerEventsListener implements Listener {
         if(entity == null){
             return;
         }
-        String entityName = "";
-        if(entity.getCustomName() != null) {
-            entityName = entity.getCustomName();
-        }
+
         Player target = null;
         if(entity instanceof Player){
             target = (Player) entity;
         }
 
         new ConditionEvent(plugin, player, event, EventType.ENTITY_INTERACT, target)
-                .addVariables(
-                        new StoredVariable("%entity_type%",entity.getType().name()),
-                        new StoredVariable("%entity_name%",entityName)
-                ).setCommonItemVariables(player.getItemInHand())
+                .setCommonEntityVariables(entity)
+                .setCommonItemVariables(player.getItemInHand())
                 .checkEvent();
     }
 

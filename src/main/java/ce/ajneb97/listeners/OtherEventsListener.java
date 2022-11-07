@@ -6,6 +6,7 @@ import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -33,12 +34,12 @@ public class OtherEventsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntitySpawn(CreatureSpawnEvent event){
+        Entity entity = event.getEntity();
         new ConditionEvent(plugin, null, event, EventType.ENTITY_SPAWN, null)
                 .addVariables(
-                        new StoredVariable("%entity%",event.getEntityType().name()),
-                        new StoredVariable("%entity_world%",event.getLocation().getWorld().getName()),
                         new StoredVariable("%reason%",event.getSpawnReason().name())
-                ).checkEvent();
+                )
+                .setCommonEntityVariables(entity).checkEvent();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

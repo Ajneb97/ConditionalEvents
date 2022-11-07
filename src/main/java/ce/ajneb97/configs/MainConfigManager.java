@@ -82,6 +82,11 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("register_commands:")){
+                List<String> commands = new ArrayList<>();
+                getConfig().set("Config.register_commands", commands);
+                saveConfig();
+            }
             if(!text.contains("placeholderAPICooldownReady:")){
                 getConfig().set("Messages.placeholderAPICooldownReady", "Ready!");
                 getConfig().set("Messages.placeholderAPICooldownNameError", "No event with that name!");

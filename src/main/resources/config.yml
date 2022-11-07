@@ -1,6 +1,8 @@
 Config:
   update_notification: true
   data_save_time: 5
+  register_commands:
+    - "hello"
   to_condition_groups:
     group1:
       - "%player_has_permission_conditionalevents.somepermission% == yes"
