@@ -33,6 +33,13 @@ public class VariablesUtils {
             endChar = '}';
         }
 
+        //For special variables like ParseOther
+        int currentSmallVariableCount = 0;
+        boolean isParseOther = false;
+        if(textLine.startsWith("%parseother_")){
+            isParseOther = true;
+        }
+
         for(int c=0;c<textLine.length();c++) {
             if(textLine.charAt(c) == startChar) {
                 if(c+1 < textLine.length()) {
@@ -48,22 +55,33 @@ public class VariablesUtils {
 
                     String bigVariable = textLine.substring(c,lastPos+1);
                     String auxBigVariable = null;
-                    if(!smallVariables && !bigVariable.startsWith("%parseother_")){
+                    if(!smallVariables){
                         auxBigVariable = replaceAllVariablesInLine(bigVariable,variablesProperties,true);
                     }else{
                         auxBigVariable = bigVariable;
                     }
 
+                    if(smallVariables && isParseOther && currentSmallVariableCount == 1){
+                        continue;
+                    }
+
                     String auxBigVariableWithoutChars = auxBigVariable.replace(startChar+"","").replace(endChar+"","");
 
-                    String replaceVariableResult = replaceVariable(auxBigVariableWithoutChars,variablesProperties);
+                    String replaceVariableResult = replaceVariable(auxBigVariableWithoutChars,variablesProperties,smallVariables);
+
                     if(replaceVariableResult.equals(auxBigVariableWithoutChars)){
                         auxTextLine = auxTextLine.replace(bigVariable,startChar+replaceVariableResult+endChar);
                     }else{
+                        if(isParseOther && smallVariables && currentSmallVariableCount == 0){
+                            if(!replaceVariableResult.startsWith(startChar+"")){
+                                replaceVariableResult = startChar+replaceVariableResult+endChar;
+                            }
+                        }
                         auxTextLine = auxTextLine.replace(bigVariable,replaceVariableResult);
                     }
 
                     c = lastPos;
+                    currentSmallVariableCount++;
                 }
             }
         }
@@ -144,7 +162,7 @@ public class VariablesUtils {
     }
 
     //Global ConditionalEvents variables
-    public static String replaceVariable(String variable,VariablesProperties variablesProperties){
+    public static String replaceVariable(String variable,VariablesProperties variablesProperties,boolean smallVariable){
         Player finalPlayer = variablesProperties.getPlayer();
         Player target = variablesProperties.getTarget();
         if(variable.startsWith("target:") && target != null){
@@ -298,7 +316,16 @@ public class VariablesUtils {
 
         //PlaceholderAPI variables
         if(variablesProperties.isPlaceholderAPI()){
+            String variableBefore = variable;
             variable = PlaceholderAPI.setPlaceholders(finalPlayer,"%"+variable+"%");
+            if(("%"+variableBefore+"%").equals(variable)){
+                //Was not replaced
+                if(smallVariable){
+                    variable = "{"+variableBefore+"}";
+                }else{
+                    variable = "%"+variableBefore+"%";
+                }
+            }
         }
 
         return variable;
