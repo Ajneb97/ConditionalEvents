@@ -2,6 +2,7 @@ package ce.ajneb97.managers;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.model.internal.DebugSender;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -63,9 +64,8 @@ public class DebugManager {
         if(start){
             startText = ",&estart";
         }
-
-        String debugMessage = MessagesManager.getColoredMessage("&8[&c"+event+playerInfo+startText+"&8] &7Checking for: &f"+condition
-                              +" &8| &7Result: "+result);
+        String debugMessage = MessagesManager.getColoredMessage("&8[&c"+event+playerInfo+startText+"&8] &7Checking for: &f")
+                +condition+MessagesManager.getColoredMessage(" &8| &7Result: "+result);
 
         for(DebugSender debugSender : debugSenders){
             if(debugSender.getEvent().equals(event)){

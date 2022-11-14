@@ -6,6 +6,7 @@ import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.utils.BlockUtils;
 import ce.ajneb97.utils.OtherUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -157,6 +158,7 @@ public class ConditionEvent {
 
     public ConditionEvent setCommonItemVariables(ItemStack item){
         String name = "";
+        String colorFormatName = "";
         String material = "";
         String loreString = "";
         short durability = 0;
@@ -172,6 +174,7 @@ public class ConditionEvent {
                 ItemMeta meta = item.getItemMeta();
                 if(meta.hasDisplayName()) {
                     name = ChatColor.stripColor(meta.getDisplayName());
+                    colorFormatName = meta.getDisplayName().replace("§", "&");
                 }
                 if(meta.hasLore()) {
                     List<String> lore = meta.getLore();
@@ -192,6 +195,7 @@ public class ConditionEvent {
 
         eventVariables.add(new StoredVariable("%item%",material));
         eventVariables.add(new StoredVariable("%item_name%",name));
+        eventVariables.add(new StoredVariable("%item_color_format_name%",colorFormatName));
         eventVariables.add(new StoredVariable("%item_durability%",durability+""));
         eventVariables.add(new StoredVariable("%item_amount%",amount+""));
         eventVariables.add(new StoredVariable("%item_lore%",loreString));
