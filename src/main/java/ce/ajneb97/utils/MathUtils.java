@@ -28,10 +28,14 @@ public class MathUtils {
     }
 
     public static double truncate(double value){
-        if (value > 0) {
-            return new BigDecimal(String.valueOf(value)).setScale(2, BigDecimal.ROUND_FLOOR).doubleValue();
-        } else {
-            return new BigDecimal(String.valueOf(value)).setScale(2, BigDecimal.ROUND_CEILING).doubleValue();
+        try{
+            if (value > 0) {
+                return new BigDecimal(String.valueOf(value)).setScale(2, BigDecimal.ROUND_FLOOR).doubleValue();
+            } else {
+                return new BigDecimal(String.valueOf(value)).setScale(2, BigDecimal.ROUND_CEILING).doubleValue();
+            }
+        }catch(NumberFormatException e){
+            return value;
         }
     }
 }

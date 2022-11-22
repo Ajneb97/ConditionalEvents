@@ -169,6 +169,7 @@ public class ConditionalEvents extends JavaPlugin {
 		}else{
 			Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &cError while checking update."));
 		}
+
 	}
 
 }

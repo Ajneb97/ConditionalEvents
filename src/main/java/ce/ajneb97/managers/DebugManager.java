@@ -80,6 +80,12 @@ public class DebugManager {
             playerInfo = ","+player.getName();
         }
 
+        //Fix actionGroup if parameters are present
+        int pos = actionGroup.indexOf("{");
+        if(pos != -1){
+            actionGroup = actionGroup.substring(0, pos);
+        }
+
         String debugMessage = MessagesManager.getColoredMessage("&8[&c"+event+playerInfo+
                                      ",&eend&8] &7Executing actions from action group: &f"+actionGroup);
 

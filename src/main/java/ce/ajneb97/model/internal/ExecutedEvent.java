@@ -50,13 +50,32 @@ public class ExecutedEvent {
         this.currentActionPos = 0;
     }
 
-    public void executeActions(boolean isPlaceholderAPI){
-        ActionGroup actionGroup = event.getActionGroup(actionGroupName);
+    public boolean setActionGroup(String actionGroupName){
+        //Check if parameters are present
+        int pos = actionGroupName.indexOf("{");
+        if(pos != -1){
+            String parameters = actionGroupName.substring(pos+1, actionGroupName.length()-1);
+            String[] sep = parameters.split(";");
+            for(int i=0;i<sep.length;i++){
+                String[] variableLineSep = sep[i].split("=");
+                eventVariables.add(new StoredVariable(variableLineSep[0],variableLineSep[1]));
+            }
+            this.actionGroupName = actionGroupName.substring(0, pos);
+        }
+
+        ActionGroup actionGroup = event.getActionGroup(this.actionGroupName);
         if(actionGroup == null){
-            return;
+            return false;
         }
         this.actions = new ArrayList<CEAction>(actionGroup.getActions());
-        this.isPlaceholderAPI = isPlaceholderAPI;
+        return true;
+    }
+
+    public void executeActions(){
+        this.isPlaceholderAPI = plugin.getDependencyManager().isPlaceholderAPI();
+        if(!setActionGroup(actionGroupName)){
+            return;
+        }
 
         ConditionalEventsEvent ceEvent = new ConditionalEventsEvent(player, event.getName(), actionGroupName);
 
@@ -268,4 +287,5 @@ public class ExecutedEvent {
     public ConditionalEvents getPlugin() {
         return plugin;
     }
+
 }

@@ -4,6 +4,8 @@ import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.libs.actionbar.ActionBarAPI;
 import ce.ajneb97.libs.titles.TitleAPI;
 import ce.ajneb97.managers.MessagesManager;
+import ce.ajneb97.model.CEEvent;
+import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ExecutedEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;

@@ -82,7 +82,7 @@ public class EventsManager {
                 if(isOneTime){
                     ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
                          "one_time", conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
-                    executedEvent.executeActions(isPlaceholderAPI);
+                    executedEvent.executeActions();
                     return;
                 }
             }
@@ -96,7 +96,7 @@ public class EventsManager {
                     conditionEvent.getEventVariables().add(new StoredVariable("%time%",timeString));
                     ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
                           "cooldown", conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
-                    executedEvent.executeActions(isPlaceholderAPI);
+                    executedEvent.executeActions();
                     return;
                 }
             }
@@ -121,7 +121,7 @@ public class EventsManager {
         //Execute actions
         ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
                 executeActionGroup, conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
-        executedEvent.executeActions(isPlaceholderAPI);
+        executedEvent.executeActions();
     }
 
     public ArrayList<CEEvent> getValidEvents(EventType eventType){
