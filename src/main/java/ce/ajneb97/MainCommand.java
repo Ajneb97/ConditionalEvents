@@ -88,7 +88,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
 		if(eventName.equals("all")){
 			playerData.resetAll();
-			msgManager.sendMessage(sender,config.getString("Messages.playerDoesNotExists")
+			msgManager.sendMessage(sender,config.getString("Messages.eventDataResetAll")
 					.replace("%player%", player),true);
 		}else{
 			CEEvent e = plugin.getEventsManager().getEvent(eventName);
