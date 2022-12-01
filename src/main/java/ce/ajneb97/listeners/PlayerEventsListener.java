@@ -10,6 +10,7 @@ import ce.ajneb97.model.player.PlayerData;
 import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.OtherUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -325,9 +326,20 @@ public class PlayerEventsListener implements Listener {
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
 
+        Location locationFrom = event.getFrom();
+        Location locationTo = event.getTo();
+
         new ConditionEvent(plugin, player, event, EventType.PLAYER_TELEPORT, null)
                 .addVariables(
-                        new StoredVariable("%cause%",event.getCause()+"")
+                        new StoredVariable("%cause%",event.getCause()+""),
+                        new StoredVariable("%from_x%",locationFrom.getX()+""),
+                        new StoredVariable("%from_y%",locationFrom.getY()+""),
+                        new StoredVariable("%from_z%",locationFrom.getZ()+""),
+                        new StoredVariable("%from_world%",locationFrom.getWorld().getName()+""),
+                        new StoredVariable("%to_x%",locationTo.getX()+""),
+                        new StoredVariable("%to_y%",locationTo.getY()+""),
+                        new StoredVariable("%to_z%",locationTo.getZ()+""),
+                        new StoredVariable("%to_world%",locationTo.getWorld().getName()+"")
                 ).checkEvent();
     }
 
