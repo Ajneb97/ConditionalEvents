@@ -40,10 +40,12 @@ public class ItemEventsListener implements Listener {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
         if(!Bukkit.getVersion().contains("1.8") && !Bukkit.getVersion().contains("1.9")) {
-            if(!event.getAction().equals(Action.PHYSICAL) && (event.getHand() == null || !event.getHand().equals(EquipmentSlot.HAND))) {
+            if(!event.getAction().equals(Action.PHYSICAL) && (event.getHand() == null || (!event.getHand().equals(EquipmentSlot.HAND)
+                    && !event.getHand().equals(EquipmentSlot.OFF_HAND)))) {
                 return;
             }
         }
+
         if(item == null){
             return;
         }

@@ -56,6 +56,7 @@ public class ConfigsManager {
                     String ignoreWithPermission = null;
                     long cooldown = 0;
                     boolean enabled = true;
+                    boolean ignoreIfCancelled = false;
 
                     List<String> preventCooldownActivationActionGroups = new ArrayList<String>();
                     List<String> preventOneTimeActivationActionGroups = new ArrayList<String>();
@@ -140,6 +141,9 @@ public class ConfigsManager {
                     if(config.contains(path+".enabled")) {
                         enabled = Boolean.valueOf(config.getString(path+".enabled"));
                     }
+                    if(config.contains(path+".ignore_if_cancelled")) {
+                        ignoreIfCancelled = Boolean.valueOf(config.getString(path+".ignore_if_cancelled"));
+                    }
                     if(config.contains(path+".prevent_cooldown_activation")){
                         preventCooldownActivationActionGroups = config.getStringList(path+".prevent_cooldown_activation");
                     }
@@ -154,6 +158,7 @@ public class ConfigsManager {
                     event.setIgnoreWithPermission(ignoreWithPermission);
                     event.setOneTime(oneTime);
                     event.setEnabled(enabled);
+                    event.setIgnoreIfCancelled(ignoreIfCancelled);
                     event.setPreventCooldownActivationActionGroups(preventCooldownActivationActionGroups);
                     event.setPreventOneTimeActivationActionGroups(preventOneTimeActivationActionGroups);
 

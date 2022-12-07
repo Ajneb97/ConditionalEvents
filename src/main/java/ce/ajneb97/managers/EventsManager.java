@@ -13,6 +13,7 @@ import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.TimeUtils;
 import ce.ajneb97.utils.VariablesUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 
 import java.util.ArrayList;
@@ -59,6 +60,17 @@ public class EventsManager {
         //Ignore with permission
         if(player != null && event.getIgnoreWithPermission() != null && player.hasPermission(event.getIgnoreWithPermission())){
             return;
+        }
+
+        //Ignore if cancelled
+        if(event.isIgnoreIfCancelled()){
+            Event minecraftEvent = conditionEvent.getMinecraftEvent();
+            if(minecraftEvent instanceof Cancellable){
+                Cancellable c = (Cancellable) minecraftEvent;
+                if(c.isCancelled()){
+                    return;
+                }
+            }
         }
 
         //Check condition list

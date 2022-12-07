@@ -20,6 +20,7 @@ public class CEEvent {
     private long cooldown;
 
     private boolean enabled;
+    private boolean ignoreIfCancelled;
 
     private RepetitiveManager repetitiveManager;
 
@@ -96,6 +97,14 @@ public class CEEvent {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isIgnoreIfCancelled() {
+        return ignoreIfCancelled;
+    }
+
+    public void setIgnoreIfCancelled(boolean ignoreIfCancelled) {
+        this.ignoreIfCancelled = ignoreIfCancelled;
     }
 
     public List<String> getPreventCooldownActivationActionGroups() {
