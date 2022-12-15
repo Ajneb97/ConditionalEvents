@@ -26,6 +26,7 @@ public enum EventType {
     ITEM_DROP,
     ITEM_MOVE,
     ITEM_SELECT,
+    ITEM_ENCHANT,
     REPETITIVE,
     REPETITIVE_SERVER,
     ENTITY_SPAWN,

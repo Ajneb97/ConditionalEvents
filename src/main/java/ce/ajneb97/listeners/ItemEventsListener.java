@@ -9,6 +9,7 @@ import ce.ajneb97.model.internal.ConditionEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -16,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
@@ -27,6 +29,9 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ItemEventsListener implements Listener {
 
@@ -139,6 +144,30 @@ public class ItemEventsListener implements Listener {
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.addVariables(
                 new StoredVariable("%select_type%",event.getSelectType().name())
+        ).setCommonItemVariables(item)
+                .checkEvent();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onItemEnchant(EnchantItemEvent event) {
+        Player player = event.getEnchanter();
+
+        ItemStack item = event.getItem();
+
+        String enchantmentStringList = "";
+        List<Map.Entry<Enchantment,Integer>> enchantmentList = new ArrayList<>(event.getEnchantsToAdd().entrySet());
+        for(int i=0;i<enchantmentList.size();i++){
+            String enchant = enchantmentList.get(i).getKey().getName()+":"+enchantmentList.get(i).getValue();
+            enchantmentStringList += enchant;
+            if(i < enchantmentList.size()-1){
+                enchantmentStringList += ";";
+            }
+        }
+
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.ITEM_ENCHANT, null);
+        if(!conditionEvent.containsValidEvents()) return;
+        conditionEvent.addVariables(
+                new StoredVariable("%enchantment_list%",enchantmentStringList)
         ).setCommonItemVariables(item)
                 .checkEvent();
     }
