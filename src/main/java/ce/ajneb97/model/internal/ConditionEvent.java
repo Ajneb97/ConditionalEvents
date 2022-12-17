@@ -142,13 +142,16 @@ public class ConditionEvent {
     public ConditionEvent setCommonVictimVariables(Entity entity){
         String victimType = entity.getType().name();
         String victimName = "";
+        String victimNameColorFormat = "";
         if(entity.getCustomName() != null) {
-            victimName = entity.getCustomName();
+            victimName = ChatColor.stripColor(entity.getCustomName());
+            victimNameColorFormat = entity.getCustomName().replace("§", "&");
         }
         Location location = entity.getLocation();
 
         eventVariables.add(new StoredVariable("%victim%",victimType));
         eventVariables.add(new StoredVariable("%victim_name%",victimName));
+        eventVariables.add(new StoredVariable("%victim_color_format_name%",victimNameColorFormat));
         eventVariables.add(new StoredVariable("%victim_block_x%",location.getBlockX()+""));
         eventVariables.add(new StoredVariable("%victim_block_y%",location.getBlockY()+""));
         eventVariables.add(new StoredVariable("%victim_block_z%",location.getBlockZ()+""));
@@ -210,13 +213,16 @@ public class ConditionEvent {
     public ConditionEvent setCommonEntityVariables(Entity entity){
         String entityType = entity.getType().name();
         String entityName = "";
+        String entityNameColorFormat = "";
         if(entity.getCustomName() != null) {
-            entityName = entity.getCustomName();
+            entityName = ChatColor.stripColor(entity.getCustomName());
+            entityNameColorFormat = entity.getCustomName().replace("§", "&");
         }
         Location location = entity.getLocation();
 
         eventVariables.add(new StoredVariable("%entity%",entityType));
         eventVariables.add(new StoredVariable("%entity_name%",entityName));
+        eventVariables.add(new StoredVariable("%entity_color_format_name%",entityNameColorFormat));
         eventVariables.add(new StoredVariable("%entity_x%",location.getBlockX()+""));
         eventVariables.add(new StoredVariable("%entity_y%",location.getBlockY()+""));
         eventVariables.add(new StoredVariable("%entity_z%",location.getBlockZ()+""));

@@ -10,6 +10,7 @@ import ce.ajneb97.model.player.PlayerData;
 import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.OtherUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
@@ -190,12 +191,14 @@ public class PlayerEventsListener implements Listener {
         String cause = event.getCause().toString();
         String damagerType = "";
         String damagerName = "";
+        String damagerNameColorFormat = "";
         if(event instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent event2 = (EntityDamageByEntityEvent) event;
             Entity damager = event2.getDamager();
             damagerType = damager.getType().name();
             if(damager.getCustomName() != null) {
-                damagerName = damager.getCustomName();
+                damagerName = ChatColor.stripColor(damager.getCustomName());
+                damagerNameColorFormat = damager.getCustomName().replace("§", "&");
             }
         }
 
@@ -205,6 +208,7 @@ public class PlayerEventsListener implements Listener {
                 .addVariables(
                         new StoredVariable("%damager_type%",damagerType),
                         new StoredVariable("%damager_name%",damagerName),
+                        new StoredVariable("%damager_color_format_name%",damagerNameColorFormat),
                         new StoredVariable("%damage%", MathUtils.truncate(event.getFinalDamage())+""),
                         new StoredVariable("%cause%",cause)
                 ).checkEvent();

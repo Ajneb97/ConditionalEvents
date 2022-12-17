@@ -226,6 +226,13 @@ public class VariablesUtils {
             int num2 = Integer.valueOf(variableLRSplit[1]);
             int numFinal = MathUtils.getRandomNumber(num1, num2);
             return numFinal+"";
+        }else if(variable.startsWith("randomword_")) {
+            // %randomword_word1-word2-word3%
+            String variableLR = variable.replace("randomword_", "");
+            String[] variableLRSplit = variableLR.split("-");
+            Random r = new Random();
+            String word = variableLRSplit[r.nextInt(variableLRSplit.length)];
+            return word;
         }else if(variable.startsWith("playerarmor_name_")) {
             // %playerarmor_name_<type>%
             String armorType = variable.replace("playerarmor_name_", "");
