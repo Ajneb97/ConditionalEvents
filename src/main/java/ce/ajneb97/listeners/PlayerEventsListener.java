@@ -13,10 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -359,5 +356,27 @@ public class PlayerEventsListener implements Listener {
                 .addVariables(
                         new StoredVariable("%result%",event.getBedEnterResult()+"")
                 ).checkEvent();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onFishEvent(PlayerFishEvent event) {
+        Player player = event.getPlayer();
+        PlayerFishEvent.State state = event.getState();
+        Entity caught = event.getCaught();
+
+        String caughtType = "";
+        ItemStack caughtItem = null;
+        if(caught != null){
+            caughtType = caught.getType().name();
+            if(caught instanceof Item){
+                caughtItem = ((Item) caught).getItemStack();
+            }
+        }
+
+        new ConditionEvent(plugin, player, event, EventType.PLAYER_FISH, null)
+                .addVariables(
+                        new StoredVariable("%state%",state.name()+""),
+                        new StoredVariable("%caught_type%",caughtType)
+                ).setCommonItemVariables(caughtItem).checkEvent();
     }
 }
