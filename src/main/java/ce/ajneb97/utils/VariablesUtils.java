@@ -238,7 +238,7 @@ public class VariablesUtils {
             String armorType = variable.replace("playerarmor_name_", "");
             ItemStack item = getArmorItem(finalPlayer,armorType);
             String name = "";
-            if(item.hasItemMeta()){
+            if(item != null && item.hasItemMeta()){
                 ItemMeta meta = item.getItemMeta();
                 if(meta.hasDisplayName()){
                     name = ChatColor.stripColor(meta.getDisplayName());

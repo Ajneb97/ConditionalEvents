@@ -137,10 +137,12 @@ public class PlayerEventsListener implements Listener {
             return;
         }
 
-        if(attacker instanceof Arrow) {
-            Arrow arrow = (Arrow) attacker;
-            if(arrow.getShooter() instanceof Player) {
-                player = (Player) arrow.getShooter();
+        String attackType = "PLAYER";
+        if(attacker instanceof Projectile) {
+            Projectile projectile = (Projectile) attacker;
+            if(projectile.getShooter() instanceof Player) {
+                attackType = projectile.getType().name();
+                player = (Player) projectile.getShooter();
             }else{
                 return;
             }
@@ -158,7 +160,8 @@ public class PlayerEventsListener implements Listener {
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_ATTACK, target);
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.addVariables(
-                new StoredVariable("%damage%",MathUtils.truncate(event.getFinalDamage())+"")
+                new StoredVariable("%damage%",MathUtils.truncate(event.getFinalDamage())+""),
+                new StoredVariable("%attack_type%", attackType)
         ).setCommonItemVariables(player.getItemInHand())
                 .setCommonVictimVariables(damaged)
                 .checkEvent();
