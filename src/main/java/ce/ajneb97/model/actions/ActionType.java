@@ -25,7 +25,8 @@ public enum ActionType {
     WAIT,
     WAIT_TICKS,
     KEEP_ITEMS,
-    CANCEL_DROP
+    CANCEL_DROP,
+    SET_DAMAGE
 
 
 }

@@ -216,6 +216,9 @@ public class ExecutedEvent {
             case CANCEL_DROP:
                 ActionUtils.cancelDrop(actionLine,minecraftEvent);
                 return;
+            case SET_DAMAGE:
+                ActionUtils.setDamage(actionLine,minecraftEvent);
+                return;
         }
 
         //Player actions
