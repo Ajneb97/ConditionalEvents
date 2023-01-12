@@ -19,6 +19,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -367,6 +368,16 @@ public class ActionUtils {
             }
 
             damageEvent.setDamage(damage);
+        }
+    }
+
+    public static void hideJoinMessage(String actionLine,Event minecraftEvent){
+        if(minecraftEvent instanceof PlayerJoinEvent) {
+            PlayerJoinEvent joinEvent = (PlayerJoinEvent) minecraftEvent;
+            boolean hideMessage = Boolean.parseBoolean(actionLine);
+            if(hideMessage){
+                joinEvent.setJoinMessage(null);
+            }
         }
     }
 }

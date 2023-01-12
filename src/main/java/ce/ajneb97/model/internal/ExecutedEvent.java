@@ -219,6 +219,9 @@ public class ExecutedEvent {
             case SET_DAMAGE:
                 ActionUtils.setDamage(actionLine,minecraftEvent);
                 return;
+            case HIDE_JOIN_MESSAGE:
+                ActionUtils.hideJoinMessage(actionLine,minecraftEvent);
+                return;
         }
 
         //Player actions

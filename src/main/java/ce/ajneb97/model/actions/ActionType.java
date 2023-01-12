@@ -26,7 +26,8 @@ public enum ActionType {
     WAIT_TICKS,
     KEEP_ITEMS,
     CANCEL_DROP,
-    SET_DAMAGE
+    SET_DAMAGE,
+    HIDE_JOIN_MESSAGE
 
 
 }
