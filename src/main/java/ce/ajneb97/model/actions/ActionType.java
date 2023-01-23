@@ -27,7 +27,9 @@ public enum ActionType {
     KEEP_ITEMS,
     CANCEL_DROP,
     SET_DAMAGE,
-    HIDE_JOIN_MESSAGE
+    HIDE_JOIN_MESSAGE,
+    HIDE_LEAVE_MESSAGE,
+    SET_DEATH_MESSAGE
 
 
 }

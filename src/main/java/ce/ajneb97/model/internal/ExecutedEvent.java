@@ -222,6 +222,12 @@ public class ExecutedEvent {
             case HIDE_JOIN_MESSAGE:
                 ActionUtils.hideJoinMessage(actionLine,minecraftEvent);
                 return;
+            case HIDE_LEAVE_MESSAGE:
+                ActionUtils.hideLeaveMessage(actionLine,minecraftEvent);
+                return;
+            case SET_DEATH_MESSAGE:
+                ActionUtils.setDeathMessage(actionLine,minecraftEvent);
+                return;
         }
 
         //Player actions

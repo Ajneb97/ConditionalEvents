@@ -20,6 +20,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -377,6 +378,27 @@ public class ActionUtils {
             boolean hideMessage = Boolean.parseBoolean(actionLine);
             if(hideMessage){
                 joinEvent.setJoinMessage(null);
+            }
+        }
+    }
+
+    public static void hideLeaveMessage(String actionLine,Event minecraftEvent){
+        if(minecraftEvent instanceof PlayerQuitEvent) {
+            PlayerQuitEvent quitEvent = (PlayerQuitEvent) minecraftEvent;
+            boolean hideMessage = Boolean.parseBoolean(actionLine);
+            if(hideMessage){
+                quitEvent.setQuitMessage(null);
+            }
+        }
+    }
+
+    public static void setDeathMessage(String actionLine,Event minecraftEvent){
+        if(minecraftEvent instanceof PlayerDeathEvent) {
+            PlayerDeathEvent deathEvent = (PlayerDeathEvent) minecraftEvent;
+            if(actionLine.equals("no")){
+                deathEvent.setDeathMessage(null);
+            }else{
+                deathEvent.setDeathMessage(MessagesManager.getColoredMessage(actionLine));
             }
         }
     }
