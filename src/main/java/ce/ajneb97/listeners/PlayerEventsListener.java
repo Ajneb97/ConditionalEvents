@@ -137,17 +137,26 @@ public class PlayerEventsListener implements Listener {
             return;
         }
 
+        //For projectiles must be the used item to shoot.
+        ItemStack item = null;
+
         String attackType = "PLAYER";
         if(attacker instanceof Projectile) {
             Projectile projectile = (Projectile) attacker;
             if(projectile.getShooter() instanceof Player) {
                 attackType = projectile.getType().name();
                 player = (Player) projectile.getShooter();
+
+                if(projectile.hasMetadata("conditionaleventes_projectile_item")){
+                    item = (ItemStack) projectile.getMetadata("conditionaleventes_projectile_item").get(0).value();
+                }
+
             }else{
                 return;
             }
         }else if(attacker instanceof Player) {
             player = (Player) attacker;
+            item = player.getItemInHand();
         }else{
             return;
         }
@@ -157,12 +166,14 @@ public class PlayerEventsListener implements Listener {
             target = (Player) damaged;
         }
 
+
+
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_ATTACK, target);
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.addVariables(
                 new StoredVariable("%damage%",MathUtils.truncate(event.getFinalDamage())+""),
                 new StoredVariable("%attack_type%", attackType)
-        ).setCommonItemVariables(player.getItemInHand())
+        ).setCommonItemVariables(item)
                 .setCommonVictimVariables(damaged)
                 .checkEvent();
     }

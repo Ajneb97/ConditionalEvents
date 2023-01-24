@@ -8,10 +8,12 @@ import ce.ajneb97.model.internal.ConditionEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -22,6 +24,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 
@@ -59,5 +62,20 @@ public class OtherEventsListener implements Listener {
                         new StoredVariable("%args_length%",(args.length-1)+"")
                 ).addVariables(eventVariables)
                 .checkEvent();
+    }
+
+
+    //Not for CE events
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onProjectileLaunch(ProjectileLaunchEvent event){
+        Projectile projectile = event.getEntity();
+        if(projectile.getShooter() instanceof Player) {
+            Player player = (Player) projectile.getShooter();
+            ItemStack usedItem = player.getItemInHand();
+            if(usedItem == null){
+                return;
+            }
+            projectile.setMetadata("conditionaleventes_projectile_item",new FixedMetadataValue(plugin,usedItem.clone()));
+        }
     }
 }
