@@ -24,6 +24,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -392,5 +393,15 @@ public class PlayerEventsListener implements Listener {
                         new StoredVariable("%state%",state.name()+""),
                         new StoredVariable("%caught_type%",caughtType)
                 ).setCommonItemVariables(caughtItem).checkEvent();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onOpenInventory(InventoryOpenEvent event) {
+        Player player = (Player) event.getPlayer();
+
+        new ConditionEvent(plugin, player, event, EventType.PLAYER_OPEN_INVENTORY, null)
+                .addVariables(
+                        new StoredVariable("%inventory_type%",event.getInventory().getType().name())
+                ).checkEvent();
     }
 }

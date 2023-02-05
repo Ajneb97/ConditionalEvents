@@ -186,7 +186,7 @@ public class VariablesUtils {
             int distance = Integer.parseInt(variable.replace("playerblock_below_", ""));
             Location l = finalPlayer.getLocation().clone().add(0, -distance, 0);
             return getBlockTypeInLocation(l);
-        }else if(variable.startsWith("%playerblock_above_")){
+        }else if(variable.startsWith("playerblock_above_")){
             // %playerblock_above_<distance>%
             int distance = Integer.parseInt(variable.replace("playerblock_above_", ""));
             Location l = finalPlayer.getLocation().clone().add(0, distance, 0);
