@@ -23,7 +23,9 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -85,17 +87,52 @@ public class ItemEventsListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void onItemRepair(InventoryClickEvent event) {
+        if(!event.getInventory().getType().equals(InventoryType.ANVIL)){
+            return;
+        }
+        AnvilInventory inv = (AnvilInventory) event.getInventory();
+
+        Player player = (Player) event.getWhoClicked();
+        if(!inv.equals(player.getOpenInventory().getTopInventory())){
+            return;
+        }
+        if(event.getRawSlot() != 2){
+            return;
+        }
+        if(player.getLevel() < inv.getRepairCost()){
+            return;
+        }
+        String renameText = inv.getRenameText();
+
+        ItemStack resultItem = inv.getItem(2);
+        if(resultItem == null || resultItem.getType().equals(Material.AIR)){
+            return;
+        }
+
+        ItemStack item = inv.getItem(0);
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.ITEM_REPAIR, null);
+        if(!conditionEvent.containsValidEvents()) return;
+        conditionEvent.addVariables(
+                        new StoredVariable("%rename_text%",renameText)
+                ).setCommonItemVariables(item)
+                .checkEvent();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onItemMove(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         ItemStack item = event.getCurrentItem();
+
+        ArrayList<ItemStack> items = new ArrayList<>();
+        items.add(item);
+
         if(event.getClick().equals(ClickType.NUMBER_KEY)) {
             int slotHotbar = event.getHotbarButton();
             ItemStack item2 = player.getInventory().getItem(slotHotbar);
-            if(item2 == null || item2.getType().equals(Material.AIR)) {
 
-            }else if(item == null || item.getType().equals(Material.AIR)){
-                item = item2;
-            }
+            //Two items swap places
+            items.add(item2);
         }
         String inventoryType = "";
         InventoryView view = player.getOpenInventory();
@@ -104,13 +141,15 @@ public class ItemEventsListener implements Listener {
         }
         int slot = event.getSlot();
 
-        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.ITEM_MOVE, null);
-        if(!conditionEvent.containsValidEvents()) return;
-        conditionEvent.addVariables(
-                new StoredVariable("%inventory_type%",inventoryType),
-                new StoredVariable("%slot%",slot+"")
-        ).setCommonItemVariables(item)
-                .checkEvent();
+        for(ItemStack i : items){
+            ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.ITEM_MOVE, null);
+            if(!conditionEvent.containsValidEvents()) return;
+            conditionEvent.addVariables(
+                            new StoredVariable("%inventory_type%",inventoryType),
+                            new StoredVariable("%slot%",slot+"")
+                    ).setCommonItemVariables(i)
+                    .checkEvent();
+        }
     }
 
     @EventHandler
