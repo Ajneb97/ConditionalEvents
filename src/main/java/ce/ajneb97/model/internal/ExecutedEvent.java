@@ -4,6 +4,7 @@ import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.api.ConditionalEventsEvent;
 import ce.ajneb97.managers.EventsManager;
 import ce.ajneb97.model.CEEvent;
+import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.ToConditionGroup;
 import ce.ajneb97.model.actions.*;
@@ -77,19 +78,27 @@ public class ExecutedEvent {
             return;
         }
 
+        //For API only
         ConditionalEventsEvent ceEvent = new ConditionalEventsEvent(player, event.getName(), actionGroupName);
 
         //Check cancel event, always first to prevent issues with async events.
         executeCancelEventAction();
+
+        boolean isPlayerPreJoin = event.getEventType().equals(EventType.PLAYER_PRE_JOIN);
 
         if(!Bukkit.isPrimaryThread()){
             new BukkitRunnable(){
                 @Override
                 public void run() {
                     plugin.getServer().getPluginManager().callEvent(ceEvent);
-                    executeActionsFinal();
+                    if(!isPlayerPreJoin){
+                        executeActionsFinal();
+                    }
                 }
             }.runTask(plugin);
+            if(isPlayerPreJoin){
+                executeActionsFinal();
+            }
         }else{
             plugin.getServer().getPluginManager().callEvent(ceEvent);
             executeActionsFinal();
@@ -227,6 +236,9 @@ public class ExecutedEvent {
                 return;
             case SET_DEATH_MESSAGE:
                 ActionUtils.setDeathMessage(actionLine,minecraftEvent);
+                return;
+            case PREVENT_JOIN:
+                ActionUtils.preventJoin(actionLine,minecraftEvent);
                 return;
         }
 

@@ -19,6 +19,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -400,6 +401,15 @@ public class ActionUtils {
             }else{
                 deathEvent.setDeathMessage(MessagesManager.getColoredMessage(actionLine));
             }
+        }
+    }
+
+    public static void preventJoin(String actionLine,Event minecraftEvent){
+        // prevent_join: <message>
+        if(minecraftEvent instanceof AsyncPlayerPreLoginEvent) {
+            AsyncPlayerPreLoginEvent preJoinEvent = (AsyncPlayerPreLoginEvent) minecraftEvent;
+            preJoinEvent.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            preJoinEvent.setKickMessage(MessagesManager.getColoredMessage(actionLine));
         }
     }
 }

@@ -29,7 +29,8 @@ public enum ActionType {
     SET_DAMAGE,
     HIDE_JOIN_MESSAGE,
     HIDE_LEAVE_MESSAGE,
-    SET_DEATH_MESSAGE
+    SET_DEATH_MESSAGE,
+    PREVENT_JOIN
 
 
 }

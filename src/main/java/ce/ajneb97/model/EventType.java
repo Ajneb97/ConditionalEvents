@@ -8,6 +8,7 @@ public enum EventType {
     PLAYER_DAMAGE,
     PLAYER_COMMAND,
     PLAYER_CHAT,
+    PLAYER_PRE_JOIN,
     PLAYER_JOIN,
     PLAYER_LEAVE,
     PLAYER_LEVELUP,

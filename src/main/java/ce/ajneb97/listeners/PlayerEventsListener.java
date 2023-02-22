@@ -39,6 +39,17 @@ public class PlayerEventsListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPreJoin(AsyncPlayerPreLoginEvent event){
+        new ConditionEvent(plugin, null, event, EventType.PLAYER_PRE_JOIN, null)
+                .addVariables(
+                        new StoredVariable("%name%",event.getName()),
+                        new StoredVariable("%ip%", event.getAddress().getHostAddress()),
+                        new StoredVariable("%uuid%",event.getUniqueId().toString())
+                )
+                .checkEvent();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
         new ConditionEvent(plugin, player, event, EventType.PLAYER_JOIN, null)
