@@ -9,9 +9,7 @@ import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.model.player.PlayerData;
 import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.OtherUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -414,5 +412,29 @@ public class PlayerEventsListener implements Listener {
                 .addVariables(
                         new StoredVariable("%inventory_type%",event.getInventory().getType().name())
                 ).checkEvent();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onStatisticIncrement(PlayerStatisticIncrementEvent event){
+        Player player = event.getPlayer();
+
+        String material = "";
+        if(event.getMaterial() != null){
+            material = event.getMaterial().name();
+        }
+        String entityType = "";
+        if(event.getEntityType() != null){
+            entityType = event.getEntityType().name();
+        }
+
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_STATISTIC, null);
+        if(!conditionEvent.containsValidEvents()) return;
+        conditionEvent.addVariables(
+                new StoredVariable("%statistic_name%",event.getStatistic().name()),
+                new StoredVariable("%previous_value%",event.getPreviousValue()+""),
+                new StoredVariable("%new_value%",event.getNewValue()+""),
+                new StoredVariable("%entity%",entityType),
+                new StoredVariable("%block%",material)
+        ).checkEvent();
     }
 }
