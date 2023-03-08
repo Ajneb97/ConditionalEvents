@@ -219,9 +219,9 @@ public class VariablesUtils {
                 return "none";
             }
         }else if(variable.startsWith("random_")) {
-            // %random_min-max%
+            // %random_min_max%
             String variableLR = variable.replace("random_", "");
-            String[] variableLRSplit = variableLR.split("-");
+            String[] variableLRSplit = variableLR.split("_");
             int num1 = Integer.valueOf(variableLRSplit[0]);
             int num2 = Integer.valueOf(variableLRSplit[1]);
             int numFinal = MathUtils.getRandomNumber(num1, num2);
