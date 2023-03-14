@@ -154,6 +154,7 @@ public class EventsManager {
         CEEvent event = conditionEvent.getCurrentEvent();
         Event minecraftEvent = conditionEvent.getMinecraftEvent();
         DebugManager debugManager = plugin.getDebugManager();
+        boolean mathFormulas = conditionEvent.getCurrentEvent().isAllowMathFormulasInConditions();
 
         //Check condition lines
         ArrayList<StoredVariable> storedVariables = conditionEvent.getEventVariables();
@@ -196,8 +197,9 @@ public class EventsManager {
                             conditionLineWithReplacements = conditionLineWithReplacements+" or ";
                         }
 
-                        String firstArg = MathUtils.calculate(arg1);String secondArg = MathUtils.calculate(arg2);
-                        //Bukkit.getConsoleSender().sendMessage("check1: '"+firstArg+"' '"+textToFind+"' check2: '"+secondArg+"'");
+                        String firstArg = !mathFormulas ? arg1 : MathUtils.calculate(arg1);
+                        String secondArg = !mathFormulas ? arg2 : MathUtils.calculate(arg2);
+
                         String firstArgLower = firstArg.toLowerCase();String secondArgLower = secondArg.toLowerCase();
                         double firstArgNum = 0;
                         double secondArgNum = 0;
@@ -273,6 +275,7 @@ public class EventsManager {
 
     public boolean checkToConditionAction(List<String> conditionGroup, Player player, boolean isPlaceholderAPI,
                                           CEEvent event, Event minecraftEvent){
+        boolean mathFormulas = event.isAllowMathFormulasInConditions();
         for(int i=0;i<conditionGroup.size();i++) {
             String conditionLine = conditionGroup.get(i);
             boolean approvedLine = false;
@@ -296,7 +299,8 @@ public class EventsManager {
                         arg1 = VariablesUtils.replaceAllVariablesInLine(arg1,variablesProperties,false);
                         arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,variablesProperties,false);
 
-                        String firstArg = MathUtils.calculate(arg1);String secondArg = MathUtils.calculate(arg2);
+                        String firstArg = !mathFormulas ? arg1 : MathUtils.calculate(arg1);
+                        String secondArg = !mathFormulas ? arg2 : MathUtils.calculate(arg2);
 
                         String firstArgLower = firstArg.toLowerCase();String secondArgLower = secondArg.toLowerCase();
                         double firstArgNum = 0;

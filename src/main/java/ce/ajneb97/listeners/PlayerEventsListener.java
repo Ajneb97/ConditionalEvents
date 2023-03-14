@@ -24,6 +24,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
@@ -437,4 +438,22 @@ public class PlayerEventsListener implements Listener {
                 new StoredVariable("%block%",material)
         ).checkEvent();
     }
+
+    /*
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onTabComplete(TabCompleteEvent event){
+        if(!(event.getSender() instanceof Player)){
+            return;
+        }
+
+        Player player = (Player) event.getSender();
+        String command = event.getBuffer();
+
+        new ConditionEvent(plugin, player, event, EventType.PLAYER_TAB_COMPLETE_EVENT, null)
+                .addVariables(
+                        new StoredVariable("%command%",command)
+                ).checkEvent();
+    }
+
+     */
 }

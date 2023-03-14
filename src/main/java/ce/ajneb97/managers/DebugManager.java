@@ -52,6 +52,10 @@ public class DebugManager {
     }
 
     public void sendConditionMessage(String event, String condition, boolean approved, Player player, boolean start){
+        if(debugSenders.isEmpty()){
+            return;
+        }
+
         String result = "&a&lAPPROVED";
         if(!approved){
             result = "&c&lDENIED";
@@ -75,6 +79,10 @@ public class DebugManager {
     }
 
     public void sendActionsMessage(String event, String actionGroup, Player player){
+        if(debugSenders.isEmpty()){
+            return;
+        }
+
         String playerInfo = "";
         if(player != null){
             playerInfo = ","+player.getName();

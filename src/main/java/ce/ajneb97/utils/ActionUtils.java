@@ -23,6 +23,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -412,4 +413,18 @@ public class ActionUtils {
             preJoinEvent.setKickMessage(MessagesManager.getColoredMessage(actionLine));
         }
     }
+
+    /*
+    public static void setTabCompletions(String actionLine,Event minecraftEvent){
+        // set_tab_completions: arg1,arg2,arg3
+        if(minecraftEvent instanceof TabCompleteEvent) {
+            TabCompleteEvent tabCompleteEvent = (TabCompleteEvent) minecraftEvent;
+
+
+
+            preJoinEvent.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            preJoinEvent.setKickMessage(MessagesManager.getColoredMessage(actionLine));
+        }
+    }
+     */
 }

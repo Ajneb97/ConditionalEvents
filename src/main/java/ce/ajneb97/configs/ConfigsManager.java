@@ -57,6 +57,7 @@ public class ConfigsManager {
                     long cooldown = 0;
                     boolean enabled = true;
                     boolean ignoreIfCancelled = false;
+                    boolean allowMathFormulasInConditions = false;
 
                     List<String> preventCooldownActivationActionGroups = new ArrayList<String>();
                     List<String> preventOneTimeActivationActionGroups = new ArrayList<String>();
@@ -150,6 +151,9 @@ public class ConfigsManager {
                     if(config.contains(path+".prevent_one_time_activation")){
                         preventOneTimeActivationActionGroups = config.getStringList(path+".prevent_one_time_activation");
                     }
+                    if(config.contains(path+".allow_math_formulas_in_conditions")) {
+                        allowMathFormulasInConditions = Boolean.valueOf(config.getString(path+".allow_math_formulas_in_conditions"));
+                    }
 
                     event.setEventType(eventType);
                     event.setConditions(conditions);
@@ -161,6 +165,7 @@ public class ConfigsManager {
                     event.setIgnoreIfCancelled(ignoreIfCancelled);
                     event.setPreventCooldownActivationActionGroups(preventCooldownActivationActionGroups);
                     event.setPreventOneTimeActivationActionGroups(preventOneTimeActivationActionGroups);
+                    event.setAllowMathFormulasInConditions(allowMathFormulasInConditions);
 
                     if(event.getEventType().equals(EventType.CUSTOM)) {
                         String eventPackage = config.getString(path+".custom_event_data.event");

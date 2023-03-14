@@ -21,6 +21,7 @@ public class CEEvent {
 
     private boolean enabled;
     private boolean ignoreIfCancelled;
+    private boolean allowMathFormulasInConditions;
 
     private RepetitiveManager repetitiveManager;
 
@@ -123,7 +124,13 @@ public class CEEvent {
         this.preventOneTimeActivationActionGroups = preventOneTimeActivationActionGroups;
     }
 
+    public boolean isAllowMathFormulasInConditions() {
+        return allowMathFormulasInConditions;
+    }
 
+    public void setAllowMathFormulasInConditions(boolean allowMathFormulasInConditions) {
+        this.allowMathFormulasInConditions = allowMathFormulasInConditions;
+    }
 
     public void enable(){
         this.enabled = true;
@@ -154,6 +161,8 @@ public class CEEvent {
     public void setCustomEventProperties(CustomEventProperties customEventProperties) {
         this.customEventProperties = customEventProperties;
     }
+
+
 
     public ActionGroup getActionGroup(String name){
         for(ActionGroup actionGroup : actionGroups){

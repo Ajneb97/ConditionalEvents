@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.server.ServerCommandEvent;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -78,4 +79,6 @@ public class OtherEventsListener implements Listener {
             projectile.setMetadata("conditionaleventes_projectile_item",new FixedMetadataValue(plugin,usedItem.clone()));
         }
     }
+
+
 }
