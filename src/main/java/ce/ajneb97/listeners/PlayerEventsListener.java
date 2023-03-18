@@ -439,6 +439,17 @@ public class PlayerEventsListener implements Listener {
         ).checkEvent();
     }
 
+    @EventHandler
+    public void onSneak(PlayerToggleSneakEvent event){
+        Player player = event.getPlayer();
+
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_SNEAK, null);
+        if(!conditionEvent.containsValidEvents()) return;
+        conditionEvent.addVariables(
+                new StoredVariable("%is_sneaking%",event.isSneaking()+"")
+        ).checkEvent();
+    }
+
     /*
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTabComplete(TabCompleteEvent event){
