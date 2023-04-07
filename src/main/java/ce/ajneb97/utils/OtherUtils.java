@@ -1,4 +1,6 @@
 package ce.ajneb97.utils;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 
@@ -31,5 +33,10 @@ public class OtherUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String fromJsonMessageToNormalMessage(String jsonMessage){
+        BaseComponent[] base = ComponentSerializer.parse(jsonMessage);
+        return BaseComponent.toLegacyText(base);
     }
 }

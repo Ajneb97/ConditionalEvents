@@ -43,7 +43,7 @@ public class ConditionalEvents extends JavaPlugin {
 	
 	public void onEnable(){
 		this.eventsManager = new EventsManager(this);
-		this.dependencyManager = new DependencyManager();
+		this.dependencyManager = new DependencyManager(this);
 		this.bungeeMessagingManager = new BungeeMessagingManager(this);
 		this.debugManager = new DebugManager(this);
 		this.playerManager =  new PlayerManager(this);
