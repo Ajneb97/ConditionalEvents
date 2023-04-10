@@ -1,6 +1,7 @@
 package ce.ajneb97.managers;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.managers.dependencies.DiscordSRVManager;
 import ce.ajneb97.managers.dependencies.ProtocolLibManager;
 import org.bukkit.Bukkit;
 
@@ -10,6 +11,7 @@ public class DependencyManager {
     private boolean citizens;
     private boolean worldGuardEvents;
     private ProtocolLibManager protocolLibManager;
+    private DiscordSRVManager discordSRVManager;
 
     public DependencyManager(ConditionalEvents plugin){
         placeholderAPI = false;
@@ -31,6 +33,10 @@ public class DependencyManager {
                 && Bukkit.getPluginManager().getPlugin("ProtocolLib").isEnabled()){
             protocolLibManager = new ProtocolLibManager(plugin);
         }
+        if(Bukkit.getPluginManager().getPlugin("DiscordSRV") != null
+                && Bukkit.getPluginManager().getPlugin("DiscordSRV").isEnabled()){
+            discordSRVManager = new DiscordSRVManager(plugin);
+        }
     }
 
     public boolean isPlaceholderAPI() {
@@ -47,5 +53,9 @@ public class DependencyManager {
 
     public ProtocolLibManager getProtocolLibManager() {
         return protocolLibManager;
+    }
+
+    public DiscordSRVManager getDiscordSRVManager() {
+        return discordSRVManager;
     }
 }

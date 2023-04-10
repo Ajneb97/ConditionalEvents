@@ -31,4 +31,5 @@ public enum ActionType {
     HIDE_LEAVE_MESSAGE,
     SET_DEATH_MESSAGE,
     PREVENT_JOIN,
+    DISCORDSRV_EMBED
 }

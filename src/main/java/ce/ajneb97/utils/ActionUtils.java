@@ -4,6 +4,7 @@ import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.libs.actionbar.ActionBarAPI;
 import ce.ajneb97.libs.titles.TitleAPI;
 import ce.ajneb97.managers.MessagesManager;
+import ce.ajneb97.managers.dependencies.DiscordSRVManager;
 import ce.ajneb97.model.internal.ExecutedEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -254,6 +255,7 @@ public class ActionUtils {
     }
 
     public static void firework(Player player,String actionLine){
+        // firework: colors:<color1>,<color2> type:<type> fade:<color1>,<color2> power:<power>
         ArrayList<Color> colors = new ArrayList<Color>();
         FireworkEffect.Type type = null;
         ArrayList<Color> fadeColors = new ArrayList<Color>();
@@ -408,6 +410,13 @@ public class ActionUtils {
             AsyncPlayerPreLoginEvent preJoinEvent = (AsyncPlayerPreLoginEvent) minecraftEvent;
             preJoinEvent.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             preJoinEvent.setKickMessage(MessagesManager.getColoredMessage(actionLine));
+        }
+    }
+
+    public static void discordSRVEmbed(String actionLine,ConditionalEvents plugin){
+        DiscordSRVManager discordSRVManager = plugin.getDependencyManager().getDiscordSRVManager();
+        if(discordSRVManager != null){
+            discordSRVManager.sendEmbedMessage(actionLine);
         }
     }
 

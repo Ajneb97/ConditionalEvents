@@ -240,6 +240,9 @@ public class ExecutedEvent {
             case PREVENT_JOIN:
                 ActionUtils.preventJoin(actionLine,minecraftEvent);
                 return;
+            case DISCORDSRV_EMBED:
+                ActionUtils.discordSRVEmbed(actionLine,plugin);
+                return;
         }
 
         //Player actions
