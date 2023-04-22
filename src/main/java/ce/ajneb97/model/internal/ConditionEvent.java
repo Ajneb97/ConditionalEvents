@@ -168,6 +168,7 @@ public class ConditionEvent {
         int amount = 0;
         List<String> loreList = new ArrayList<String>();
         int customModelData = 0;
+        String metaString = "";
 
         if(item != null) {
             durability = item.getDurability();
@@ -175,6 +176,7 @@ public class ConditionEvent {
             amount = item.getAmount();
             if(item.hasItemMeta()) {
                 ItemMeta meta = item.getItemMeta();
+                metaString = meta.toString();
                 if(meta.hasDisplayName()) {
                     name = ChatColor.stripColor(meta.getDisplayName());
                     colorFormatName = meta.getDisplayName().replace("§", "&");
@@ -203,6 +205,7 @@ public class ConditionEvent {
         eventVariables.add(new StoredVariable("%item_amount%",amount+""));
         eventVariables.add(new StoredVariable("%item_lore%",loreString));
         eventVariables.add(new StoredVariable("%item_custom_model_data%",customModelData+""));
+        eventVariables.add(new StoredVariable("%item_meta%",metaString));
         for(int i=0;i<loreList.size();i++) {
             eventVariables.add(new StoredVariable("%item_lore_line_"+(i+1)+"%", loreList.get(i)));
         }
