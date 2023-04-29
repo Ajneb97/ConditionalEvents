@@ -6,6 +6,7 @@ import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
+import ce.ajneb97.utils.OtherUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -89,6 +90,9 @@ public class ItemEventsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onItemRepair(InventoryClickEvent event) {
         if(!event.getInventory().getType().equals(InventoryType.ANVIL)){
+            return;
+        }
+        if(OtherUtils.isLegacy()){
             return;
         }
         AnvilInventory inv = (AnvilInventory) event.getInventory();

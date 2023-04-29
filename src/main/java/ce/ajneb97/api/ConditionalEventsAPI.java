@@ -31,4 +31,19 @@ public class ConditionalEventsAPI {
             return messagesManager.getPlaceholderAPICooldownReady();
         }
     }
+
+    public static String getOneTimeReady(Player player, String event){
+        CEEvent ceEvent = plugin.getEventsManager().getEvent(event);
+
+        if(ceEvent == null){
+            return "no";
+        }
+
+        boolean oneTime = plugin.getPlayerManager().getEventOneTime(event,player);
+        if(oneTime){
+            return "yes";
+        }else{
+            return "no";
+        }
+    }
 }
