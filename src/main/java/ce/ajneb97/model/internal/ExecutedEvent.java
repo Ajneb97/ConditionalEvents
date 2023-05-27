@@ -243,6 +243,10 @@ public class ExecutedEvent {
             case DISCORDSRV_EMBED:
                 ActionUtils.discordSRVEmbed(actionLine,plugin);
                 return;
+            // Could or could not be a player event
+            case CALL_EVENT:
+                ActionUtils.callEvent(actionLine,player,plugin);
+                return;
         }
 
         //Player actions

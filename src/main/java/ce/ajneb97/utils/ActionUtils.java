@@ -1,10 +1,12 @@
 package ce.ajneb97.utils;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.api.ConditionalEventsCallEvent;
 import ce.ajneb97.libs.actionbar.ActionBarAPI;
 import ce.ajneb97.libs.titles.TitleAPI;
 import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.managers.dependencies.DiscordSRVManager;
+import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ExecutedEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -418,6 +420,22 @@ public class ActionUtils {
         if(discordSRVManager != null){
             discordSRVManager.sendEmbedMessage(actionLine);
         }
+    }
+
+    public static void callEvent(String actionLine,Player player,ConditionalEvents plugin){
+        // call_event: <event>;%variable1%=<value1>;%variable2%=<value2>
+        ArrayList<StoredVariable> variables = new ArrayList<>();
+        String[] sep = actionLine.split(";");
+        String eventName = sep[0];
+        if(sep.length > 1){
+            for(int i=1;i<sep.length;i++){
+                String[] variableLineSep = sep[i].split("=");
+                variables.add(new StoredVariable(variableLineSep[0],variableLineSep[1]));
+            }
+        }
+
+        ConditionalEventsCallEvent event = new ConditionalEventsCallEvent(player,variables,eventName);
+        plugin.getServer().getPluginManager().callEvent(event);
     }
 
     /*

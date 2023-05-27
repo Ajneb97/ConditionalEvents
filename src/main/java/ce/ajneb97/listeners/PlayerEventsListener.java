@@ -408,10 +408,10 @@ public class PlayerEventsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onOpenInventory(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
-
         new ConditionEvent(plugin, player, event, EventType.PLAYER_OPEN_INVENTORY, null)
                 .addVariables(
-                        new StoredVariable("%inventory_type%",event.getInventory().getType().name())
+                        new StoredVariable("%inventory_type%",event.getInventory().getType().name()),
+                        new StoredVariable("%inventory_title%",ChatColor.stripColor(event.getView().getTitle()))
                 ).checkEvent();
     }
 

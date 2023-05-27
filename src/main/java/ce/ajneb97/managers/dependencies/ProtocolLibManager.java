@@ -42,7 +42,6 @@ public class ProtocolLibManager {
                 ConditionalEvents pluginInstance = (ConditionalEvents) plugin;
                 PacketContainer packet = event.getPacket();
                 Player player = event.getPlayer();
-
                 for(EnumWrappers.ChatType type : packet.getChatTypes().getValues()) {
                     if(type.equals(EnumWrappers.ChatType.GAME_INFO)) {
                         return;
@@ -67,6 +66,11 @@ public class ProtocolLibManager {
                         if(object.getClass().equals("net.minecraft.network.chat.PlayerChatMessage")) {
                             return;
                         }
+                        /*
+                        if(object.getClass().equals("net.minecraft.network.chat.SignedMessageBody")) {
+                            net.minecraft.network.chat.SignedMessageBody signedMessageBody = (net.minecraft.network.chat.SignedMessageBody) object;
+                        }
+                        */
                     }
                     if(jsonMessage != null) {
                         executeEvent(player,jsonMessage,normalMessage,event);

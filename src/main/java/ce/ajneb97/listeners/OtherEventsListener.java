@@ -1,7 +1,10 @@
 package ce.ajneb97.listeners;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.api.ConditionalEventsCallEvent;
 import ce.ajneb97.libs.itemselectevent.ItemSelectEvent;
+import ce.ajneb97.managers.EventsManager;
+import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
@@ -63,6 +66,22 @@ public class OtherEventsListener implements Listener {
                         new StoredVariable("%args_length%",(args.length-1)+"")
                 ).addVariables(eventVariables)
                 .checkEvent();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onConditionalEventsCallEvent(ConditionalEventsCallEvent event){
+        Player player = event.getPlayer();
+        String eventName = event.getEvent();
+
+        EventsManager eventsManager = plugin.getEventsManager();
+        CEEvent ceEvent = eventsManager.getEvent(eventName);
+        if(!ceEvent.getEventType().equals(EventType.CALL)){
+            return;
+        }
+
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.CALL, null)
+                .addVariables(event.getVariables());
+        eventsManager.checkSingularEvent(conditionEvent,ceEvent);
     }
 
 
