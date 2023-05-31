@@ -10,6 +10,7 @@ public class DependencyManager {
     private boolean placeholderAPI;
     private boolean citizens;
     private boolean worldGuardEvents;
+    private boolean paper;
     private ProtocolLibManager protocolLibManager;
     private DiscordSRVManager discordSRVManager;
 
@@ -17,6 +18,7 @@ public class DependencyManager {
         placeholderAPI = false;
         citizens = false;
         worldGuardEvents = false;
+        paper = false;
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null
             && Bukkit.getPluginManager().getPlugin("PlaceholderAPI").isEnabled()){
             placeholderAPI = true;
@@ -36,6 +38,13 @@ public class DependencyManager {
         if(Bukkit.getPluginManager().getPlugin("DiscordSRV") != null
                 && Bukkit.getPluginManager().getPlugin("DiscordSRV").isEnabled()){
             discordSRVManager = new DiscordSRVManager(plugin);
+        }
+
+        try{
+            Class.forName("com.destroystokyo.paper.ParticleBuilder");
+            paper = true;
+        }catch(Exception e){
+
         }
     }
 
@@ -57,5 +66,9 @@ public class DependencyManager {
 
     public DiscordSRVManager getDiscordSRVManager() {
         return discordSRVManager;
+    }
+
+    public boolean isPaper() {
+        return paper;
     }
 }

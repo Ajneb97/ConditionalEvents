@@ -11,8 +11,8 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.comphenix.protocol.wrappers.*;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
@@ -27,11 +27,10 @@ public class ProtocolLibManager {
     }
 
     public void configure(){
-        PacketAdapter packet1 = getChatAdapter(PacketType.Play.Server.CHAT);
-        ProtocolLibrary.getProtocolManager().addPacketListener(packet1);
+        ProtocolLibrary.getProtocolManager().addPacketListener(getChatAdapter(PacketType.Play.Server.CHAT));
         if(Bukkit.getVersion().contains("1.19")) {
-            PacketAdapter packet2 = getChatAdapter(PacketType.Play.Server.SYSTEM_CHAT);
-            ProtocolLibrary.getProtocolManager().addPacketListener(packet2);
+            ProtocolLibrary.getProtocolManager().addPacketListener(getChatAdapter(PacketType.Play.Server.SYSTEM_CHAT));
+            ProtocolLibrary.getProtocolManager().addPacketListener(getChatAdapter(PacketType.Play.Server.DISGUISED_CHAT));
         }
     }
 
@@ -40,6 +39,8 @@ public class ProtocolLibManager {
             @Override
             public void onPacketSending(PacketEvent event) {
                 ConditionalEvents pluginInstance = (ConditionalEvents) plugin;
+                boolean isPaper = pluginInstance.getDependencyManager().isPaper();
+
                 PacketContainer packet = event.getPacket();
                 Player player = event.getPlayer();
                 for(EnumWrappers.ChatType type : packet.getChatTypes().getValues()) {
@@ -47,6 +48,7 @@ public class ProtocolLibManager {
                         return;
                     }
                 }
+
                 for(Object object : packet.getModifier().getValues()) {
                     if(object == null) {
                         continue;
@@ -54,6 +56,7 @@ public class ProtocolLibManager {
 
                     String jsonMessage = null;
                     String normalMessage = null;
+
                     if(object instanceof String) {
                         jsonMessage = (String) object;
                         normalMessage = OtherUtils.fromJsonMessageToNormalMessage(jsonMessage);
@@ -62,16 +65,16 @@ public class ProtocolLibManager {
                         normalMessage = BaseComponent.toLegacyText(baseComponents);
                         jsonMessage = ComponentSerializer.toString(baseComponents);
                     }
-                    if(Bukkit.getVersion().contains("1.19")) {
-                        if(object.getClass().equals("net.minecraft.network.chat.PlayerChatMessage")) {
-                            return;
+
+                    if(isPaper){
+                        if(object instanceof Component){
+                            WrappedChatComponent wrappedChatComponent = AdventureComponentConverter
+                                    .fromComponent((Component)object);
+                            jsonMessage = wrappedChatComponent.getJson();
+                            normalMessage = OtherUtils.fromJsonMessageToNormalMessage(jsonMessage);
                         }
-                        /*
-                        if(object.getClass().equals("net.minecraft.network.chat.SignedMessageBody")) {
-                            net.minecraft.network.chat.SignedMessageBody signedMessageBody = (net.minecraft.network.chat.SignedMessageBody) object;
-                        }
-                        */
                     }
+
                     if(jsonMessage != null) {
                         executeEvent(player,jsonMessage,normalMessage,event);
                         return;

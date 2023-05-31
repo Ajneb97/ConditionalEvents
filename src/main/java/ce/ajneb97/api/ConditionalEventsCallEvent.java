@@ -16,7 +16,6 @@ public class ConditionalEventsCallEvent extends Event{
 	private String event;
 	private static final HandlerList handlers = new HandlerList();
 
-	//Event called when conditions for an event are accomplished
 	public ConditionalEventsCallEvent(Player player, ArrayList<StoredVariable> variables, String event){
 		this.player = player;
 		this.variables = variables;
