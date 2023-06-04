@@ -31,8 +31,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ActionUtils {
 
@@ -436,6 +435,55 @@ public class ActionUtils {
 
         ConditionalEventsCallEvent event = new ConditionalEventsCallEvent(player,variables,eventName);
         plugin.getServer().getPluginManager().callEvent(event);
+    }
+
+    public static void executeActionGroup(String actionLine,ExecutedEvent executedEvent,ConditionalEvents plugin){
+        // execute_action_group: <group1>:<prob1>;<group2>:<prob2>
+        ArrayList<String> actionGroups = new ArrayList<String>();
+        ArrayList<Integer> probs = new ArrayList<Integer>();
+
+        String[] sep = actionLine.split(";");
+        for(String line : sep){
+            String[] sep2 = line.split(":");
+            actionGroups.add(sep2[0]);
+            probs.add(Integer.parseInt(sep2[1]));
+        }
+
+        for(int i=0;i<probs.size();i++){
+            if(i != 0){
+                probs.set(i, probs.get(i-1)+probs.get(i));
+            }
+        }
+        String actionGroup = null;
+
+        Random random = new Random();
+        int max = probs.get(probs.size()-1);
+        int randomNumber = random.nextInt(max);
+        for(int i=0;i<probs.size();i++){
+            if(i==0){
+                if(randomNumber < probs.get(i)){
+                    actionGroup = actionGroups.get(i);
+                }
+            }else{
+                if(randomNumber > probs.get(i-1) && randomNumber <= probs.get(i)){
+                    actionGroup = actionGroups.get(i);
+                }
+            }
+        }
+        if(actionGroup == null){
+            actionGroup = actionGroups.get(0);
+        }
+
+        //Clone ExecutedEvent
+        new ExecutedEvent(
+                executedEvent.getPlayer(),
+                executedEvent.getEventVariables(),
+                executedEvent.getEvent(),
+                actionGroup,
+                executedEvent.getMinecraftEvent(),
+                executedEvent.getTarget(),
+                plugin
+        ).executeActions();
     }
 
     /*

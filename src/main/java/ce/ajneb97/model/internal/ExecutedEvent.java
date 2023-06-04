@@ -247,6 +247,9 @@ public class ExecutedEvent {
             case CALL_EVENT:
                 ActionUtils.callEvent(actionLine,player,plugin);
                 return;
+            case EXECUTE_ACTION_GROUP:
+                ActionUtils.executeActionGroup(actionLine,this,plugin);
+                return;
         }
 
         //Player actions
@@ -319,4 +322,26 @@ public class ExecutedEvent {
         return plugin;
     }
 
+    public Player getPlayer() {
+        return player;
+    }
+
+    public Player getTarget() {
+        return target;
+    }
+
+    public ArrayList<StoredVariable> getEventVariables() {
+        return eventVariables;
+    }
+
+    public CEEvent getEvent() {
+        return event;
+    }
+
+    public Event getMinecraftEvent() {
+        return minecraftEvent;
+    }
+    public List<CEAction> getActions() {
+        return actions;
+    }
 }

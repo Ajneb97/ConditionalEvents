@@ -32,5 +32,6 @@ public enum ActionType {
     SET_DEATH_MESSAGE,
     PREVENT_JOIN,
     DISCORDSRV_EMBED,
-    CALL_EVENT
+    CALL_EVENT,
+    EXECUTE_ACTION_GROUP
 }
