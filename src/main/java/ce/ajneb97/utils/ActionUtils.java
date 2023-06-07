@@ -27,6 +27,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -255,7 +256,7 @@ public class ActionUtils {
         TitleAPI.sendTitle(player,fadeIn,stay,fadeOut,title,subtitle);
     }
 
-    public static void firework(Player player,String actionLine){
+    public static void firework(Player player,String actionLine,ConditionalEvents plugin){
         // firework: colors:<color1>,<color2> type:<type> fade:<color1>,<color2> power:<power>
         ArrayList<Color> colors = new ArrayList<Color>();
         FireworkEffect.Type type = null;
@@ -296,10 +297,15 @@ public class ActionUtils {
         fireworkMeta.addEffect(effect);
         fireworkMeta.setPower(power);
         firework.setFireworkMeta(fireworkMeta);
+        firework.setMetadata("conditionalevents", new FixedMetadataValue(plugin, "no_damage"));
     }
 
     public static void particle(Player player,String actionLine){
 
+    }
+
+    public static void damage(Player player,String actionLine){
+        player.damage(Double.parseDouble(actionLine));
     }
 
     public static void gamemode(Player player,String actionLine){

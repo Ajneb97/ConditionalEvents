@@ -10,12 +10,14 @@ import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -99,5 +101,13 @@ public class OtherEventsListener implements Listener {
         }
     }
 
-
+    @EventHandler
+    public void fireworkDamage(EntityDamageByEntityEvent event) {
+        Entity damager = event.getDamager();
+        if(event.getEntity() instanceof Player && damager.getType().equals(EntityType.FIREWORK)) {
+            if(damager.hasMetadata("conditionalevents")) {
+                event.setCancelled(true);
+            }
+        }
+    }
 }

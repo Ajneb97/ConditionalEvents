@@ -22,6 +22,7 @@ public enum ActionType {
     TITLE,
     FIREWORK,
     GAMEMODE,
+    DAMAGE,
     WAIT,
     WAIT_TICKS,
     KEEP_ITEMS,

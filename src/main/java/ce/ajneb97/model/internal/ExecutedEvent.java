@@ -306,10 +306,13 @@ public class ExecutedEvent {
                 ActionUtils.title(player, actionLine);
                 return;
             case FIREWORK:
-                ActionUtils.firework(player, actionLine);
+                ActionUtils.firework(player, actionLine, plugin);
                 return;
             case GAMEMODE:
                 ActionUtils.gamemode(player, actionLine);
+                return;
+            case DAMAGE:
+                ActionUtils.damage(player, actionLine);
                 return;
         }
     }
