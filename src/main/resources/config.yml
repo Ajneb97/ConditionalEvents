@@ -63,7 +63,7 @@ Events:
       - '%victim% == PLAYER'
       - '%item% == DIAMOND_SWORD'
       - '%item_name% == Super Sword'
-      - '%random_1-10% >= 8'
+      - '%random_1_10% >= 8'
     actions:
       default:
         - 'message: &aYour diamond sword poison effect was activated! &6%target:player_name% &ais now poisoned!'

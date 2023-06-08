@@ -28,7 +28,7 @@ public class ProtocolLibManager {
 
     public void configure(){
         ProtocolLibrary.getProtocolManager().addPacketListener(getChatAdapter(PacketType.Play.Server.CHAT));
-        if(Bukkit.getVersion().contains("1.19")) {
+        if(Bukkit.getVersion().contains("1.19") || Bukkit.getVersion().contains("1.20")) {
             ProtocolLibrary.getProtocolManager().addPacketListener(getChatAdapter(PacketType.Play.Server.SYSTEM_CHAT));
             ProtocolLibrary.getProtocolManager().addPacketListener(getChatAdapter(PacketType.Play.Server.DISGUISED_CHAT));
         }

@@ -14,7 +14,7 @@ public class ProtocolLibReceiveMessageEvent extends Event implements Cancellable
 	private boolean cancelled;
 	private static final HandlerList handlers = new HandlerList();
 
-	//Event called when conditions for an event are accomplished
+
 	public ProtocolLibReceiveMessageEvent(Player player, String jsonMessage, String normalMessage){
 		this.player = player;
 		this.jsonMessage = jsonMessage;
