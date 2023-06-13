@@ -3,6 +3,7 @@ package ce.ajneb97.configs;
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.model.player.EventData;
 import ce.ajneb97.model.player.PlayerData;
+import ce.ajneb97.utils.OtherUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -50,6 +51,10 @@ public class PlayerConfigsManager {
 		for (int i=0;i<listOfFiles.length;i++) {
 			if(listOfFiles[i].isFile()) {
 		        String pathName = listOfFiles[i].getName();
+				String ext = OtherUtils.getFileExtension(pathName);
+				if(!ext.equals("yml")) {
+					continue;
+				}
 		        PlayerConfig config = new PlayerConfig(pathName,plugin);
 		        config.registerPlayerConfig();
 		        configPlayers.add(config);

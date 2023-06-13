@@ -40,4 +40,13 @@ public class OtherUtils {
         BaseComponent[] base = ComponentSerializer.parse(jsonMessage);
         return BaseComponent.toLegacyText(base);
     }
+
+    public static String getFileExtension(String filePath) {
+        int lastIndex = filePath.lastIndexOf(".");
+        if (lastIndex > 0 && lastIndex < filePath.length() - 1) {
+            return filePath.substring(lastIndex+1);
+        } else {
+            return "invalid";
+        }
+    }
 }

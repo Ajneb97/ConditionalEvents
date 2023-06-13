@@ -2,6 +2,7 @@ package ce.ajneb97.configs;
 
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.utils.OtherUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
@@ -62,6 +63,10 @@ public class DataFolderConfigManager {
         for (int i=0;i<listOfFiles.length;i++) {
             if(listOfFiles[i].isFile()) {
                 String pathName = listOfFiles[i].getName();
+                String ext = OtherUtils.getFileExtension(pathName);
+                if(!ext.equals("yml")) {
+                    continue;
+                }
                 CEConfig config = new CEConfig(pathName, plugin, folderName);
                 config.registerConfig();
                 configs.add(config);

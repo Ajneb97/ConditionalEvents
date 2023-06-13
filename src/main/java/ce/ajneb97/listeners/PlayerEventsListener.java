@@ -87,12 +87,33 @@ public class PlayerEventsListener implements Listener {
     public void onDeath(PlayerDeathEvent event){
         Player player = event.getEntity();
         String cause = "";
-        if(player.getLastDamageCause() != null) {
-            cause = player.getLastDamageCause().getCause().name();
+        String killerType = "";
+        String killerName = "";
+        String killerNameColorFormat = "";
+
+        EntityDamageEvent entityDamageEvent = player.getLastDamageCause();
+        if(entityDamageEvent != null) {
+            EntityDamageEvent.DamageCause damageCause = entityDamageEvent.getCause();
+            cause = damageCause.name();
+
+            if(entityDamageEvent instanceof EntityDamageByEntityEvent) {
+                EntityDamageByEntityEvent event2 = (EntityDamageByEntityEvent) entityDamageEvent;
+                Entity killer = event2.getDamager();
+                killerType = killer.getType().name();
+                if(killer.getCustomName() != null) {
+                    killerName = ChatColor.stripColor(killer.getCustomName());
+                    killerNameColorFormat = killer.getCustomName().replace("§", "&");
+                }
+            }
         }
 
         new ConditionEvent(plugin, player, event, EventType.PLAYER_DEATH, null)
-                .addVariables(new StoredVariable("%cause%",cause))
+                .addVariables(
+                        new StoredVariable("%cause%",cause),
+                        new StoredVariable("%killer_type%",killerType),
+                        new StoredVariable("%killer_name%",killerName),
+                        new StoredVariable("%killer_color_format_name%",killerNameColorFormat)
+                )
                 .checkEvent();
     }
 
