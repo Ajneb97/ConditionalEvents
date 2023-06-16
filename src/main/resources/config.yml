@@ -29,6 +29,10 @@ Messages:
   days: d
   placeholderAPICooldownReady: "Ready!"
   placeholderAPICooldownNameError: "No event with that name!"
+  commandCallError: '&cUse &7/ce call <event> (optional)%variable1%=<value1>;%variableN%=<valueN>'
+  commandCallInvalidEvent: '&cYou can only execute a CALL event.'
+  commandCallCorrect: '&aEvent &7%event% &asuccessfully executed.'
+  commandCallFailed: '&cEvent &7%event% &ccould not be executed. Maybe a format error?'
 Events:
   event1:
     type: player_join

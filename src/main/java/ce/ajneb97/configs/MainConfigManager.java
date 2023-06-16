@@ -82,6 +82,13 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("commandCallError:")){
+                getConfig().set("Messages.commandCallError", "&cUse &7/ce call <event> (optional)%variable1%=<value1>;%variableN%=<valueN>");
+                getConfig().set("Messages.commandCallInvalidEvent", "&cYou can only execute a CALL event.");
+                getConfig().set("Messages.commandCallCorrect", "&aEvent &7%event% &asuccessfully executed.");
+                getConfig().set("Messages.commandCallFailed", "&cEvent &7%event% &ccould not be executed. Maybe a format error?");
+                saveConfig();
+            }
             if(!text.contains("register_commands:")){
                 List<String> commands = new ArrayList<>();
                 getConfig().set("Config.register_commands", commands);

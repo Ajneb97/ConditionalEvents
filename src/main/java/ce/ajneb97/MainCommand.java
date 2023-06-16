@@ -6,7 +6,9 @@ package ce.ajneb97;
 import ce.ajneb97.configs.MainConfigManager;
 import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.model.CEEvent;
+import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.player.PlayerData;
+import ce.ajneb97.utils.ActionUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -56,6 +58,8 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 				   }else{
 					   msgManager.sendMessage(sender,config.getString("Messages.onlyPlayerCommand"),true);
 				   }
+			   }else if(args[0].equalsIgnoreCase("call")) {
+				   call(args,sender,config,msgManager);
 			   }
 			   else {
 				   help(sender);
@@ -165,6 +169,44 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			msgManager.sendMessage(sender,config.getString("Messages.debugDisabled").replace("%event%", eventName),true);
 		}
 	}
+
+	public void call(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager) {
+		// /ce call <event> %variable1%=<value1>;%variable2%=<value2>
+		if(args.length <= 1) {
+			msgManager.sendMessage(sender,config.getString("Messages.commandCallError"),true);
+			return;
+		}
+
+		String eventName = args[1];
+		CEEvent e = plugin.getEventsManager().getEvent(eventName);
+		if(e == null) {
+			msgManager.sendMessage(sender,config.getString("Messages.eventDoesNotExists"),true);
+			return;
+		}
+		if(!e.getEventType().equals(EventType.CALL)){
+			msgManager.sendMessage(sender,config.getString("Messages.commandCallInvalidEvent"),true);
+			return;
+		}
+
+		String actionLine = eventName;
+		if(args.length >= 3){
+			actionLine += ";"+args[2];
+		}
+
+		Player player = null;
+		if(sender instanceof Player){
+			player = (Player) sender;
+		}
+
+		if(ActionUtils.callEvent(actionLine,player,plugin)){
+			msgManager.sendMessage(sender,config.getString("Messages.commandCallCorrect")
+					.replace("%event%",eventName),true);
+		}else{
+			msgManager.sendMessage(sender,config.getString("Messages.commandCallFailed")
+					.replace("%event%",eventName),true);
+		}
+
+	}
 	
 	public static void help(CommandSender sender) {
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&7[ [ &8[&bConditionalEvents&8] &7] ]"));
@@ -175,6 +217,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce debug <event> &8Enables/disables debug information for an event."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce reset <player> <event>/all &8Resets an event data for a player."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce enable/disable <event> &8Enable or disables an event."));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce call <event> (optional)%variable1%=<value1>;%variableN%=<valueN> &8Executes a 'call' event."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',""));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&7[ [ &8[&bConditionalEvents&8] &7] ]"));
 	}
@@ -187,7 +230,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 				List<String> commands = new ArrayList<String>();
 				commands.add("help");commands.add("reload");commands.add("verify");
 				commands.add("reset");commands.add("debug");commands.add("enable");
-				commands.add("disable");
+				commands.add("disable");commands.add("call");
 				for(String c : commands) {
 					if(args[0].isEmpty() || c.startsWith(args[0].toLowerCase())) {
 						completions.add(c);
@@ -196,7 +239,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 				return completions;
 			}else {
 				if((args[0].equalsIgnoreCase("debug") || args[0].equalsIgnoreCase("enable")
-						|| args[0].equalsIgnoreCase("disable")) && args.length == 2) {
+						|| args[0].equalsIgnoreCase("disable") || args[0].equalsIgnoreCase("call")) && args.length == 2) {
 					List<String> completions = getEventsCompletions(args,1,false);
 					return completions;
 				}else if(args[0].equalsIgnoreCase("reset") && args.length == 3) {

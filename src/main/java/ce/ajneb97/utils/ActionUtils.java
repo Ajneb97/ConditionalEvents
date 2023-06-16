@@ -427,20 +427,26 @@ public class ActionUtils {
         }
     }
 
-    public static void callEvent(String actionLine,Player player,ConditionalEvents plugin){
+    public static boolean callEvent(String actionLine,Player player,ConditionalEvents plugin){
         // call_event: <event>;%variable1%=<value1>;%variable2%=<value2>
         ArrayList<StoredVariable> variables = new ArrayList<>();
-        String[] sep = actionLine.split(";");
-        String eventName = sep[0];
-        if(sep.length > 1){
-            for(int i=1;i<sep.length;i++){
-                String[] variableLineSep = sep[i].split("=");
-                variables.add(new StoredVariable(variableLineSep[0],variableLineSep[1]));
+        String eventName = null;
+        try{
+            String[] sep = actionLine.split(";");
+            eventName = sep[0];
+            if(sep.length > 1){
+                for(int i=1;i<sep.length;i++){
+                    String[] variableLineSep = sep[i].split("=");
+                    variables.add(new StoredVariable(variableLineSep[0],variableLineSep[1]));
+                }
             }
+        }catch(Exception e){
+            return false;
         }
 
         ConditionalEventsCallEvent event = new ConditionalEventsCallEvent(player,variables,eventName);
         plugin.getServer().getPluginManager().callEvent(event);
+        return true;
     }
 
     public static void executeActionGroup(String actionLine,ExecutedEvent executedEvent,ConditionalEvents plugin){
