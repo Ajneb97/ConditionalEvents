@@ -1,6 +1,7 @@
 package ce.ajneb97.managers.dependencies;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
@@ -18,6 +19,8 @@ import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+
 public class ProtocolLibManager {
 
     private ConditionalEvents plugin;
@@ -28,7 +31,7 @@ public class ProtocolLibManager {
 
     public void configure(){
         ProtocolLibrary.getProtocolManager().addPacketListener(getChatAdapter(PacketType.Play.Server.CHAT));
-        if(Bukkit.getVersion().contains("1.19") || Bukkit.getVersion().contains("1.20")) {
+        if(OtherUtils.isChatNew()) {
             ProtocolLibrary.getProtocolManager().addPacketListener(getChatAdapter(PacketType.Play.Server.SYSTEM_CHAT));
             ProtocolLibrary.getProtocolManager().addPacketListener(getChatAdapter(PacketType.Play.Server.DISGUISED_CHAT));
         }
@@ -40,6 +43,12 @@ public class ProtocolLibManager {
             public void onPacketSending(PacketEvent event) {
                 ConditionalEvents pluginInstance = (ConditionalEvents) plugin;
                 boolean isPaper = pluginInstance.getDependencyManager().isPaper();
+
+                //Check if config has a protocollib event
+                ArrayList<CEEvent> validEvents = pluginInstance.getEventsManager().getValidEvents(EventType.PROTOCOLLIB_RECEIVE_MESSAGE);
+                if(validEvents.size() == 0){
+                    return;
+                }
 
                 PacketContainer packet = event.getPacket();
                 Player player = event.getPlayer();
@@ -66,7 +75,7 @@ public class ProtocolLibManager {
                         jsonMessage = ComponentSerializer.toString(baseComponents);
                     }
 
-                    if(isPaper){
+                    if(isPaper && OtherUtils.isChatNew()){
                         if(object instanceof Component){
                             WrappedChatComponent wrappedChatComponent = AdventureComponentConverter
                                     .fromComponent((Component)object);
@@ -96,7 +105,6 @@ public class ProtocolLibManager {
     public void executeEvent(Player player,String jsonMessage,String normalMessage,PacketEvent event){
         ProtocolLibReceiveMessageEvent messageEvent = new ProtocolLibReceiveMessageEvent(player,jsonMessage,normalMessage);
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, messageEvent, EventType.PROTOCOLLIB_RECEIVE_MESSAGE, null);
-        if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.addVariables(
                 new StoredVariable("%json_message%",jsonMessage),
                 new StoredVariable("%normal_message%",normalMessage.replace("§", "&"))

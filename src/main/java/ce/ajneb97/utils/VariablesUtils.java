@@ -195,6 +195,14 @@ public class VariablesUtils {
             // %playerblock_inside%
             Location l = finalPlayer.getLocation();
             return getBlockTypeInLocation(l);
+        }else if(variable.equals("player_is_outside")){
+            Location l = finalPlayer.getLocation();
+            Block block = getNextHighestBlock(l);
+            if(block == null){
+                return "true";
+            }else{
+                return "false";
+            }
         }else if(variable.equals("random_player")) {
             int random = new Random().nextInt(Bukkit.getOnlinePlayers().size());
             ArrayList<Player> players = new ArrayList<Player>(Bukkit.getOnlinePlayers());
@@ -359,5 +367,17 @@ public class VariablesUtils {
             blockType = block.getType().name();
         }
         return blockType;
+    }
+
+    private static Block getNextHighestBlock(Location location){
+        int y = location.getBlockY();
+        Location locationClone = location.clone();
+        for(int i=y+1;i<location.getWorld().getMaxHeight();i++){
+            Block nextBlock = locationClone.add(0,1,0).getBlock();
+            if(!nextBlock.getType().isAir()){
+                return nextBlock;
+            }
+        }
+        return null;
     }
 }

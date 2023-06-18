@@ -239,7 +239,7 @@ public class PlayerEventsListener implements Listener {
             EntityDamageByEntityEvent event2 = (EntityDamageByEntityEvent) event;
             Entity damager = event2.getDamager();
             damagerType = damager.getType().name();
-            if(damager.getCustomName() != null) {
+            if(damager != null && damager.getCustomName() != null) {
                 damagerName = ChatColor.stripColor(damager.getCustomName());
                 damagerNameColorFormat = damager.getCustomName().replace("§", "&");
             }

@@ -6,6 +6,14 @@ import org.bukkit.Color;
 
 public class OtherUtils {
 
+    public static boolean isChatNew() {
+        if(Bukkit.getVersion().contains("1.19") || Bukkit.getVersion().contains("1.20")) {
+            return true;
+        }else {
+            return false;
+        }
+    }
+
     public static boolean isNew() {
         if(Bukkit.getVersion().contains("1.16") || Bukkit.getVersion().contains("1.17")
                 || Bukkit.getVersion().contains("1.18") || Bukkit.getVersion().contains("1.19")
