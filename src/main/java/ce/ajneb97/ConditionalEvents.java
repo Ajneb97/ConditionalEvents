@@ -12,6 +12,8 @@ import ce.ajneb97.listeners.dependencies.CitizensListener;
 import ce.ajneb97.listeners.dependencies.WGRegionEventsListener;
 import ce.ajneb97.managers.*;
 import ce.ajneb97.managers.commandregister.CommandRegisterManager;
+import ce.ajneb97.model.EventType;
+import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.model.internal.UpdateCheckerResult;
 import ce.ajneb97.tasks.PlayerDataSaveTask;
 import org.bukkit.Bukkit;
@@ -70,9 +72,14 @@ public class ConditionalEvents extends JavaPlugin {
 
 		updateCheckerManager = new UpdateCheckerManager(version);
 		updateMessage(updateCheckerManager.check());
+
+		new ConditionEvent(this, null, null, EventType.SERVER_START, null)
+				.checkEvent();
 	}
 	  
 	public void onDisable(){
+		new ConditionEvent(this, null, null, EventType.SERVER_STOP, null)
+				.checkEvent();
 		this.configsManager.getPlayerConfigsManager().savePlayerData();
 		Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &eHas been disabled! &fVersion: "+version));
 	}
