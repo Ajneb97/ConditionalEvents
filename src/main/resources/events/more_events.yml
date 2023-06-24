@@ -2,8 +2,38 @@ Events:
   event8:
     type: player_command
     conditions:
-      - "%command% == /discord"
+      - "%main_command% == /discord"
     actions:
       default:
         - 'cancel_event: true'
         - "message: &7Check the Discord: &b<link>"
+  event9:
+    type: player_command
+    cooldown: 15
+    prevent_cooldown_activation:
+      - error1
+      - error2
+    conditions:
+      - '%main_command% == /announce'
+      - '%args_length% == 0 execute error1'
+      - '%vault_eco_balance% < 500 execute error2'
+    actions:
+      default:
+        - 'cancel_event: true'
+        - 'to_all: centered_message: &f&m                                                      '
+        - 'to_all: centered_message: &c&lAnnounce'
+        - 'to_all: centered_message: &e%player% &7is making an announcement:'
+        - 'to_all: centered_message:  '
+        - 'to_all: centered_message: &7%args_substring_1-100%'
+        - 'to_all: centered_message:  '
+        - 'to_all: centered_message: &f&m                                                      '
+        - 'console_command: eco take %player% 500'
+      error1:
+        - 'cancel_event: true'
+        - 'message: &cYou have to use &7/announce <message>&c.'
+      error2:
+        - 'cancel_event: true'
+        - 'message: &cYou need $500 to use this command.'
+      cooldown:
+        - 'cancel_event: true'
+        - 'message: &cYou must wait &7%time% &cbefore using this command again.'

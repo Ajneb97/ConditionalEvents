@@ -19,6 +19,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -365,8 +366,8 @@ public class ActionUtils {
     }
 
     public static void setDamage(String actionLine,Event minecraftEvent){
-        if(minecraftEvent instanceof EntityDamageByEntityEvent) {
-            EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) minecraftEvent;
+        if(minecraftEvent instanceof EntityDamageEvent) {
+            EntityDamageEvent damageEvent = (EntityDamageEvent) minecraftEvent;
             double damage = damageEvent.getDamage();
             if(actionLine.contains("%")){
                 double modifier = Double.parseDouble(actionLine.substring(0,actionLine.length()-1));

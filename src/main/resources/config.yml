@@ -105,7 +105,7 @@ Events:
   event7:
     type: player_command
     conditions:
-      - '%command% == /hello'
+      - '%main_command% == /hello'
     actions:
       default:
         - 'cancel_event: true'

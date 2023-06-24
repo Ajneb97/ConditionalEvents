@@ -1,6 +1,9 @@
 package ce.ajneb97.managers;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.model.actions.ActionTargeter;
+import ce.ajneb97.model.actions.ActionTargeterType;
+import ce.ajneb97.model.actions.ActionType;
 import ce.ajneb97.model.internal.DebugSender;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -95,7 +98,7 @@ public class DebugManager {
         }
 
         String debugMessage = MessagesManager.getColoredMessage("&8[&c"+event+playerInfo+
-                                     ",&eend&8] &7Executing actions from action group: &f"+actionGroup);
+                                     "&8] &7Executing actions from action group: &f"+actionGroup);
 
         for(DebugSender debugSender : debugSenders){
             if(debugSender.getEvent().equals(event)){
@@ -104,4 +107,32 @@ public class DebugManager {
         }
     }
 
+    public void sendActionMessage(String event, String actionLine, Player player, ActionType actionType, ActionTargeter actionTargeter){
+        if(debugSenders.isEmpty()){
+            return;
+        }
+
+        String playerInfo = "";
+        if(player != null){
+            playerInfo = ","+player.getName();
+        }
+
+        String actionTargeterInfo = "";
+        if(!actionTargeter.getType().equals(ActionTargeterType.NORMAL)){
+            if(actionTargeter.getParameter() == null){
+                actionTargeterInfo = " &6("+actionTargeter.getType()+")";
+            }else{
+                actionTargeterInfo = " &6("+actionTargeter.getType()+" "+actionTargeter.getParameter()+")";
+            }
+        }
+
+        String debugMessage = MessagesManager.getColoredMessage("&8[&c"+event+playerInfo+
+                ",&eaction&8] &7Executing action:"+actionTargeterInfo+" &6["+actionType+"&6] &f")+actionLine;
+
+        for(DebugSender debugSender : debugSenders){
+            if(debugSender.getEvent().equals(event)){
+                debugSender.getSender().sendMessage(debugMessage);
+            }
+        }
+    }
 }

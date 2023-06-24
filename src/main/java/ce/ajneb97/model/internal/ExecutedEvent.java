@@ -2,6 +2,7 @@ package ce.ajneb97.model.internal;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.api.ConditionalEventsEvent;
+import ce.ajneb97.managers.DebugManager;
 import ce.ajneb97.managers.EventsManager;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.EventType;
@@ -120,6 +121,7 @@ public class ExecutedEvent {
     }
 
     private void executeActionsFinal(){
+        DebugManager debugManager = plugin.getDebugManager();
         for(int i=currentActionPos;i<actions.size();i++){
             CEAction action = actions.get(i);
             ActionType actionType = action.getType();
@@ -134,6 +136,9 @@ public class ExecutedEvent {
 
             ActionTargeter targeter = action.getTargeter();
             ActionTargeterType targeterType = targeter.getType();
+
+            //Debug if enabled
+            debugManager.sendActionMessage(event.getName(), actionLine, player, actionType, targeter);
 
             String parametersLine = targeter.getParameter();
             if(parametersLine != null){
