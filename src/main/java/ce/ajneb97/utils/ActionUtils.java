@@ -301,8 +301,8 @@ public class ActionUtils {
         firework.setMetadata("conditionalevents", new FixedMetadataValue(plugin, "no_damage"));
     }
 
-    public static void particle(Player player,String actionLine){
-
+    public static void particle(String actionLine){
+        // particle: x;y;z
     }
 
     public static void damage(Player player,String actionLine){

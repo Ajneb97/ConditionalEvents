@@ -18,10 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.TabCompleteEvent;
@@ -460,7 +457,7 @@ public class PlayerEventsListener implements Listener {
         ).checkEvent();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onSneak(PlayerToggleSneakEvent event){
         Player player = event.getPlayer();
 
@@ -471,6 +468,32 @@ public class PlayerEventsListener implements Listener {
         ).checkEvent();
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onRun(PlayerToggleSprintEvent event){
+        Player player = event.getPlayer();
+
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_RUN, null);
+        if(!conditionEvent.containsValidEvents()) return;
+        conditionEvent.addVariables(
+                new StoredVariable("%is_running%",event.isSprinting()+"")
+        ).checkEvent();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onHealthRegain(EntityRegainHealthEvent event){
+        Entity entity = event.getEntity();
+        if(!(entity instanceof Player)){
+            return;
+        }
+        Player player = (Player) entity;
+
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_REGAIN_HEALTH, null);
+        if(!conditionEvent.containsValidEvents()) return;
+        conditionEvent.addVariables(
+                new StoredVariable("%reason%",event.getRegainReason().name()),
+                new StoredVariable("%amount%",event.getAmount()+"")
+        ).checkEvent();
+    }
 
     /*
     @EventHandler(priority = EventPriority.HIGHEST)

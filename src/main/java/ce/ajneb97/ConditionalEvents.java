@@ -92,6 +92,7 @@ public class ConditionalEvents extends JavaPlugin {
 		pm.registerEvents(new ItemSelectListener(this), this);
 		pm.registerEvents(new OtherEventsListener(this), this);
 		pm.registerEvents(new CustomEventListener(this), this);
+
 		if(!Bukkit.getVersion().contains("1.8")) {
 			pm.registerEvents(new ItemSelectListenerNew(), this);
 			pm.registerEvents(new PlayerEventsListenerNew(this), this);
