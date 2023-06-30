@@ -89,10 +89,11 @@ public class ConfigsManager {
                                     action = action.replace("to_target: ","");
                                     targeter.setType(ActionTargeterType.TO_TARGET);
                                 }else if(action.startsWith("to_world: ") || action.startsWith("to_range: ")
-                                        || action.startsWith("to_condition: ")){
+                                        || action.startsWith("to_condition: ") || action.startsWith("to_player: ")){
                                     // to_world: parkour: message: hi
                                     // to_range: 5;true: message: hi
                                     // to_condition: toConditionGroup1: message: hi
+                                    // to_player: <player>: message: hi
                                     ActionTargeterType targeterType = null;
                                     if(action.startsWith("to_world: ")){
                                         targeterType = ActionTargeterType.TO_WORLD;
@@ -100,6 +101,8 @@ public class ConfigsManager {
                                         targeterType = ActionTargeterType.TO_RANGE;
                                     }else if(action.startsWith("to_condition: ")){
                                         targeterType = ActionTargeterType.TO_CONDITION;
+                                    }else if(action.startsWith("to_player: ")){
+                                        targeterType = ActionTargeterType.TO_PLAYER;
                                     }
                                     targeter.setType(targeterType);
 

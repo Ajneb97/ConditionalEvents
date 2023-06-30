@@ -5,6 +5,7 @@ public enum ActionTargeterType {
     TO_TARGET,
     TO_WORLD,
     TO_RANGE,
+    TO_PLAYER,
     TO_CONDITION,
     NORMAL;
 }

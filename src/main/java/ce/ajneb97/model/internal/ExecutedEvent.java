@@ -158,6 +158,12 @@ public class ExecutedEvent {
                         executeAction(globalPlayer,actionType,actionLine);
                     }
                 }
+            }else if(targeterType.equals(ActionTargeterType.TO_PLAYER)){
+                String playerName = parametersLine;
+                Player onlinePlayer = Bukkit.getPlayer(playerName);
+                if(onlinePlayer != null){
+                    executeAction(onlinePlayer,actionType,actionLine);
+                }
             }else if(targeterType.equals(ActionTargeterType.TO_RANGE)){
                 String[] sep = parametersLine.split(";");
                 double range = Double.valueOf(sep[0]);
