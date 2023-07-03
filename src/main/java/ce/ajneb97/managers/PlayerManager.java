@@ -77,4 +77,17 @@ public class PlayerManager {
             return p.isEventOneTime(eventName);
         }
     }
+
+    public void resetEventDataForPlayers(String eventName){
+        for(PlayerData p : playerData){
+            p.resetCooldown(eventName);
+            p.setOneTime(eventName,false);
+        }
+    }
+
+    public void resetAllDataForPlayers(){
+        for(PlayerData p : playerData){
+            p.resetAll();
+        }
+    }
 }

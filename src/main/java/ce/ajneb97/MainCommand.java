@@ -5,10 +5,12 @@ package ce.ajneb97;
 
 import ce.ajneb97.configs.MainConfigManager;
 import ce.ajneb97.managers.MessagesManager;
+import ce.ajneb97.managers.PlayerManager;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.player.PlayerData;
 import ce.ajneb97.utils.ActionUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -84,26 +86,42 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		String player = args[1];
 		String eventName = args[2];
 
-		PlayerData playerData = plugin.getPlayerManager().getPlayerDataByName(player);
-		if(playerData == null){
+		PlayerManager playerManager = plugin.getPlayerManager();
+		PlayerData playerData = playerManager.getPlayerDataByName(player);
+		if(!player.equals("all") && playerData == null){
 			msgManager.sendMessage(sender,config.getString("Messages.playerDoesNotExists"),true);
 			return;
 		}
 
 		if(eventName.equals("all")){
-			playerData.resetAll();
-			msgManager.sendMessage(sender,config.getString("Messages.eventDataResetAll")
-					.replace("%player%", player),true);
+			if(player.equals("all")){
+				//ALL player data reset
+				playerManager.resetAllDataForPlayers();
+				msgManager.sendMessage(sender,config.getString("Messages.eventDataResetAllForAllPlayers"),true);
+			}else{
+				//Reset ALL event data for a player
+				playerData.resetAll();
+				msgManager.sendMessage(sender,config.getString("Messages.eventDataResetAll")
+						.replace("%player%", player),true);
+			}
 		}else{
 			CEEvent e = plugin.getEventsManager().getEvent(eventName);
 			if(e == null){
 				msgManager.sendMessage(sender,config.getString("Messages.eventDoesNotExists"),true);
 				return;
 			}
-			playerData.resetCooldown(eventName);
-			playerData.setOneTime(eventName,false);
-			msgManager.sendMessage(sender,config.getString("Messages.eventDataReset")
-					.replace("%player%", player).replace("%event%", eventName),true);
+			if(player.equals("all")){
+				//Reset an event for ALL players
+				playerManager.resetEventDataForPlayers(eventName);
+				msgManager.sendMessage(sender,config.getString("Messages.eventDataResetForAllPlayers")
+						.replace("%event%", eventName),true);
+			}else{
+				//Reset an event for a player
+				playerData.resetCooldown(eventName);
+				playerData.setOneTime(eventName,false);
+				msgManager.sendMessage(sender,config.getString("Messages.eventDataReset")
+						.replace("%player%", player).replace("%event%", eventName),true);
+			}
 		}
 	}
 	
@@ -244,6 +262,17 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 					return completions;
 				}else if(args[0].equalsIgnoreCase("reset") && args.length == 3) {
 					List<String> completions = getEventsCompletions(args,2,true);
+					return completions;
+				}else if(args[0].equalsIgnoreCase("reset") && args.length == 2) {
+					List<String> completions = new ArrayList<String>();
+					for(Player p : Bukkit.getOnlinePlayers()) {
+						if(args[1].toLowerCase().isEmpty() || p.getName().startsWith(args[1].toLowerCase())){
+							completions.add(p.getName());
+						}
+					}
+					if(args[1].toLowerCase().isEmpty() || "all".startsWith(args[1].toLowerCase())) {
+						completions.add("all");
+					}
 					return completions;
 				}
 			}

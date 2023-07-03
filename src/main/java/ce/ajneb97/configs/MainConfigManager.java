@@ -82,6 +82,11 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("eventDataResetForAllPlayers:")){
+                getConfig().set("Messages.eventDataResetForAllPlayers", "&aData reset for &eall players &aon event &e%event%&a!");
+                getConfig().set("Messages.eventDataResetAllForAllPlayers", "&aAll player data reset.");
+                saveConfig();
+            }
             if(!text.contains("commandCallError:")){
                 getConfig().set("Messages.commandCallError", "&cUse &7/ce call <event> (optional)%variable1%=<value1>;%variableN%=<valueN>");
                 getConfig().set("Messages.commandCallInvalidEvent", "&cYou can only execute a CALL event.");

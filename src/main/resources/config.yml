@@ -14,6 +14,8 @@ Messages:
   eventDoesNotExists: '&cThat event doesn''t exists on the config.'
   eventDataReset: '&aData reset for player &e%player% &aon event &e%event%&a!'
   eventDataResetAll: '&aAll data reset for player &e%player%&a!'
+  eventDataResetForAllPlayers: '&aData reset for &eall players &aon event &e%event%&a!'
+  eventDataResetAllForAllPlayers: '&aAll player data reset.'
   eventEnableError: '&cUse &7/ce enable <event>'
   eventDisableError: '&cUse &7/ce disable <event>'
   eventEnabled: '&aEvent &7%event% &aenabled.'
