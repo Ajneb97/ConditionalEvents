@@ -233,7 +233,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce reload &8Reloads the config."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce verify &8Checks ALL events for errors."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce debug <event> &8Enables/disables debug information for an event."));
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce reset <player> <event>/all &8Resets an event data for a player."));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce reset <player>/all <event>/all &8Resets an event data for a player."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce enable/disable <event> &8Enable or disables an event."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce call <event> (optional)%variable1%=<value1>;%variableN%=<valueN> &8Executes a 'call' event."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',""));

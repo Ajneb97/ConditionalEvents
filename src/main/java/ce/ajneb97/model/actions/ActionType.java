@@ -21,6 +21,7 @@ public enum ActionType {
     ACTIONBAR,
     TITLE,
     FIREWORK,
+    PARTICLE,
     GAMEMODE,
     DAMAGE,
     WAIT,

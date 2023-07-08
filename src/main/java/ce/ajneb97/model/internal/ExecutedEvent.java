@@ -319,6 +319,9 @@ public class ExecutedEvent {
             case FIREWORK:
                 ActionUtils.firework(player, actionLine, plugin);
                 return;
+            case PARTICLE:
+                ActionUtils.particle(player, actionLine);
+                return;
             case GAMEMODE:
                 ActionUtils.gamemode(player, actionLine);
                 return;

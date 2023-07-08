@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -32,7 +32,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import java.util.*;
 
 public class ActionUtils {
@@ -301,8 +300,51 @@ public class ActionUtils {
         firework.setMetadata("conditionalevents", new FixedMetadataValue(plugin, "no_damage"));
     }
 
-    public static void particle(String actionLine){
-        // particle: x;y;z
+    public static void particle(Player player,String actionLine){
+        // particle: effect:<effect_name> offset:<x>;<y>;<z> speed:<speed> amount:<amount> location(optional): <x>;<y>;<z>;<world>
+        String effectName = null;
+        double offsetX = 0;double offsetY = 0;double offsetZ = 0;
+        double speed = 0;
+        int amount = 1;
+
+        String[] sep = actionLine.split(" ");
+        for(String s : sep) {
+            if(s.startsWith("effect:")) {
+                effectName = s.replace("effect:", "");
+            }else if(s.startsWith("speed:")) {
+                speed = Double.parseDouble(s.replace("speed:", ""));
+            }else if(s.startsWith("amount:")) {
+                amount = Integer.parseInt(s.replace("amount:", ""));
+            }else if(s.startsWith("offset:")) {
+                String[] sep2 = s.replace("offset:", "").split(";");
+                offsetX = Double.parseDouble(sep2[0]);
+                offsetY = Double.parseDouble(sep2[1]);
+                offsetZ = Double.parseDouble(sep2[2]);
+            }
+        }
+
+        Location location = player.getLocation();
+        if(Bukkit.getVersion().contains("1.8")) {
+            return;
+        }
+
+        try {
+            if(effectName.startsWith("REDSTONE;")) {
+                String[] effectSeparated = effectName.split(";");
+                int red = Integer.parseInt(effectSeparated[1]);
+                int green = Integer.parseInt(effectSeparated[2]);
+                int blue = Integer.parseInt(effectSeparated[3]);
+                Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(red,green,blue), 1);
+                location.getWorld().spawnParticle(
+                        Particle.REDSTONE,location,amount,offsetX,offsetY,offsetZ,speed,dustOptions,false);
+            }else {
+                location.getWorld().spawnParticle(
+                        Particle.valueOf(effectName),location,amount,offsetX,offsetY,offsetZ,speed,null,false);
+            }
+        }catch(Exception e) {
+            Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix+
+                    MessagesManager.getColoredMessage(" &7Particle Name: &c"+effectName+" &7is not valid. Change it in the config!"));
+        }
     }
 
     public static void damage(Player player,String actionLine){
