@@ -257,10 +257,11 @@ public class ActionUtils {
     }
 
     public static void firework(Player player,String actionLine,ConditionalEvents plugin){
-        // firework: colors:<color1>,<color2> type:<type> fade:<color1>,<color2> power:<power>
+        // firework: colors:<color1>,<color2> type:<type> fade:<color1>,<color2> power:<power> location(optional): <x>;<y>;<z>;<world>
         ArrayList<Color> colors = new ArrayList<Color>();
         FireworkEffect.Type type = null;
         ArrayList<Color> fadeColors = new ArrayList<Color>();
+        Location location = null;
         int power = 0;
 
         String[] sep = actionLine.split(" ");
@@ -283,10 +284,18 @@ public class ActionUtils {
             }else if(s.startsWith("power:")) {
                 s = s.replace("power:", "");
                 power = Integer.valueOf(s);
+            }else if(s.startsWith("location:")) {
+                String[] sep2 = s.replace("location:", "").split(";");
+                location = new Location(
+                   Bukkit.getWorld(sep2[3]), Double.parseDouble(sep2[0]), Double.parseDouble(sep2[1]), Double.parseDouble(sep2[2])
+                );
             }
         }
 
-        Location location = player.getLocation();
+        if(location == null){
+            location = player.getLocation();
+        }
+
         Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK);
         FireworkMeta fireworkMeta = firework.getFireworkMeta();
         FireworkEffect effect = FireworkEffect.builder().flicker(false)
@@ -306,6 +315,7 @@ public class ActionUtils {
         double offsetX = 0;double offsetY = 0;double offsetZ = 0;
         double speed = 0;
         int amount = 1;
+        Location location = null;
 
         String[] sep = actionLine.split(" ");
         for(String s : sep) {
@@ -320,10 +330,17 @@ public class ActionUtils {
                 offsetX = Double.parseDouble(sep2[0]);
                 offsetY = Double.parseDouble(sep2[1]);
                 offsetZ = Double.parseDouble(sep2[2]);
+            }else if(s.startsWith("location:")) {
+                String[] sep2 = s.replace("location:", "").split(";");
+                location = new Location(
+                        Bukkit.getWorld(sep2[3]), Double.parseDouble(sep2[0]), Double.parseDouble(sep2[1]), Double.parseDouble(sep2[2])
+                );
             }
         }
 
-        Location location = player.getLocation();
+        if(location == null){
+            location = player.getLocation();
+        }
         if(Bukkit.getVersion().contains("1.8")) {
             return;
         }
