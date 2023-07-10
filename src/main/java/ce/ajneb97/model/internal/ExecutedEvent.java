@@ -255,6 +255,12 @@ public class ExecutedEvent {
                 ActionUtils.discordSRVEmbed(actionLine,plugin);
                 return;
             // Could or could not be a player event
+            case FIREWORK:
+                ActionUtils.firework(player, actionLine, plugin);
+                return;
+            case PARTICLE:
+                ActionUtils.particle(player, actionLine);
+                return;
             case CALL_EVENT:
                 ActionUtils.callEvent(actionLine,player,plugin);
                 return;
@@ -315,12 +321,6 @@ public class ExecutedEvent {
                 return;
             case TITLE:
                 ActionUtils.title(player, actionLine);
-                return;
-            case FIREWORK:
-                ActionUtils.firework(player, actionLine, plugin);
-                return;
-            case PARTICLE:
-                ActionUtils.particle(player, actionLine);
                 return;
             case GAMEMODE:
                 ActionUtils.gamemode(player, actionLine);
