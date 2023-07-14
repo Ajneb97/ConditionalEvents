@@ -24,6 +24,8 @@ public enum ActionType {
     PARTICLE,
     GAMEMODE,
     DAMAGE,
+    CLOSE_INVENTORY,
+    SET_ON_FIRE,
     WAIT,
     WAIT_TICKS,
     KEEP_ITEMS,

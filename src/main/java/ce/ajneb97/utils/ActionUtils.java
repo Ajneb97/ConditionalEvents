@@ -232,6 +232,14 @@ public class ActionUtils {
         player.playSound(player.getLocation(), sound, volume, pitch);
     }
 
+    public static void giveItem(Player player,String actionLine){
+        // give_item: id:<id>;amount:<amount>;durability:<durability>;custom_model_data:<data>;name:<name>;
+        // lore:<lore_line1>|<lore_lineN>;enchants:<name1>-<level1>|<nameN>-<levelN>
+
+        String[] sep = actionLine.replace("give_item: ","").split(";");
+
+    }
+
     public static void actionbar(Player player,String actionLine,ConditionalEvents plugin){
         String[] sep = actionLine.split(";");
         String text = sep[0];
@@ -370,6 +378,15 @@ public class ActionUtils {
 
     public static void gamemode(Player player,String actionLine){
         player.setGameMode(GameMode.valueOf(actionLine));
+    }
+
+    public static void closeInventory(Player player){
+        player.closeInventory();
+    }
+
+    public static void setOnFire(Player player,String actionLine){
+        // set_on_fire: <duration_on_ticks>
+        player.setFireTicks(Integer.parseInt(actionLine));
     }
 
     public static void wait(String actionLine, ExecutedEvent executedEvent){

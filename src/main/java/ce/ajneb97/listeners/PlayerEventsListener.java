@@ -62,7 +62,7 @@ public class PlayerEventsListener implements Listener {
         if(player.isOp() && !(plugin.version.equals(latestVersion)) &&
                 plugin.getConfigsManager().getMainConfigManager().isUpdateNotifications()){
             player.sendMessage(MessagesManager.getColoredMessage(plugin.prefix+" &cThere is a new version available. &e(&7"+latestVersion+"&e)"));
-            player.sendMessage(MessagesManager.getColoredMessage("&cYou can download it at: &ahttps://www.spigotmc.org/resources/82271/"));
+            player.sendMessage(MessagesManager.getColoredMessage("&cYou can download it at: &ahttps://modrinth.com/plugin/conditionalevents"));
         }
     }
 

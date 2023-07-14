@@ -117,7 +117,12 @@ public class ConfigsManager {
                                 String actionTypeText = null;
                                 ActionType actionType = null;
                                 try{
-                                    actionTypeText = action.substring(0,action.indexOf(":"));
+                                    if(action.equalsIgnoreCase("close_inventory")){
+                                        actionTypeText = action;
+                                    }else{
+                                        actionTypeText = action.substring(0,action.indexOf(":"));
+                                    }
+
                                     actionType = ActionType.valueOf(actionTypeText.toUpperCase());
                                 }catch(Exception e){
                                     continue;

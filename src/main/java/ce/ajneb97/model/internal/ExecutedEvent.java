@@ -328,6 +328,12 @@ public class ExecutedEvent {
             case DAMAGE:
                 ActionUtils.damage(player, actionLine);
                 return;
+            case CLOSE_INVENTORY:
+                ActionUtils.closeInventory(player);
+                return;
+            case SET_ON_FIRE:
+                ActionUtils.setOnFire(player, actionLine);
+                return;
         }
     }
 
