@@ -1,6 +1,7 @@
 Config:
   update_notification: true
   data_save_time: 5
+  debug_actions: true
   register_commands:
     - "hello"
   to_condition_groups:
@@ -23,6 +24,8 @@ Messages:
   commandDebugError: '&cUse &7/ce debug <event>'
   debugEnabled: '&aDebug now enabled for event &7%event%&a!'
   debugDisabled: '&aDebug disabled for event &7%event%&a!'
+  debugEnabledPlayer: '&aDebug now enabled for event &7%event% &aand player &7%player%&a!'
+  debugDisabledPlayer: '&aDebug disabled for event &7%event% &aand player &7%player%&a!'
   onlyPlayerCommand: "&cThis command can be only used by a player."
   playerDoesNotExists: '&cThat player doesn''t have any data.'
   seconds: s

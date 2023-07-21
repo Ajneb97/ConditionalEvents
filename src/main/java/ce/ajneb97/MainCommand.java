@@ -167,7 +167,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 	}
 
 	public void debug(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager) {
-		// /ce debug <event>
+		// /ce debug <event> (optional)<player>
 		if(args.length <= 1) {
 			msgManager.sendMessage(sender,config.getString("Messages.commandDebugError"),true);
 			return;
@@ -180,11 +180,26 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			return;
 		}
 
-		boolean result = plugin.getDebugManager().setDebugSender(sender,eventName);
+		String playerName = null;
+		if(args.length >= 3){
+			playerName = args[2];
+		}
+
+		boolean result = plugin.getDebugManager().setDebugSender(sender,eventName,playerName);
 		if(result){
-			msgManager.sendMessage(sender,config.getString("Messages.debugEnabled").replace("%event%", eventName),true);
+			if(playerName != null){
+				msgManager.sendMessage(sender,config.getString("Messages.debugEnabledPlayer")
+						.replace("%event%", eventName).replace("%player%",playerName),true);
+			}else{
+				msgManager.sendMessage(sender,config.getString("Messages.debugEnabled").replace("%event%", eventName),true);
+			}
 		}else{
-			msgManager.sendMessage(sender,config.getString("Messages.debugDisabled").replace("%event%", eventName),true);
+			if(playerName != null){
+				msgManager.sendMessage(sender,config.getString("Messages.debugDisabledPlayer")
+						.replace("%event%", eventName).replace("%player%",playerName),true);
+			}else{
+				msgManager.sendMessage(sender,config.getString("Messages.debugDisabled").replace("%event%", eventName),true);
+			}
 		}
 	}
 
@@ -232,7 +247,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce help &8Shows this message."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce reload &8Reloads the config."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce verify &8Checks ALL events for errors."));
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce debug <event> &8Enables/disables debug information for an event."));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce debug <event> (optional)<player> &8Enables/disables debug information for an event."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce reset <player>/all <event>/all &8Resets an event data for a player."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce enable/disable <event> &8Enable or disables an event."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce call <event> (optional)%variable1%=<value1>;%variableN%=<valueN> &8Executes a 'call' event."));

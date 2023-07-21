@@ -20,10 +20,10 @@ public class DebugManager {
         this.debugSenders = new ArrayList<DebugSender>();
     }
 
-    public boolean setDebugSender(CommandSender sender,String event){
+    public boolean setDebugSender(CommandSender sender,String event,String playerName){
         DebugSender debugSender = getDebugSender(sender);
         if(debugSender == null){
-            this.debugSenders.add(new DebugSender(sender,event));
+            this.debugSenders.add(new DebugSender(sender,event,playerName));
             return true;
         }
         if(debugSender.getEvent().equals(event)){
@@ -76,6 +76,11 @@ public class DebugManager {
 
         for(DebugSender debugSender : debugSenders){
             if(debugSender.getEvent().equals(event)){
+                if(player != null && debugSender.getPlayerName() != null){
+                    if(!debugSender.getPlayerName().equals(player.getName())){
+                        continue;
+                    }
+                }
                 debugSender.getSender().sendMessage(debugMessage);
             }
         }
@@ -102,6 +107,11 @@ public class DebugManager {
 
         for(DebugSender debugSender : debugSenders){
             if(debugSender.getEvent().equals(event)){
+                if(player != null && debugSender.getPlayerName() != null){
+                    if(!debugSender.getPlayerName().equals(player.getName())){
+                        continue;
+                    }
+                }
                 debugSender.getSender().sendMessage(debugMessage);
             }
         }
@@ -131,6 +141,11 @@ public class DebugManager {
 
         for(DebugSender debugSender : debugSenders){
             if(debugSender.getEvent().equals(event)){
+                if(player != null && debugSender.getPlayerName() != null){
+                    if(!debugSender.getPlayerName().equals(player.getName())){
+                        continue;
+                    }
+                }
                 debugSender.getSender().sendMessage(debugMessage);
             }
         }

@@ -122,6 +122,7 @@ public class ExecutedEvent {
 
     private void executeActionsFinal(){
         DebugManager debugManager = plugin.getDebugManager();
+        boolean isDebugActions = plugin.getConfigsManager().getMainConfigManager().isDebugActions();
         for(int i=currentActionPos;i<actions.size();i++){
             CEAction action = actions.get(i);
             ActionType actionType = action.getType();
@@ -138,7 +139,9 @@ public class ExecutedEvent {
             ActionTargeterType targeterType = targeter.getType();
 
             //Debug if enabled
-            debugManager.sendActionMessage(event.getName(), actionLine, player, actionType, targeter);
+            if(isDebugActions){
+                debugManager.sendActionMessage(event.getName(), actionLine, player, actionType, targeter);
+            }
 
             String parametersLine = targeter.getParameter();
             if(parametersLine != null){

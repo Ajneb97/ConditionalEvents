@@ -24,6 +24,7 @@ public class MainConfigManager {
     private ConditionalEvents plugin;
 
     private boolean updateNotifications;
+    private boolean debugActions;
     private ArrayList<ToConditionGroup> toConditionGroups;
     public MainConfigManager(ConditionalEvents plugin){
         this.plugin = plugin;
@@ -36,6 +37,7 @@ public class MainConfigManager {
         FileConfiguration config = configFile.getConfig();
 
         updateNotifications = config.getBoolean("Config.update_notification");
+        debugActions = config.getBoolean("Config.debug_actions");
         toConditionGroups = new ArrayList<ToConditionGroup>();
         String path = "Config.to_condition_groups";
         if(config.contains(path)){
@@ -82,6 +84,12 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("debugEnabledPlayer:")){
+                getConfig().set("Messages.debugEnabledPlayer", "&aDebug now enabled for event &7%event% &aand player &7%player%&a!");
+                getConfig().set("Messages.debugDisabledPlayer", "&aDebug disabled for event &7%event% &aand player &7%player%&a!");
+                getConfig().set("Config.debug_actions", true);
+                saveConfig();
+            }
             if(!text.contains("eventDataResetForAllPlayers:")){
                 getConfig().set("Messages.eventDataResetForAllPlayers", "&aData reset for &eall players &aon event &e%event%&a!");
                 getConfig().set("Messages.eventDataResetAllForAllPlayers", "&aAll player data reset.");
@@ -131,6 +139,10 @@ public class MainConfigManager {
 
     public boolean isUpdateNotifications() {
         return updateNotifications;
+    }
+
+    public boolean isDebugActions() {
+        return debugActions;
     }
 
     public ToConditionGroup getToConditionGroup(String name){

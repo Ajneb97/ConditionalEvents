@@ -5,10 +5,12 @@ import org.bukkit.command.CommandSender;
 public class DebugSender {
     private CommandSender sender;
     private String event;
+    private String playerName;
 
-    public DebugSender(CommandSender sender, String event) {
+    public DebugSender(CommandSender sender, String event, String playerName) {
         this.sender = sender;
         this.event = event;
+        this.playerName = playerName;
     }
 
     public CommandSender getSender() {
@@ -25,5 +27,13 @@ public class DebugSender {
 
     public void setEvent(String event) {
         this.event = event;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 }
