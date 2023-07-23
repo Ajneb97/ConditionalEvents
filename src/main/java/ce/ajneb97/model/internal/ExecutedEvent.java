@@ -257,6 +257,9 @@ public class ExecutedEvent {
             case DISCORDSRV_EMBED:
                 ActionUtils.discordSRVEmbed(actionLine,plugin);
                 return;
+            case DROP_ITEM:
+                ActionUtils.dropItem(actionLine);
+                return;
             // Could or could not be a player event
             case FIREWORK:
                 ActionUtils.firework(player, actionLine, plugin);

@@ -239,98 +239,37 @@ public class ActionUtils {
         // flags:<flag1>|<flag2>
 
         String[] sep = actionLine.replace("give_item: ","").split(";");
-
-        String id = null;
-        int amount = 1;
-        short durability = 0;
-        String name = null;
-        List<String> lore = new ArrayList<String>();
-        List<String> flags = new ArrayList<String>();
-        List<String> enchants = new ArrayList<String>();
-        int customModelData = 0;
-        String skullTexture = null;
-        String skullId = null;
-        String skullOwner = null;
-
-        for(String property : sep) {
-            if(property.startsWith("id:")) {
-                id = property.replace("id:", "");
-            }else if(property.startsWith("amount:")) {
-                amount = Integer.parseInt(property.replace("amount:", ""));
-            }else if(property.startsWith("custom_model_data:")) {
-                customModelData = Integer.parseInt(property.replace("custom_model_data:", ""));
-            }else if(property.startsWith("durability:")) {
-                durability = Short.parseShort(property.replace("durability:", ""));
-            }else if(property.startsWith("name:")) {
-                name = property.replace("name:", "");
-            }else if(property.startsWith("lore:")) {
-                String[] splitLore = property.replace("lore:", "").split("\\|");
-                for(String loreLine : splitLore) {
-                    lore.add(loreLine);
-                }
-            }else if(property.startsWith("enchants:")) {
-                String[] splitEnchants = property.replace("enchants:", "").split("\\|");
-                for(String enchantLine : splitEnchants) {
-                    String[] splitEnchants2 = enchantLine.split("-");
-                    enchants.add(splitEnchants2[0]+";"+splitEnchants2[1]);
-                }
-            }else if(property.startsWith("flags:")) {
-                String[] splitFlags = property.replace("flags:", "").split("\\|");
-                for(String flagLine : splitFlags) {
-                    flags.add(flagLine);
-                }
-            }else if(property.startsWith("skull_texture:")) {
-                skullTexture = property.replace("skull_texture:", "");
-            }else if(property.startsWith("skull_owner:")) {
-                skullOwner = property.replace("skull_owner:", "");
-            }else if(property.startsWith("skull_id")) {
-                skullId = property.replace("skull_id:", "");
-            }
-        }
-
-        ItemStack item = ItemUtils.createItemFromID(id);
-        item.setAmount(amount);
-        if(durability != 0) {
-            item.setDurability(durability);
-        }
-
-        //Main Meta
-        ItemMeta meta = item.getItemMeta();
-        if(name != null) {
-            meta.setDisplayName(MessagesManager.getColoredMessage(name));
-        }
-        if(lore != null) {
-            List<String> loreCopy = new ArrayList<>(lore);
-            for(int i=0;i<loreCopy.size();i++) {
-                loreCopy.set(i, MessagesManager.getColoredMessage(loreCopy.get(i)));
-            }
-            meta.setLore(loreCopy);
-        }
-
-        if(customModelData != 0) {
-            meta.setCustomModelData(customModelData);
-        }
-
-        if(enchants != null) {
-            for(int i=0;i<enchants.size();i++) {
-                String[] sep2 = enchants.get(i).split(";");
-                String enchantName = sep2[0];
-                int enchantLevel = Integer.valueOf(sep2[1]);
-                meta.addEnchant(Enchantment.getByName(enchantName), enchantLevel, true);
-            }
-        }
-        if(flags != null) {
-            for(int i=0;i<flags.size();i++) {
-                meta.addItemFlags(ItemFlag.valueOf(flags.get(i)));
-            }
-        }
-        item.setItemMeta(meta);
-
-        //Other Meta
-        ItemUtils.setSkullData(item,skullTexture,skullId,skullOwner);
+        ItemStack item = ItemUtils.getItemFromProperties(sep);
 
         //Give Item
         player.getInventory().addItem(item);
+    }
+
+    public static void dropItem(String actionLine) {
+        // drop_item: location:<x>,<y>,<z>,<world>;id:<id>;amount:<amount>;...
+
+        String[] sep = actionLine.replace("drop_item: ","").split(";");
+        ItemStack item = ItemUtils.getItemFromProperties(sep);
+        Location location = null;
+
+        // Find location
+        for(String property : sep){
+            if(property.startsWith("location:")){
+                String[] locationSplit = property.replace("location:", "").split(",");
+                location = new Location(
+                        Bukkit.getWorld(locationSplit[3]),
+                        Double.parseDouble(locationSplit[0]),
+                        Double.parseDouble(locationSplit[1]),
+                        Double.parseDouble(locationSplit[2])
+                );
+                break;
+            }
+        }
+
+        //Drop Item
+        if(location != null){
+            location.getWorld().dropItemNaturally(location,item);
+        }
     }
 
     public static void actionbar(Player player,String actionLine,ConditionalEvents plugin){
@@ -358,7 +297,7 @@ public class ActionUtils {
     }
 
     public static void firework(Player player,String actionLine,ConditionalEvents plugin){
-        // firework: colors:<color1>,<color2> type:<type> fade:<color1>,<color2> power:<power> location(optional): <x>;<y>;<z>;<world>
+        // firework: colors:<color1>,<color2> type:<type> fade:<color1>,<color2> power:<power> location(optional):<x>;<y>;<z>;<world>
         ArrayList<Color> colors = new ArrayList<Color>();
         FireworkEffect.Type type = null;
         ArrayList<Color> fadeColors = new ArrayList<Color>();
