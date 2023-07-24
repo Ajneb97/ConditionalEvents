@@ -154,7 +154,7 @@ public class VerifyManager {
     }
 
     public boolean verifyCondition(String line) {
-        String[] sepExecute = line.split(" execute ");
+        String[] sepExecute = line.contains(" executecontinue ") ? line.split(" executecontinue ") : line.split(" execute ");
         String[] sepOr = sepExecute[0].split(" or ");
         for(int i=0;i<sepOr.length;i++) {
             String[] sep = sepOr[i].split(" ");

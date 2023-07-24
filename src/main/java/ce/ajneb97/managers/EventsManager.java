@@ -74,66 +74,70 @@ public class EventsManager {
         }
 
         //Check condition list
-        CheckConditionsResult conditionsResult = checkConditions(conditionEvent,isPlaceholderAPI);
-        if(!conditionsResult.isConditionsAccomplished()){
-            return;
+        List<CheckConditionsResult> conditionsResults = checkConditions(conditionEvent,isPlaceholderAPI);
+        for (CheckConditionsResult conditionsResult : conditionsResults) {
+            if(!conditionsResult.isConditionsAccomplished()){
+                return;
+            }
+            String executeActionGroup = conditionsResult.getExecuteActionGroup();
+
+            PlayerManager playerManager = plugin.getPlayerManager();
+            MessagesManager messagesManager = plugin.getMessagesManager();
+
+            boolean bypassCooldown = false;
+
+            if(player != null){
+                bypassCooldown = player.hasPermission("conditionalevents.bypasscooldown."+event.getName());
+
+                //Check One time
+                if(event.isOneTime()){
+                    boolean isOneTime = playerManager.getEventOneTime(event.getName(),player);
+                    if(isOneTime){
+                        ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
+                                "one_time", conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
+                        executedEvent.executeActions();
+                        return;
+                    }
+                }
+
+                //Check Cooldown
+                if(event.getCooldown() != 0 && !bypassCooldown){
+                    long eventCooldownMillis = playerManager.getEventCooldown(event.getName(),player)+(event.getCooldown()*1000);
+                    long currentTimeMillis = System.currentTimeMillis();
+                    if(eventCooldownMillis > currentTimeMillis){
+                        String timeString = TimeUtils.getTime((eventCooldownMillis-currentTimeMillis)/1000,messagesManager);
+                        conditionEvent.getEventVariables().add(new StoredVariable("%time%",timeString));
+                        ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
+                                "cooldown", conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
+                        executedEvent.executeActions();
+                        return;
+                    }
+                }
+            }
+
+            if(player != null){
+                //Set One Time
+                if(event.isOneTime()){
+                    if(!event.getPreventOneTimeActivationActionGroups().contains(executeActionGroup)){
+                        playerManager.setEventOneTime(event.getName(),player);
+                    }
+                }
+
+                //Set Cooldown
+                if(event.getCooldown() != 0 && !bypassCooldown){
+                    if(!event.getPreventCooldownActivationActionGroups().contains(executeActionGroup)){
+                        playerManager.setEventCooldown(event.getName(),player);
+                    }
+                }
+            }
+
+            //Execute actions
+            ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
+                    executeActionGroup, conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
+            executedEvent.executeActions();
         }
-        String executeActionGroup = conditionsResult.getExecuteActionGroup();
-
-        PlayerManager playerManager = plugin.getPlayerManager();
-        MessagesManager messagesManager = plugin.getMessagesManager();
-
-        boolean bypassCooldown = false;
-
-        if(player != null){
-            bypassCooldown = player.hasPermission("conditionalevents.bypasscooldown."+event.getName());
-
-            //Check One time
-            if(event.isOneTime()){
-                boolean isOneTime = playerManager.getEventOneTime(event.getName(),player);
-                if(isOneTime){
-                    ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
-                         "one_time", conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
-                    executedEvent.executeActions();
-                    return;
-                }
-            }
-
-            //Check Cooldown
-            if(event.getCooldown() != 0 && !bypassCooldown){
-                long eventCooldownMillis = playerManager.getEventCooldown(event.getName(),player)+(event.getCooldown()*1000);
-                long currentTimeMillis = System.currentTimeMillis();
-                if(eventCooldownMillis > currentTimeMillis){
-                    String timeString = TimeUtils.getTime((eventCooldownMillis-currentTimeMillis)/1000,messagesManager);
-                    conditionEvent.getEventVariables().add(new StoredVariable("%time%",timeString));
-                    ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
-                          "cooldown", conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
-                    executedEvent.executeActions();
-                    return;
-                }
-            }
-        }
-
-        if(player != null){
-            //Set One Time
-            if(event.isOneTime()){
-                if(!event.getPreventOneTimeActivationActionGroups().contains(executeActionGroup)){
-                    playerManager.setEventOneTime(event.getName(),player);
-                }
-            }
-
-            //Set Cooldown
-            if(event.getCooldown() != 0 && !bypassCooldown){
-                if(!event.getPreventCooldownActivationActionGroups().contains(executeActionGroup)){
-                    playerManager.setEventCooldown(event.getName(),player);
-                }
-            }
-        }
-
-        //Execute actions
-        ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
-                executeActionGroup, conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
-        executedEvent.executeActions();
+        //Check condition list
+        //CheckConditionsResult conditionsResult = checkConditions(conditionEvent,isPlaceholderAPI);
     }
 
     public ArrayList<CEEvent> getValidEvents(EventType eventType){
@@ -146,7 +150,7 @@ public class EventsManager {
         return validEvents;
     }
 
-    private CheckConditionsResult checkConditions(ConditionEvent conditionEvent, boolean isPlaceholderAPI){
+    private List<CheckConditionsResult> checkConditions(ConditionEvent conditionEvent, boolean isPlaceholderAPI){
         List<String> conditions = new ArrayList<String>(conditionEvent.getCurrentEvent().getConditions());
         String eventName = conditionEvent.getCurrentEvent().getName();
         Player player = conditionEvent.getPlayer();
@@ -159,11 +163,19 @@ public class EventsManager {
         //Check condition lines
         ArrayList<StoredVariable> storedVariables = conditionEvent.getEventVariables();
 
+        List<CheckConditionsResult> conditionsResults = new ArrayList<>();
+
         for(int i=0;i<conditions.size();i++) {
             String conditionLine = conditions.get(i);
             boolean approvedLine = false;
             String executedActionGroup = null;
-            if (conditionLine.contains(" execute ")) {
+            boolean isExecuteContinue = false;
+            if (conditionLine.contains(" executecontinue ")) {
+                String[] sep = conditionLine.split(" executecontinue ");
+                conditionLine = sep[0];
+                executedActionGroup = sep[1];
+                isExecuteContinue = true;
+            }else if (conditionLine.contains(" execute ")) {
                 String[] sep = conditionLine.split(" execute ");
                 conditionLine = sep[0];
                 executedActionGroup = sep[1];
@@ -171,7 +183,6 @@ public class EventsManager {
 
             String conditionLineWithReplacements = "";
             String[] orConditions = conditionLine.split(" or ");
-
             for(int c=0;c<orConditions.length;c++){
                 //If a miniCondition is NOT accomplished, it will check the next.
                 //If a miniCondition IS accomplished, it will finish this cycle.
@@ -204,8 +215,8 @@ public class EventsManager {
                         double firstArgNum = 0;
                         double secondArgNum = 0;
                         try{
-                            firstArgNum = Double.valueOf(firstArg);
-                            secondArgNum = Double.valueOf(secondArg);
+                            firstArgNum = Double.parseDouble(firstArg);
+                            secondArgNum = Double.parseDouble(secondArg);
                         }catch(NumberFormatException e){
 
                         }
@@ -225,6 +236,14 @@ public class EventsManager {
                                 if(firstArgLower.startsWith(secondArgLower)) approvedLine = true;break;
                             case NOT_STARTS_WITH:
                                 if(!firstArgLower.startsWith(secondArgLower)) approvedLine = true;break;
+                            case ENDS_WITH:
+                                if(firstArgLower.endsWith(secondArgLower)) approvedLine = true;break;
+                            case NOT_ENDS_WITH:
+                                if(!firstArgLower.endsWith(secondArgLower)) approvedLine = true;break;
+                            case MATCHES_WITH:
+                                if(firstArg.matches(secondArg)) approvedLine = true;break;
+                            case NOT_MATCHES_WITH:
+                                if(!firstArg.matches(secondArg)) approvedLine = true;break;
                             case CONTAINS:
                                 if(firstArgLower.contains(secondArgLower)) approvedLine = true;break;
                             case NOT_CONTAINS:
@@ -237,13 +256,16 @@ public class EventsManager {
                                 if(firstArgNum < secondArgNum) approvedLine = true;break;
                             case LOWER_EQUALS:
                                 if(firstArgNum <= secondArgNum) approvedLine = true;break;
+                            case IS_MULTIPLE_OF:
+                                if(firstArgNum % secondArgNum == 0) approvedLine = true;break;
+                            case NOT_IS_MULTIPLE_OF:
+                                if(firstArgNum % secondArgNum != 0) approvedLine = true;break;
                         }
                     }
                     if(approvedLine){
                         break;
                     }
                 }
-
                 if(approvedLine){
                     break;
                 }
@@ -258,19 +280,22 @@ public class EventsManager {
             // will return this action group.
             if(!approvedLine){
                 if(executedActionGroup == null){
-                    return new CheckConditionsResult(false,null);
+                    conditionsResults.add(new CheckConditionsResult(false,null));
+                    if(!isExecuteContinue) return conditionsResults;
                 }
                 continue;
             }
             if(approvedLine && executedActionGroup != null){
                 debugManager.sendActionsMessage(eventName,executedActionGroup,conditionEvent.getPlayer());
-                return new CheckConditionsResult(true,executedActionGroup);
+                conditionsResults.add(new CheckConditionsResult(true,executedActionGroup));
+                if(!isExecuteContinue) return conditionsResults;
             }
         }
 
         //If all condition lines are approved, the event is executed with the default actions.
         debugManager.sendActionsMessage(eventName,"default",conditionEvent.getPlayer());
-        return new CheckConditionsResult(true,null);
+        conditionsResults.add(new CheckConditionsResult(true,null));
+        return conditionsResults;
     }
 
     public boolean checkToConditionAction(List<String> conditionGroup, Player player, boolean isPlaceholderAPI,
@@ -306,8 +331,8 @@ public class EventsManager {
                         double firstArgNum = 0;
                         double secondArgNum = 0;
                         try{
-                            firstArgNum = Double.valueOf(firstArg);
-                            secondArgNum = Double.valueOf(secondArg);
+                            firstArgNum = Double.parseDouble(firstArg);
+                            secondArgNum = Double.parseDouble(secondArg);
                         }catch(NumberFormatException e){
 
                         }
@@ -327,6 +352,14 @@ public class EventsManager {
                                 if(firstArgLower.startsWith(secondArgLower)) approvedLine = true;break;
                             case NOT_STARTS_WITH:
                                 if(!firstArgLower.startsWith(secondArgLower)) approvedLine = true;break;
+                            case ENDS_WITH:
+                                if(firstArgLower.endsWith(secondArgLower)) approvedLine = true;break;
+                            case NOT_ENDS_WITH:
+                                if(!firstArgLower.endsWith(secondArgLower)) approvedLine = true;break;
+                            case MATCHES_WITH:
+                                if(firstArg.matches(secondArg)) approvedLine = true;break;
+                            case NOT_MATCHES_WITH:
+                                if(!firstArg.matches(secondArg)) approvedLine = true;break;
                             case CONTAINS:
                                 if(firstArgLower.contains(secondArgLower)) approvedLine = true;break;
                             case NOT_CONTAINS:
@@ -339,6 +372,10 @@ public class EventsManager {
                                 if(firstArgNum < secondArgNum) approvedLine = true;break;
                             case LOWER_EQUALS:
                                 if(firstArgNum <= secondArgNum) approvedLine = true;break;
+                            case IS_MULTIPLE_OF:
+                                if(firstArgNum % secondArgNum == 0) approvedLine = true;break;
+                            case NOT_IS_MULTIPLE_OF:
+                                if(firstArgNum % secondArgNum != 0) approvedLine = true;break;
                         }
                     }
                     if(approvedLine){
