@@ -164,9 +164,11 @@ public class ConditionEvent {
         String colorFormatName = "";
         String material = "";
         String loreString = "";
+        String colorFormatLoreString = "";
         short durability = 0;
         int amount = 0;
         List<String> loreList = new ArrayList<String>();
+        List<String> colorFormatLoreList = new ArrayList<String>();
         int customModelData = 0;
         String metaString = "";
 
@@ -185,10 +187,13 @@ public class ConditionEvent {
                     List<String> lore = meta.getLore();
                     for(int i=0;i<lore.size();i++) {
                         loreList.add(ChatColor.stripColor(lore.get(i)));
+                        colorFormatLoreList.add(lore.get(i).replace("§", "&"));
                         if(i == lore.size()-1) {
                             loreString = loreString+ChatColor.stripColor(lore.get(i));
+                            colorFormatLoreString = colorFormatLoreString+lore.get(i).replace("§", "&");
                         }else {
                             loreString = loreString+ChatColor.stripColor(lore.get(i))+" ";
+                            colorFormatLoreString = colorFormatLoreString+lore.get(i).replace("§", "&")+" ";
                         }
                     }
                 }
@@ -204,10 +209,14 @@ public class ConditionEvent {
         eventVariables.add(new StoredVariable("%item_durability%",durability+""));
         eventVariables.add(new StoredVariable("%item_amount%",amount+""));
         eventVariables.add(new StoredVariable("%item_lore%",loreString));
+        eventVariables.add(new StoredVariable("%item_color_format_lore%",colorFormatLoreString));
         eventVariables.add(new StoredVariable("%item_custom_model_data%",customModelData+""));
         eventVariables.add(new StoredVariable("%item_meta%",metaString));
         for(int i=0;i<loreList.size();i++) {
             eventVariables.add(new StoredVariable("%item_lore_line_"+(i+1)+"%", loreList.get(i)));
+        }
+        for(int i=0;i<colorFormatLoreList.size();i++) {
+            eventVariables.add(new StoredVariable("%item_color_format_lore_line_"+(i+1)+"%", colorFormatLoreList.get(i)));
         }
 
         return this;
