@@ -77,7 +77,11 @@ public class VariablesUtils {
                                 replaceVariableResult = startChar+replaceVariableResult+endChar;
                             }
                         }
-                        auxTextLine = auxTextLine.replace(bigVariable,replaceVariableResult);
+
+                        int firstIndex = auxTextLine.indexOf(bigVariable);
+                        if(firstIndex != -1){
+                            auxTextLine = auxTextLine.substring(0,firstIndex)+replaceVariableResult+auxTextLine.substring(firstIndex+bigVariable.length());
+                        }
                     }
 
                     c = lastPos;
