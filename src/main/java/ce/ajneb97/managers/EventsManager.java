@@ -217,9 +217,7 @@ public class EventsManager {
                         try{
                             firstArgNum = Double.parseDouble(firstArg);
                             secondArgNum = Double.parseDouble(secondArg);
-                        }catch(NumberFormatException e){
-
-                        }
+                        }catch(NumberFormatException ignored){}
 
                         switch(conditionalType){
                             case EQUALS:
@@ -333,9 +331,7 @@ public class EventsManager {
                         try{
                             firstArgNum = Double.parseDouble(firstArg);
                             secondArgNum = Double.parseDouble(secondArg);
-                        }catch(NumberFormatException e){
-
-                        }
+                        }catch(NumberFormatException ignored){}
 
                         switch(conditionalType){
                             case EQUALS:

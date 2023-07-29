@@ -3,6 +3,7 @@ package ce.ajneb97.managers;
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.configs.CEConfig;
 import ce.ajneb97.model.CEEvent;
+import ce.ajneb97.model.ConditionalType;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.actions.ActionGroup;
 import ce.ajneb97.model.actions.ActionTargeter;
@@ -161,13 +162,19 @@ public class VerifyManager {
             if(sep.length < 3) {
                 return false;
             }
+            if(!ConditionalType.isValidConditionType(sep[1])) return false;
+            /* To remove?
             if(!sep[1].equals("!=") && !sep[1].equals("==") && !sep[1].equals(">=") &&
                     !sep[1].equals("<=") && !sep[1].equals(">") && !sep[1].equals("<")
                     && !sep[1].equals("equals") && !sep[1].equals("!equals") && !sep[1].equals("contains")
                     && !sep[1].equals("!contains") && !sep[1].equals("startsWith") && !sep[1].equals("!startsWith")
-                    && !sep[1].equals("equalsIgnoreCase") && !sep[1].equals("!equalsIgnoreCase")) {
+                    && !sep[1].equals("equalsIgnoreCase") && !sep[1].equals("!equalsIgnoreCase")
+                    && !sep[1].equals("endsWith") && !sep[1].equals("!endsWith")
+                    && !sep[1].equals("matchesWith") && !sep[1].equals("!matchesWith")
+                    && !sep[1].equals("isMultipleOf") && !sep[1].equals("!isMultipleOf")) {
                 return false;
             }
+            */
         }
         return true;
     }

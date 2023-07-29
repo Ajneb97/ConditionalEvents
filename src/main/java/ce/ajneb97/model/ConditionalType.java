@@ -1,5 +1,9 @@
 package ce.ajneb97.model;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public enum ConditionalType {
     EQUALS("=="),
     NOT_EQUALS("!="),
@@ -22,11 +26,16 @@ public enum ConditionalType {
     IS_MULTIPLE_OF("isMultipleOf"),
     NOT_IS_MULTIPLE_OF("!isMultipleOf");
     private String text;
+    private static final List<String> AVAILABLE_TYPES = Arrays.stream(values()).map(Enum::name).collect(Collectors.toList());
     ConditionalType(String text) {
         this.text = text;
     }
 
     public String getText() {
         return text;
+    }
+
+    public static boolean isValidConditionType(String string) {
+        return AVAILABLE_TYPES.contains(string);
     }
 }
