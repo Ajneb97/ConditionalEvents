@@ -156,13 +156,17 @@ public class VerifyManager {
 
     public boolean verifyCondition(String line) {
         String[] sepExecute = line.contains(" executecontinue ") ? line.split(" executecontinue ") : line.split(" execute ");
-        String[] sepOr = sepExecute[0].split(" or ");
-        for(int i=0;i<sepOr.length;i++) {
-            String[] sep = sepOr[i].split(" ");
-            if(sep.length < 3) {
-                return false;
-            }
-            if(!ConditionalType.isValidConditionType(sep[1])) return false;
+        if(sepExecute[0].contains(" or ")) {
+            //To prevent (for now) that condition contains "or" and "and" (Mixed conditions)
+            //In a future, probably a system to support parenthesis might be a good idea to support ( or ) and ( or )
+            if(sepExecute[0].contains(" and ")) return false;
+            String[] sepOr = sepExecute[0].split(" or ");
+            for(int i=0;i<sepOr.length;i++) {
+                String[] sep = sepOr[i].split(" ");
+                if(sep.length < 3) {
+                    return false;
+                }
+                if(!ConditionalType.isValidConditionType(sep[1])) return false;
             /* To remove?
             if(!sep[1].equals("!=") && !sep[1].equals("==") && !sep[1].equals(">=") &&
                     !sep[1].equals("<=") && !sep[1].equals(">") && !sep[1].equals("<")
@@ -175,7 +179,21 @@ public class VerifyManager {
                 return false;
             }
             */
+            }
+            return true;
+        }else{
+            //To prevent (for now) that condition contains "and" and "or" (Mixed conditions)
+            //In a future, probably a system to support parenthesis might be a good idea to support ( or ) and ( or )
+            if(sepExecute[0].contains(" or ")) return false;
+            String[] sepOr = sepExecute[0].split(" and ");
+            for(int i=0;i<sepOr.length;i++) {
+                String[] sep = sepOr[i].split(" ");
+                if(sep.length < 3) {
+                    return false;
+                }
+                if(!ConditionalType.isValidConditionType(sep[1])) return false;
+            }
+            return true;
         }
-        return true;
     }
 }
