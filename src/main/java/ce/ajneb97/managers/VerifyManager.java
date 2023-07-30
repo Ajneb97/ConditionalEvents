@@ -3,6 +3,7 @@ package ce.ajneb97.managers;
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.configs.CEConfig;
 import ce.ajneb97.model.CEEvent;
+import ce.ajneb97.model.ConditionalType;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.actions.ActionGroup;
 import ce.ajneb97.model.actions.ActionTargeter;
@@ -154,21 +155,45 @@ public class VerifyManager {
     }
 
     public boolean verifyCondition(String line) {
-        String[] sepExecute = line.split(" execute ");
-        String[] sepOr = sepExecute[0].split(" or ");
-        for(int i=0;i<sepOr.length;i++) {
-            String[] sep = sepOr[i].split(" ");
-            if(sep.length < 3) {
-                return false;
-            }
+        String[] sepExecute = line.contains(" executecontinue ") ? line.split(" executecontinue ") : line.split(" execute ");
+        if(sepExecute[0].contains(" or ")) {
+            //To prevent (for now) that condition contains "or" and "and" (Mixed conditions)
+            //In a future, probably a system to support parenthesis might be a good idea to support ( or ) and ( or )
+            if(sepExecute[0].contains(" and ")) return false;
+            String[] sepOr = sepExecute[0].split(" or ");
+            for(int i=0;i<sepOr.length;i++) {
+                String[] sep = sepOr[i].split(" ");
+                if(sep.length < 3) {
+                    return false;
+                }
+                if(!ConditionalType.isValidConditionType(sep[1])) return false;
+            /* To remove?
             if(!sep[1].equals("!=") && !sep[1].equals("==") && !sep[1].equals(">=") &&
                     !sep[1].equals("<=") && !sep[1].equals(">") && !sep[1].equals("<")
                     && !sep[1].equals("equals") && !sep[1].equals("!equals") && !sep[1].equals("contains")
                     && !sep[1].equals("!contains") && !sep[1].equals("startsWith") && !sep[1].equals("!startsWith")
-                    && !sep[1].equals("equalsIgnoreCase") && !sep[1].equals("!equalsIgnoreCase")) {
+                    && !sep[1].equals("equalsIgnoreCase") && !sep[1].equals("!equalsIgnoreCase")
+                    && !sep[1].equals("endsWith") && !sep[1].equals("!endsWith")
+                    && !sep[1].equals("matchesWith") && !sep[1].equals("!matchesWith")
+                    && !sep[1].equals("isMultipleOf") && !sep[1].equals("!isMultipleOf")) {
                 return false;
             }
+            */
+            }
+            return true;
+        }else{
+            //To prevent (for now) that condition contains "and" and "or" (Mixed conditions)
+            //In a future, probably a system to support parenthesis might be a good idea to support ( or ) and ( or )
+            if(sepExecute[0].contains(" or ")) return false;
+            String[] sepOr = sepExecute[0].split(" and ");
+            for(int i=0;i<sepOr.length;i++) {
+                String[] sep = sepOr[i].split(" ");
+                if(sep.length < 3) {
+                    return false;
+                }
+                if(!ConditionalType.isValidConditionType(sep[1])) return false;
+            }
+            return true;
         }
-        return true;
     }
 }
