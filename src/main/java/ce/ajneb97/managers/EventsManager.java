@@ -5,10 +5,7 @@ import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.ConditionalType;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
-import ce.ajneb97.model.internal.CheckConditionsResult;
-import ce.ajneb97.model.internal.ConditionEvent;
-import ce.ajneb97.model.internal.ExecutedEvent;
-import ce.ajneb97.model.internal.VariablesProperties;
+import ce.ajneb97.model.internal.*;
 import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.TimeUtils;
 import ce.ajneb97.utils.VariablesUtils;
@@ -169,15 +166,31 @@ public class EventsManager {
                 executedActionGroup = sep[1];
             }
 
-            String conditionLineWithReplacements = "";
-            String[] orConditions = conditionLine.split(" or ");
+            String[] separatedConditions = null;
+            SeparatorType separatorType = SeparatorType.NONE;
+            if(conditionLine.contains(" or ")){
+                separatedConditions = conditionLine.split(" or ");
+                separatorType = SeparatorType.OR;
+            }else if(conditionLine.contains(" and ")){
+                separatedConditions = conditionLine.split(" and ");
+                separatorType = SeparatorType.AND;
+            }else{
+                separatedConditions = new String[]{conditionLine};
+            }
 
-            for(int c=0;c<orConditions.length;c++){
-                //If a miniCondition is NOT accomplished, it will check the next.
-                //If a miniCondition IS accomplished, it will finish this cycle.
-                //If this cycle is finished with NO accomplished miniConditions, the
-                // whole condition was not satisfied so the checkConditions method returns FALSE.
-                String miniCondition = orConditions[c];
+            String conditionLineWithReplacements = "";
+
+            //AND
+            //If a miniCondition is NOT accomplished, it will finish this cycle.
+            //If a miniCondition is accomplished, it will check the next.
+
+            //OR
+            //If a miniCondition is NOT accomplished, it will check the next.
+            //If a miniCondition IS accomplished, it will finish this cycle.
+            //If this cycle is finished with NO accomplished miniConditions, the
+            // whole condition was not satisfied so the checkConditions method returns FALSE.
+            for(int c=0;c<separatedConditions.length;c++){
+                String miniCondition = separatedConditions[c];
 
                 for(ConditionalType conditionalType : ConditionalType.values()){
                     String textToFind = " "+conditionalType.getText()+" ";
@@ -193,8 +206,12 @@ public class EventsManager {
                         arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,variablesProperties,false);
 
                         conditionLineWithReplacements = conditionLineWithReplacements+"'"+arg1+"'"+textToFind+"'"+arg2+"'";
-                        if(c != orConditions.length-1){
-                            conditionLineWithReplacements = conditionLineWithReplacements+" or ";
+                        if(c != separatedConditions.length-1){
+                            if(separatorType.equals(SeparatorType.OR)){
+                                conditionLineWithReplacements = conditionLineWithReplacements+" or ";
+                            }else if(separatorType.equals(SeparatorType.AND)){
+                                conditionLineWithReplacements = conditionLineWithReplacements+" and ";
+                            }
                         }
 
                         String firstArg = !mathFormulas ? arg1 : MathUtils.calculate(arg1);
@@ -244,11 +261,23 @@ public class EventsManager {
                     }
                 }
 
+                if(separatorType.equals(SeparatorType.AND)){
+                    if(approvedLine){
+                        if(c != separatedConditions.length-1){
+                            //If not last condition, should verify again for the next
+                            approvedLine = false;
+                        }
+                        continue;
+                    }else{
+                        break;
+                    }
+                }
+
                 if(approvedLine){
                     break;
                 }
             }
-            //Bukkit.getConsoleSender().sendMessage(conditionLine+" -> ¿aprobada? "+approvedLine);
+
             debugManager.sendConditionMessage(eventName,conditionLineWithReplacements,approvedLine,conditionEvent.getPlayer(),i==0);
             //If approvedLine is false, the conditions are not satisfied. Returns FALSE.
             //If approvedLine is false, but there is an executedActionGroup, it will continue with the next
@@ -281,10 +310,21 @@ public class EventsManager {
             boolean approvedLine = false;
             ArrayList<StoredVariable> storedVariables = new ArrayList<StoredVariable>();
 
-            String[] orConditions = conditionLine.split(" or ");
+            String[] separatedConditions = null;
+            SeparatorType separatorType = SeparatorType.NONE;
+            if(conditionLine.contains(" or ")){
+                separatedConditions = conditionLine.split(" or ");
+                separatorType = SeparatorType.OR;
+            }else if(conditionLine.contains(" and ")){
+                separatedConditions = conditionLine.split(" and ");
+                separatorType = SeparatorType.AND;
+            }else{
+                separatedConditions = new String[]{conditionLine};
+            }
 
-            for(int c=0;c<orConditions.length;c++){
-                String miniCondition = orConditions[c];
+
+            for(int c=0;c<separatedConditions.length;c++){
+                String miniCondition = separatedConditions[c];
 
                 for(ConditionalType conditionalType : ConditionalType.values()){
                     String textToFind = " "+conditionalType.getText()+" ";
@@ -342,6 +382,18 @@ public class EventsManager {
                         }
                     }
                     if(approvedLine){
+                        break;
+                    }
+                }
+
+                if(separatorType.equals(SeparatorType.AND)){
+                    if(approvedLine){
+                        if(c != separatedConditions.length-1){
+                            //If not last condition, should verify again for the next
+                            approvedLine = false;
+                        }
+                        continue;
+                    }else{
                         break;
                     }
                 }

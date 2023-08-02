@@ -204,7 +204,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 	}
 
 	public void call(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager) {
-		// /ce call <event> %variable1%=<value1>;%variable2%=<value2>
+		// /ce call <event> (optional)%variable1%=<value1>;%variable2%=<value2> (optional)player:<player>
 		if(args.length <= 1) {
 			msgManager.sendMessage(sender,config.getString("Messages.commandCallError"),true);
 			return;
@@ -222,12 +222,26 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		}
 
 		String actionLine = eventName;
+		String playerName = null;
 		if(args.length >= 3){
-			actionLine += ";"+args[2];
+			if(args[2].startsWith("player:")){
+				playerName = args[2].replace("player:","");
+			}else{
+				actionLine += ";"+args[2];
+			}
+		}
+		if(args.length >= 4 && args[3].startsWith("player:")){
+			playerName = args[3].replace("player:","");
 		}
 
 		Player player = null;
-		if(sender instanceof Player){
+		if(playerName != null){
+			player = Bukkit.getPlayer(playerName);
+			if(player == null){
+				msgManager.sendMessage(sender,config.getString("Messages.playerNotOnline"),true);
+				return;
+			}
+		}else if(sender instanceof Player){
 			player = (Player) sender;
 		}
 
@@ -250,7 +264,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce debug <event> (optional)<player> &8Enables/disables debug information for an event."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce reset <player>/all <event>/all &8Resets an event data for a player."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce enable/disable <event> &8Enable or disables an event."));
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce call <event> (optional)%variable1%=<value1>;%variableN%=<valueN> &8Executes a 'call' event."));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce call <event> (optional)%variable1%=<value1>;%variableN%=<valueN> (optional)player:<player> &8Executes a 'call' event."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',""));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&7[ [ &8[&bConditionalEvents&8] &7] ]"));
 	}

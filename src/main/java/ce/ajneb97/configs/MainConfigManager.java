@@ -84,6 +84,10 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("playerNotOnline:")){
+                getConfig().set("Messages.playerNotOnline", "&cThat player is not online.");
+                saveConfig();
+            }
             if(!text.contains("debugEnabledPlayer:")){
                 getConfig().set("Messages.debugEnabledPlayer", "&aDebug now enabled for event &7%event% &aand player &7%player%&a!");
                 getConfig().set("Messages.debugDisabledPlayer", "&aDebug disabled for event &7%event% &aand player &7%player%&a!");

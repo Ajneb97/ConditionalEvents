@@ -2,11 +2,11 @@ Events:
   event8:
     type: player_command
     conditions:
-      - "%main_command% == /discord"
+      - "%main_command% == /youtube"
     actions:
       default:
         - 'cancel_event: true'
-        - "message: &7Check the Discord: &b<link>"
+        - "message: &7Check the Youtube: &b<link>"
   event9:
     type: player_command
     cooldown: 15
