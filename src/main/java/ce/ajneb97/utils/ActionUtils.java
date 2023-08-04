@@ -419,6 +419,7 @@ public class ActionUtils {
     public static void setOnFire(Player player,String actionLine){
         // set_on_fire: <duration_on_ticks>
         player.setFireTicks(Integer.parseInt(actionLine));
+        
     }
 
     public static void wait(String actionLine, ExecutedEvent executedEvent){

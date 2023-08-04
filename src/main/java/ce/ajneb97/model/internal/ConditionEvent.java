@@ -122,6 +122,8 @@ public class ConditionEvent {
                 actionVariable = "SHIFT_RIGHT_CLICK";
             }else if(actionName.contains("LEFT_CLICK")) {
                 actionVariable = "SHIFT_LEFT_CLICK";
+            }else if(action.equals(Action.PHYSICAL)) {
+                actionVariable = "PHYSICAL";
             }
         }else {
             if(actionName.contains("RIGHT_CLICK")) {

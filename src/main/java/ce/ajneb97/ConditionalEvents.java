@@ -9,6 +9,7 @@ import ce.ajneb97.libs.itemselectevent.ItemSelectListener;
 import ce.ajneb97.libs.itemselectevent.ItemSelectListenerNew;
 import ce.ajneb97.listeners.*;
 import ce.ajneb97.listeners.dependencies.CitizensListener;
+import ce.ajneb97.managers.dependencies.Metrics;
 import ce.ajneb97.listeners.dependencies.WGRegionEventsListener;
 import ce.ajneb97.managers.*;
 import ce.ajneb97.managers.commandregister.CommandRegisterManager;
@@ -66,6 +67,7 @@ public class ConditionalEvents extends JavaPlugin {
 		if(getServer().getPluginManager().getPlugin("PlaceholderAPI") != null){
 			new ExpansionCE(this).register();
 		}
+		Metrics metrics = new Metrics(this, 19371);
 
 		Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &eHas been enabled! &fVersion: "+version));
         Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &eThanks for using my plugin!   &f~Ajneb97"));
