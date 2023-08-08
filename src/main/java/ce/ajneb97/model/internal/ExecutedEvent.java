@@ -340,6 +340,9 @@ public class ExecutedEvent {
             case SET_ON_FIRE:
                 ActionUtils.setOnFire(player, actionLine);
                 return;
+            case FREEZE:
+                ActionUtils.freeze(player, actionLine);
+                return;
             case GIVE_ITEM:
                 ActionUtils.giveItem(player, actionLine);
                 return;

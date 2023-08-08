@@ -16,8 +16,7 @@ public class OtherUtils {
 
     public static boolean isNew() {
         if(Bukkit.getVersion().contains("1.16") || Bukkit.getVersion().contains("1.17")
-                || Bukkit.getVersion().contains("1.18") || Bukkit.getVersion().contains("1.19")
-                || Bukkit.getVersion().contains("1.20")) {
+                || Bukkit.getVersion().contains("1.18") || isChatNew()) {
             return true;
         }else {
             return false;

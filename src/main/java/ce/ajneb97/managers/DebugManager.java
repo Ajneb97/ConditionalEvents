@@ -58,6 +58,11 @@ public class DebugManager {
         if(debugSenders.isEmpty()){
             return;
         }
+        if(condition.endsWith(" or ")){
+            condition = condition.substring(0,condition.length()-4);
+        }else if(condition.endsWith(" and ")){
+            condition = condition.substring(0,condition.length()-5);
+        }
 
         String result = "&a&lAPPROVED";
         if(!approved){
