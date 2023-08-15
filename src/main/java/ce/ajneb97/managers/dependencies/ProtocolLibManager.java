@@ -58,6 +58,14 @@ public class ProtocolLibManager {
                     }
                 }
 
+                if(isPaper && OtherUtils.isChatNew()){
+                    for(boolean b : packet.getBooleans().getValues()){
+                        if(b){
+                            return;
+                        }
+                    }
+                }
+
                 for(Object object : packet.getModifier().getValues()) {
                     if(object == null) {
                         continue;
@@ -79,6 +87,7 @@ public class ProtocolLibManager {
                         if(object instanceof Component){
                             WrappedChatComponent wrappedChatComponent = AdventureComponentConverter
                                     .fromComponent((Component)object);
+
                             jsonMessage = wrappedChatComponent.getJson();
                             normalMessage = OtherUtils.fromJsonMessageToNormalMessage(jsonMessage);
                         }

@@ -108,7 +108,8 @@ public class ConditionEvent {
         if(OtherUtils.isLegacy()){
             eventVariables.add(new StoredVariable("%block_data%",block.getData()+""));
         }else{
-            eventVariables.add(new StoredVariable("%block_data%",block.getBlockData().getAsString()));
+            eventVariables.add(new StoredVariable("%block_data%",
+                    BlockUtils.getBlockDataStringFromObject(block.getBlockData())));
         }
 
         return this;

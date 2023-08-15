@@ -260,6 +260,9 @@ public class ExecutedEvent {
             case DROP_ITEM:
                 ActionUtils.dropItem(actionLine);
                 return;
+            case SET_BLOCK:
+                ActionUtils.setBlock(actionLine);
+                return;
             // Could or could not be a player event
             case FIREWORK:
                 ActionUtils.firework(player, actionLine, plugin);

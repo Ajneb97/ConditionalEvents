@@ -147,7 +147,7 @@ public class PlayerEventsListener implements Listener {
         }
 
         Player target = null;
-        if(entity instanceof Player){
+        if(entity instanceof Player) {
             target = (Player) entity;
         }
 

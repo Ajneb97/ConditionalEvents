@@ -11,6 +11,8 @@ import ce.ajneb97.model.internal.ExecutedEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -269,6 +271,38 @@ public class ActionUtils {
         //Drop Item
         if(location != null){
             location.getWorld().dropItemNaturally(location,item);
+        }
+    }
+
+    public static void setBlock(String actionLine){
+        // set_block: location:<x>,<y>,<z>,<world>;id:<id>
+        String[] sep = actionLine.replace("set_block: ","").split(";");
+        Location location = null;
+        Material material = Material.AIR;
+        String blockData = null;
+
+        for(String property : sep){
+            if(property.startsWith("location:")){
+                String[] locationSplit = property.replace("location:", "").split(",");
+                location = new Location(
+                        Bukkit.getWorld(locationSplit[3]),
+                        Double.parseDouble(locationSplit[0]),
+                        Double.parseDouble(locationSplit[1]),
+                        Double.parseDouble(locationSplit[2])
+                );
+            }else if(property.startsWith("id:")){
+                material = Material.valueOf(property.replace("id:",""));
+            }else if(property.startsWith("block_data:")){
+                blockData = property.replace("block_data:","");
+            }
+        }
+
+        if(location != null){
+            Block block = location.getWorld().getBlockAt(location);
+            block.setType(material);
+            if(blockData != null){
+                block.setBlockData(BlockUtils.getBlockDataFromString(blockData,material));
+            }
         }
     }
 
