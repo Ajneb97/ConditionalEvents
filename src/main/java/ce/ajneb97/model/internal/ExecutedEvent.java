@@ -150,7 +150,7 @@ public class ExecutedEvent {
 
             if(targeterType.equals(ActionTargeterType.TO_ALL)) {
                 for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
-                    executeAction(globalPlayer,actionType,actionLine);
+                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType);
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_TARGET)){
                 executeAction(target,actionType,actionLine);
@@ -158,14 +158,14 @@ public class ExecutedEvent {
                 String world = parametersLine;
                 for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
                     if(globalPlayer.getWorld().getName().equals(world)){
-                        executeAction(globalPlayer,actionType,actionLine);
+                        executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType);
                     }
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_PLAYER)){
                 String playerName = parametersLine;
                 Player onlinePlayer = Bukkit.getPlayer(playerName);
                 if(onlinePlayer != null){
-                    executeAction(onlinePlayer,actionType,actionLine);
+                    executeActionsFromToTarget(variablesProperties,onlinePlayer,actionLine,actionType);
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_RANGE)){
                 String[] sep = parametersLine.split(";");
@@ -184,7 +184,7 @@ public class ExecutedEvent {
                     }
                 }
                 for(Player globalPlayer : globalPlayers){
-                    executeAction(globalPlayer,actionType,actionLine);
+                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType);
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_CONDITION)) {
                 String toConditionGroup = parametersLine;
@@ -204,7 +204,7 @@ public class ExecutedEvent {
                 }
 
                 for(Player globalPlayer : players){
-                    executeAction(globalPlayer,actionType,actionLine);
+                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType);
                 }
             }
             else {
@@ -216,6 +216,14 @@ public class ExecutedEvent {
                 return;
             }
         }
+    }
+
+    private void executeActionsFromToTarget(VariablesProperties variablesProperties,Player player,String actionLine,ActionType actionType){
+        //Replaces %to:<variable>% variables
+        variablesProperties.setToTarget(player);
+        String toActionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties,false);
+
+        executeAction(player,actionType,toActionLine);
     }
 
     private void executeAction(Player player,ActionType type,String actionLine){

@@ -169,9 +169,13 @@ public class VariablesUtils {
     public static String replaceVariable(String variable,VariablesProperties variablesProperties,boolean smallVariable){
         Player finalPlayer = variablesProperties.getPlayer();
         Player target = variablesProperties.getTarget();
+        Player to = variablesProperties.getToTarget();
         if(variable.startsWith("target:") && target != null){
             finalPlayer = target;
             variable = variable.replace("target:","");
+        }else if(variable.startsWith("to:") && to != null){
+            finalPlayer = to;
+            variable = variable.replace("to:","");
         }
 
         //Event variables

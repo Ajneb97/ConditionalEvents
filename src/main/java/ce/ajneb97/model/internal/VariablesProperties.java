@@ -12,6 +12,7 @@ public class VariablesProperties {
     private ArrayList<StoredVariable> eventVariables;
     private Player player;
     private Player target;
+    private Player toTarget;
     private boolean isPlaceholderAPI;
     private CEEvent event;
     private Event minecraftEvent;
@@ -72,5 +73,13 @@ public class VariablesProperties {
 
     public void setMinecraftEvent(Event minecraftEvent) {
         this.minecraftEvent = minecraftEvent;
+    }
+
+    public Player getToTarget() {
+        return toTarget;
+    }
+
+    public void setToTarget(Player toTarget) {
+        this.toTarget = toTarget;
     }
 }
