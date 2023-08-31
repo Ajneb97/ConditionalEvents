@@ -210,28 +210,64 @@ public class ActionUtils {
     }
 
     public static void playSound(Player player,String actionLine){
+        // playsound: sound;volume;pitch;(optional)<x>,<y>,<z>,<world>
         String[] sep = actionLine.split(";");
         Sound sound = null;
-        int volume = 0;
+        float volume = 0;
         float pitch = 0;
         try {
             sound = Sound.valueOf(sep[0]);
-            volume = Integer.valueOf(sep[1]);
-            pitch = Float.valueOf(sep[2]);
+            volume = Float.parseFloat(sep[1]);
+            pitch = Float.parseFloat(sep[2]);
         }catch(Exception e ) {
             Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix+
                     MessagesManager.getColoredMessage(" &7Sound Name: &c"+sep[0]+" &7is not valid. Change it in the config!"));
             return;
         }
 
-        player.playSound(player.getLocation(), sound, volume, pitch);
+        Location location = null;
+        if(sep.length >= 4){
+            String[] locParameters = sep[3].split(",");
+            location = new Location(
+                    Bukkit.getWorld(locParameters[3]),
+                    Double.parseDouble(locParameters[0]),
+                    Double.parseDouble(locParameters[1]),
+                    Double.parseDouble(locParameters[2])
+            );
+        }
+
+        if(location != null){
+            location.getWorld().playSound(location,sound,volume,pitch);
+        }else{
+            player.playSound(player.getLocation(), sound, volume, pitch);
+        }
+
     }
 
     public static void playSoundResourcePack(Player player,String actionLine){
+        // playsound_resource_pack: sound;volume;pitch;(optional)<x>,<y>,<z>,<world>
         String[] sep = actionLine.split(";");
         String sound = sep[0];
-        int volume = Integer.valueOf(sep[1]);
-        float pitch = Float.valueOf(sep[2]);
+        float volume = Float.parseFloat(sep[1]);
+        float pitch = Float.parseFloat(sep[2]);
+
+        Location location = null;
+        if(sep.length >= 4){
+            String[] locParameters = sep[3].split(",");
+            location = new Location(
+                    Bukkit.getWorld(locParameters[3]),
+                    Double.parseDouble(locParameters[0]),
+                    Double.parseDouble(locParameters[1]),
+                    Double.parseDouble(locParameters[2])
+            );
+        }
+
+        if(location != null){
+            location.getWorld().playSound(location,sound,volume,pitch);
+        }else{
+            player.playSound(player.getLocation(), sound, volume, pitch);
+        }
+
         player.playSound(player.getLocation(), sound, volume, pitch);
     }
 
@@ -384,7 +420,7 @@ public class ActionUtils {
     }
 
     public static void particle(Player player,String actionLine){
-        // particle: effect:<effect_name> offset:<x>;<y>;<z> speed:<speed> amount:<amount> location(optional): <x>;<y>;<z>;<world>
+        // particle: effect:<effect_name> offset:<x>;<y>;<z> speed:<speed> amount:<amount> location(optional):<x>;<y>;<z>;<world>
         String effectName = null;
         double offsetX = 0;double offsetY = 0;double offsetZ = 0;
         double speed = 0;

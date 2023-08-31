@@ -327,7 +327,11 @@ public class VariablesUtils {
             String variableLR = variable.replace("world_time_", "");
             World world = Bukkit.getWorld(variableLR);
             return world.getTime()+"";
-        }else if(variable.equals("empty")) {
+        }else if(variable.equals("world_is_raining")){
+            World world = finalPlayer.getWorld();
+            return world.hasStorm()+"";
+        }
+        else if(variable.equals("empty")) {
             return "";
         }
 

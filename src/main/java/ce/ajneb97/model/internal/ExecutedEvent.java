@@ -278,6 +278,12 @@ public class ExecutedEvent {
             case PARTICLE:
                 ActionUtils.particle(player, actionLine);
                 return;
+            case PLAYSOUND:
+                ActionUtils.playSound(player, actionLine);
+                return;
+            case PLAYSOUND_RESOURCE_PACK:
+                ActionUtils.playSoundResourcePack(player, actionLine);
+                return;
             case CALL_EVENT:
                 ActionUtils.callEvent(actionLine,player,plugin);
                 return;
@@ -326,12 +332,6 @@ public class ExecutedEvent {
                 return;
             case KICK:
                 ActionUtils.kick(player, actionLine);
-                return;
-            case PLAYSOUND:
-                ActionUtils.playSound(player, actionLine);
-                return;
-            case PLAYSOUND_RESOURCE_PACK:
-                ActionUtils.playSoundResourcePack(player, actionLine);
                 return;
             case ACTIONBAR:
                 ActionUtils.actionbar(player, actionLine, plugin);
