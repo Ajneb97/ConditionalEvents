@@ -19,9 +19,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
@@ -201,6 +201,7 @@ public class PlayerEventsListener implements Listener {
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.addVariables(
                 new StoredVariable("%damage%",MathUtils.truncate(event.getFinalDamage())+""),
+                new StoredVariable("%original_damage%",MathUtils.truncate(event.getDamage())+""),
                 new StoredVariable("%attack_type%", attackType)
         ).setCommonItemVariables(item)
                 .setCommonVictimVariables(damaged)
@@ -242,14 +243,13 @@ public class PlayerEventsListener implements Listener {
             }
         }
 
-
-
         new ConditionEvent(plugin, player, event, EventType.PLAYER_DAMAGE, null)
                 .addVariables(
                         new StoredVariable("%damager_type%",damagerType),
                         new StoredVariable("%damager_name%",damagerName),
                         new StoredVariable("%damager_color_format_name%",damagerNameColorFormat),
                         new StoredVariable("%damage%", MathUtils.truncate(event.getFinalDamage())+""),
+                        new StoredVariable("%original_damage%",MathUtils.truncate(event.getDamage())+""),
                         new StoredVariable("%cause%",cause)
                 ).checkEvent();
     }
@@ -427,6 +427,16 @@ public class PlayerEventsListener implements Listener {
     public void onOpenInventory(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
         new ConditionEvent(plugin, player, event, EventType.PLAYER_OPEN_INVENTORY, null)
+                .addVariables(
+                        new StoredVariable("%inventory_type%",event.getInventory().getType().name()),
+                        new StoredVariable("%inventory_title%",ChatColor.stripColor(event.getView().getTitle()))
+                ).checkEvent();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCloseInventory(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+        new ConditionEvent(plugin, player, event, EventType.PLAYER_CLOSE_INVENTORY, null)
                 .addVariables(
                         new StoredVariable("%inventory_type%",event.getInventory().getType().name()),
                         new StoredVariable("%inventory_title%",ChatColor.stripColor(event.getView().getTitle()))

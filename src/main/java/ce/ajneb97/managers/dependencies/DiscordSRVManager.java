@@ -7,7 +7,7 @@ import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageChannel;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.User;
 import org.bukkit.Bukkit;
-import org.bukkit.FireworkEffect;
+import java.awt.Color;
 import org.bukkit.entity.Player;
 
 public class DiscordSRVManager {
@@ -18,7 +18,8 @@ public class DiscordSRVManager {
     }
 
     public void sendEmbedMessage(String actionLine){
-        // discordsrv_embed: channel:<channel>;author_name:<name>;title:<title>;player_skin_name:<name>
+        // discordsrv_embed: channel:<channel>;author_name:<name>;title:<title>;player_skin_name:<name>;
+        //color:<r>,<g>,<b>
         EmbedBuilder embed = new EmbedBuilder();
 
         String channel = null;
@@ -27,8 +28,9 @@ public class DiscordSRVManager {
         String title = null;
         String footer = null;
         String description = null;
-        int color = 0;
-
+        int colorR = 0;
+        int colorG = 0;
+        int colorB = 0;
 
         String[] sep = actionLine.split(";");
         for(String s : sep) {
@@ -55,7 +57,16 @@ public class DiscordSRVManager {
                     }
                     break;
                 case "color":
-                    color = Integer.parseInt(value);
+                    try{
+                        String[] color = value.split(",");
+                        colorR = Integer.parseInt(color[0]);
+                        colorG = Integer.parseInt(color[1]);
+                        colorB = Integer.parseInt(color[2]);
+                    }catch(Exception e){
+                        colorR = 0;
+                        colorG = 0;
+                        colorB = 0;
+                    }
                     break;
                 case "description":
                     description = value;
@@ -66,7 +77,7 @@ public class DiscordSRVManager {
         embed.setAuthor(authorName,null,authorAvatarURL);
         embed.setTitle(title);
         embed.setFooter(footer);
-        embed.setColor(color);
+        embed.setColor(new Color(colorR, colorG, colorB));
         embed.setDescription(description);
 
         MessageChannel messageChannel = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName(channel);
