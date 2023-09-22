@@ -1,5 +1,6 @@
 package ce.ajneb97.utils;
 
+import ce.ajneb97.ConditionalEvents;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
@@ -9,6 +10,7 @@ import org.bukkit.block.Skull;
 import org.bukkit.block.data.BlockData;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 public class BlockUtils {
@@ -25,21 +27,26 @@ public class BlockUtils {
             try {
                 profileField = skullBlock.getClass().getDeclaredField("profile");
                 profileField.setAccessible(true);
-                try {
-                    GameProfile gameProfile = (GameProfile) profileField.get(skullBlock);
-                    if(gameProfile != null && gameProfile.getProperties() != null &&
-                            gameProfile.getProperties().containsKey("textures")) {
-                        Collection<Property> properties = gameProfile.getProperties().get("textures");
-                        for(Property p : properties) {
+                GameProfile gameProfile = (GameProfile) profileField.get(skullBlock);
+                if(gameProfile != null && gameProfile.getProperties() != null &&
+                        gameProfile.getProperties().containsKey("textures")) {
+                    Collection<Property> properties = gameProfile.getProperties().get("textures");
+                    ServerVersion serverVersion = ConditionalEvents.serverVersion;
+                    for(Property p : properties) {
+                        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R2)){
+                            String pName = (String)p.getClass().getMethod("name").invoke(p);
+                            if(pName.equals("textures")){
+                                return (String)p.getClass().getMethod("value").invoke(p);
+                            }
+                        }else{
                             if(p.getName().equals("textures")) {
                                 return p.getValue();
                             }
                         }
                     }
-                } catch (IllegalArgumentException | IllegalAccessException e) {
-                    e.printStackTrace();
                 }
-            } catch (NoSuchFieldException | SecurityException e) {
+            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException
+                     | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
         }

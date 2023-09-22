@@ -17,6 +17,7 @@ import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.model.internal.UpdateCheckerResult;
 import ce.ajneb97.tasks.PlayerDataSaveTask;
+import ce.ajneb97.utils.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -28,7 +29,8 @@ public class ConditionalEvents extends JavaPlugin {
   
 	PluginDescriptionFile pdfFile = getDescription();
 	public String version = pdfFile.getVersion();
-	public static String prefix = MessagesManager.getColoredMessage("&4[&bConditionalEvents&4]");
+	public static ServerVersion serverVersion;
+	public static String prefix;
 
 	private EventsManager eventsManager;
 	private DependencyManager dependencyManager;
@@ -45,6 +47,9 @@ public class ConditionalEvents extends JavaPlugin {
 
 	
 	public void onEnable(){
+		setVersion();
+		setPrefix();
+
 		this.eventsManager = new EventsManager(this);
 		this.dependencyManager = new DependencyManager(this);
 		this.bungeeMessagingManager = new BungeeMessagingManager(this);
@@ -106,6 +111,15 @@ public class ConditionalEvents extends JavaPlugin {
 		if(dependencyManager.isWorldGuardEvents()){
 			pm.registerEvents(new WGRegionEventsListener(this), this);
 		}
+	}
+
+	public void setPrefix(){
+		prefix = MessagesManager.getColoredMessage("&4[&bConditionalEvents&4]");
+	}
+
+	public void setVersion(){
+		String packageName = Bukkit.getServer().getClass().getPackage().getName();
+		serverVersion = ServerVersion.valueOf(packageName.replace("org.bukkit.craftbukkit.", ""));
 	}
 
 	public void reloadEvents(){

@@ -1,31 +1,30 @@
 package ce.ajneb97.utils;
+import ce.ajneb97.ConditionalEvents;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 
 public class OtherUtils {
 
     public static boolean isChatNew() {
-        if(Bukkit.getVersion().contains("1.19") || Bukkit.getVersion().contains("1.20")) {
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_19_R1)){
             return true;
-        }else {
-            return false;
         }
+        return false;
     }
 
     public static boolean isNew() {
-        if(Bukkit.getVersion().contains("1.16") || Bukkit.getVersion().contains("1.17")
-                || Bukkit.getVersion().contains("1.18") || isChatNew()) {
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_16_R1)){
             return true;
-        }else {
-            return false;
         }
+        return false;
     }
 
     public static boolean isLegacy() {
-        if(Bukkit.getVersion().contains("1.13") || Bukkit.getVersion().contains("1.14") ||
-                Bukkit.getVersion().contains("1.15") || isNew()) {
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_13_R1)){
             return false;
         }else {
             return true;

@@ -50,9 +50,9 @@ public class ItemUtils {
 
         GameProfile profile = null;
         if(id == null) {
-            profile = new GameProfile(UUID.randomUUID(), owner);
+            profile = new GameProfile(UUID.randomUUID(), "");
         }else {
-            profile = new GameProfile(UUID.fromString(id), owner);
+            profile = new GameProfile(UUID.fromString(id), "");
         }
         profile.getProperties().put("textures", new Property("textures", texture));
 
