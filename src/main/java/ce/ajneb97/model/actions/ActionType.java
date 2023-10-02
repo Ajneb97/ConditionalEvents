@@ -29,6 +29,7 @@ public enum ActionType {
     FREEZE,
     GIVE_ITEM,
     DROP_ITEM,
+    SET_ITEM,
     SET_BLOCK,
     WAIT,
     WAIT_TICKS,

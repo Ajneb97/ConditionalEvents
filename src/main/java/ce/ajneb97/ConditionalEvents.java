@@ -95,12 +95,12 @@ public class ConditionalEvents extends JavaPlugin {
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PlayerEventsListener(this), this);
 		pm.registerEvents(new ItemEventsListener(this), this);
-		pm.registerEvents(new ArmorListener(new ArrayList<String>()), this);
+		pm.registerEvents(new ArmorListener(new ArrayList<>()), this);
 		pm.registerEvents(new ItemSelectListener(this), this);
 		pm.registerEvents(new OtherEventsListener(this), this);
 		pm.registerEvents(new CustomEventListener(this), this);
 
-		if(!Bukkit.getVersion().contains("1.8")) {
+		if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_9_R1)){
 			pm.registerEvents(new ItemSelectListenerNew(), this);
 			pm.registerEvents(new PlayerEventsListenerNew(this), this);
 		}

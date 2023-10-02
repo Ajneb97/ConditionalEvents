@@ -366,6 +366,7 @@ public class PlayerEventsListener implements Listener {
                 .checkEvent();
     }
 
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
@@ -380,10 +381,14 @@ public class PlayerEventsListener implements Listener {
                         new StoredVariable("%from_y%",locationFrom.getY()+""),
                         new StoredVariable("%from_z%",locationFrom.getZ()+""),
                         new StoredVariable("%from_world%",locationFrom.getWorld().getName()+""),
+                        new StoredVariable("%from_yaw%",locationFrom.getYaw()+""),
+                        new StoredVariable("%from_pitch%",locationFrom.getPitch()+""),
                         new StoredVariable("%to_x%",locationTo.getX()+""),
                         new StoredVariable("%to_y%",locationTo.getY()+""),
                         new StoredVariable("%to_z%",locationTo.getZ()+""),
-                        new StoredVariable("%to_world%",locationTo.getWorld().getName()+"")
+                        new StoredVariable("%to_world%",locationTo.getWorld().getName()+""),
+                        new StoredVariable("%to_yaw%",locationTo.getYaw()+""),
+                        new StoredVariable("%to_pitch%",locationTo.getPitch()+"")
                 ).checkEvent();
     }
 

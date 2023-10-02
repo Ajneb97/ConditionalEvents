@@ -14,19 +14,14 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Firework;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -310,12 +305,26 @@ public class ActionUtils {
         }
     }
 
+    public static void setItem(String actionLine,Event minecraftEvent){
+        String[] sep = actionLine.replace("set_item: ","").split(";");
+        if(minecraftEvent instanceof PlayerFishEvent){
+            PlayerFishEvent event = (PlayerFishEvent) minecraftEvent;
+            Entity caught = event.getCaught();
+            if(caught != null && caught instanceof Item){
+                Item item = (Item) caught;
+                item.setItemStack(ItemUtils.getItemFromProperties(sep));
+            }
+        }
+    }
+
     public static void setBlock(String actionLine){
         // set_block: location:<x>,<y>,<z>,<world>;id:<id>
         String[] sep = actionLine.replace("set_block: ","").split(";");
         Location location = null;
         Material material = Material.AIR;
         String blockData = null;
+        String skullTexture = null;
+        String skullOwner = null;
 
         for(String property : sep){
             if(property.startsWith("location:")){
@@ -330,6 +339,10 @@ public class ActionUtils {
                 material = Material.valueOf(property.replace("id:",""));
             }else if(property.startsWith("block_data:")){
                 blockData = property.replace("block_data:","");
+            }else if(property.startsWith("skull_texture:")) {
+                skullTexture = property.replace("skull_texture:", "");
+            }else if(property.startsWith("skull_owner:")) {
+                skullOwner = property.replace("skull_owner:", "");
             }
         }
 
@@ -338,6 +351,9 @@ public class ActionUtils {
             block.setType(material);
             if(blockData != null){
                 block.setBlockData(BlockUtils.getBlockDataFromString(blockData,material));
+            }
+            if(skullTexture != null || skullOwner != null){
+                BlockUtils.setHeadTextureData(block,skullTexture,skullOwner);
             }
         }
     }

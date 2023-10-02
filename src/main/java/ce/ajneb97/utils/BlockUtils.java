@@ -5,6 +5,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.SkullType;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.block.data.BlockData;
@@ -12,6 +13,7 @@ import org.bukkit.block.data.BlockData;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.UUID;
 
 public class BlockUtils {
 
@@ -52,6 +54,31 @@ public class BlockUtils {
         }
 
         return "";
+    }
+
+    public static void setHeadTextureData(Block block,String texture,String owner){
+        Skull skullBlock = (Skull) block.getState();
+        if(OtherUtils.isLegacy()) {
+            skullBlock.setSkullType(SkullType.PLAYER);
+            skullBlock.setRawData((byte)1);
+        }
+
+        if(owner != null){
+            skullBlock.setOwner(owner);
+            skullBlock.update();
+            return;
+        }
+
+        GameProfile profile = new GameProfile(UUID.randomUUID(), "");
+        profile.getProperties().put("textures", new Property("textures", texture));
+        try {
+            Field profileField = skullBlock.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(skullBlock, profile);
+        } catch (IllegalArgumentException|NoSuchFieldException|SecurityException|IllegalAccessException error) {
+            error.printStackTrace();
+        }
+        skullBlock.update();
     }
 
     public static String getBlockDataStringFromObject(BlockData blockData){
