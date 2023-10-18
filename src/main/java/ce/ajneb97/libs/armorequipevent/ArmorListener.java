@@ -2,6 +2,8 @@ package ce.ajneb97.libs.armorequipevent;
 
 import java.util.List;
 
+import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.utils.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -87,12 +89,17 @@ public class ArmorListener implements Listener{
 					}
 				}
 			}else{
+				ServerVersion serverVersion = ConditionalEvents.serverVersion;
 				if(isAirOrNull(e.getCursor()) && !isAirOrNull(e.getCurrentItem())){// unequip with no new item going into the slot.
 					newArmorType = ArmorType.matchType(e.getCurrentItem());
 				}
-				// e.getCurrentItem() == Unequip
-				// e.getCursor() == Equip
-				// newArmorType = ArmorType.matchType(!isAirOrNull(e.getCurrentItem()) ? e.getCurrentItem() : e.getCursor());
+				if(ConditionalEvents.serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_9_R1)){
+					ItemStack offhandItem = e.getWhoClicked().getInventory().getItemInOffHand();
+					if(e.getSlotType() == SlotType.ARMOR && !isAirOrNull(offhandItem)){
+						newArmorType = ArmorType.matchType(offhandItem);
+						newArmorPiece = offhandItem;
+					}
+				}
 			}
 			if(newArmorType != null && e.getRawSlot() == newArmorType.getSlot()){
 				EquipMethod method = EquipMethod.PICK_DROP;
@@ -122,15 +129,40 @@ public class ArmorListener implements Listener{
 					}
 				}
 			}
+
 			ArmorType newArmorType = ArmorType.matchType(e.getItem());
-			if(newArmorType != null){
-				if(newArmorType.equals(ArmorType.HELMET) && isAirOrNull(e.getPlayer().getInventory().getHelmet()) || newArmorType.equals(ArmorType.CHESTPLATE) && isAirOrNull(e.getPlayer().getInventory().getChestplate()) || newArmorType.equals(ArmorType.LEGGINGS) && isAirOrNull(e.getPlayer().getInventory().getLeggings()) || newArmorType.equals(ArmorType.BOOTS) && isAirOrNull(e.getPlayer().getInventory().getBoots())){
-					ArmorEquipEvent armorEquipEvent = new ArmorEquipEvent(e.getPlayer(), EquipMethod.HOTBAR, ArmorType.matchType(e.getItem()), null, e.getItem());
-					Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
-					if(armorEquipEvent.isCancelled()){
-						e.setCancelled(true);
-						player.updateInventory();
+			if(newArmorType != null && !isHead(e.getItem())){
+				ServerVersion serverVersion = ConditionalEvents.serverVersion;
+
+				ItemStack newArmorPiece = e.getItem();
+				ItemStack oldArmorPiece = null;
+
+				if(ConditionalEvents.serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R1)){
+					switch(newArmorType){
+						case HELMET:
+							oldArmorPiece = player.getInventory().getHelmet();
+							break;
+						case CHESTPLATE:
+							oldArmorPiece = player.getInventory().getChestplate();
+							break;
+						case LEGGINGS:
+							oldArmorPiece = player.getInventory().getLeggings();
+							break;
+						case BOOTS:
+							oldArmorPiece = player.getInventory().getBoots();
+							break;
 					}
+				}else{
+					if(!(newArmorType.equals(ArmorType.HELMET) && isAirOrNull(e.getPlayer().getInventory().getHelmet()) || newArmorType.equals(ArmorType.CHESTPLATE) && isAirOrNull(e.getPlayer().getInventory().getChestplate()) || newArmorType.equals(ArmorType.LEGGINGS) && isAirOrNull(e.getPlayer().getInventory().getLeggings()) || newArmorType.equals(ArmorType.BOOTS) && isAirOrNull(e.getPlayer().getInventory().getBoots()))){
+						return;
+					}
+				}
+
+				ArmorEquipEvent armorEquipEvent = new ArmorEquipEvent(e.getPlayer(), EquipMethod.HOTBAR, ArmorType.matchType(newArmorPiece), oldArmorPiece, newArmorPiece);
+				Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
+				if(armorEquipEvent.isCancelled()){
+					e.setCancelled(true);
+					player.updateInventory();
 				}
 			}
 		}
@@ -152,16 +184,6 @@ public class ArmorListener implements Listener{
 				event.setCancelled(true);
 			}
 		}
-		// Debug shit
-		/*System.out.println("Slots: " + event.getInventorySlots().toString());
-		System.out.println("Raw Slots: " + event.getRawSlots().toString());
-		if(event.getCursor() != null){
-			System.out.println("Cursor: " + event.getCursor().getType().name());
-		}
-		if(event.getOldCursor() != null){
-			System.out.println("OldCursor: " + event.getOldCursor().getType().name());
-		}
-		System.out.println("Type: " + event.getType().name());*/
 	}
 
 	@EventHandler
@@ -205,5 +227,10 @@ public class ArmorListener implements Listener{
 	 */
 	public static boolean isAirOrNull(ItemStack item){
 		return item == null || item.getType().equals(Material.AIR);
+	}
+
+	public static boolean isHead(ItemStack item) {
+		String materialName = item.getType().name();
+		return materialName.endsWith("_HEAD") || materialName.startsWith("SKULL_");
 	}
 }
