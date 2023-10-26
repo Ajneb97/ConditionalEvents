@@ -246,8 +246,13 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		}
 
 		if(ActionUtils.callEvent(actionLine,player,plugin)){
-			msgManager.sendMessage(sender,config.getString("Messages.commandCallCorrect")
-					.replace("%event%",eventName),true);
+			if(player != null){
+				msgManager.sendMessage(sender,config.getString("Messages.commandCallCorrectPlayer")
+						.replace("%event%",eventName).replace("%player%",player.getName()),true);
+			}else{
+				msgManager.sendMessage(sender,config.getString("Messages.commandCallCorrect")
+						.replace("%event%",eventName),true);
+			}
 		}else{
 			msgManager.sendMessage(sender,config.getString("Messages.commandCallFailed")
 					.replace("%event%",eventName),true);
@@ -286,11 +291,14 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 				return completions;
 			}else {
 				if((args[0].equalsIgnoreCase("debug") || args[0].equalsIgnoreCase("enable")
-						|| args[0].equalsIgnoreCase("disable") || args[0].equalsIgnoreCase("call")) && args.length == 2) {
-					List<String> completions = getEventsCompletions(args,1,false);
+						|| args[0].equalsIgnoreCase("disable")) && args.length == 2) {
+					List<String> completions = getEventsCompletions(args,1,false,null);
+					return completions;
+				}else if(args[0].equalsIgnoreCase("call") && args.length == 2) {
+					List<String> completions = getEventsCompletions(args,1,false,EventType.CALL);
 					return completions;
 				}else if(args[0].equalsIgnoreCase("reset") && args.length == 3) {
-					List<String> completions = getEventsCompletions(args,2,true);
+					List<String> completions = getEventsCompletions(args,2,true,null);
 					return completions;
 				}else if(args[0].equalsIgnoreCase("reset") && args.length == 2) {
 					List<String> completions = new ArrayList<String>();
@@ -311,7 +319,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		return null;
 	}
 
-	public List<String> getEventsCompletions(String[] args,int argEventPos,boolean addAll){
+	public List<String> getEventsCompletions(String[] args,int argEventPos,boolean addAll,EventType eventType){
 		List<String> completions = new ArrayList<String>();
 
 		String argEvent = args[argEventPos];
@@ -325,7 +333,13 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		ArrayList<CEEvent> events = plugin.getEventsManager().getEvents();
 		for(CEEvent event : events) {
 			if(argEvent.isEmpty() || event.getName().toLowerCase().startsWith(argEvent.toLowerCase())) {
-				completions.add(event.getName());
+				if(eventType != null){
+					if(event.getEventType().equals(eventType)){
+						completions.add(event.getName());
+					}
+				}else{
+					completions.add(event.getName());
+				}
 			}
 		}
 

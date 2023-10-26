@@ -102,7 +102,10 @@ public class ConditionalEvents extends JavaPlugin {
 
 		if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_9_R1)){
 			pm.registerEvents(new ItemSelectListenerNew(), this);
-			pm.registerEvents(new PlayerEventsListenerNew(this), this);
+			pm.registerEvents(new PlayerEventsListenerNew1_9(this), this);
+		}
+		if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_16_R1)){
+			pm.registerEvents(new PlayerEventsListenerNew1_16(this), this);
 		}
 
 		if(dependencyManager.isCitizens()){

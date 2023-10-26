@@ -84,6 +84,10 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("commandCallCorrectPlayer:")){
+                getConfig().set("Messages.commandCallCorrectPlayer", "&aEvent &7%event% &asuccessfully executed for player &7%player%&a.");
+                saveConfig();
+            }
             if(!text.contains("playerNotOnline:")){
                 getConfig().set("Messages.playerNotOnline", "&cThat player is not online.");
                 saveConfig();

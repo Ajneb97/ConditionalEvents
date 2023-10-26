@@ -9,10 +9,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class PlayerEventsListenerNew implements Listener {
+public class PlayerEventsListenerNew1_9 implements Listener {
 
     public ConditionalEvents plugin;
-    public PlayerEventsListenerNew(ConditionalEvents plugin) {
+    public PlayerEventsListenerNew1_9(ConditionalEvents plugin) {
         this.plugin = plugin;
     }
 

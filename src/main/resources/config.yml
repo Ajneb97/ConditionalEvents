@@ -37,6 +37,7 @@ Messages:
   commandCallError: '&cUse &7/ce call <event> (optional)%variable1%=<value1>;%variableN%=<valueN> (optional)player:<player>'
   commandCallInvalidEvent: '&cYou can only execute a CALL event.'
   commandCallCorrect: '&aEvent &7%event% &asuccessfully executed.'
+  commandCallCorrectPlayer: '&aEvent &7%event% &asuccessfully executed for player &7%player%&a.'
   commandCallFailed: '&cEvent &7%event% &ccould not be executed. Maybe a format error?'
   playerNotOnline: '&cThat player is not online.'
 Events:

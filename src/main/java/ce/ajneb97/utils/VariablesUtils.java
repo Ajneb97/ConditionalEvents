@@ -153,12 +153,12 @@ public class VariablesUtils {
                 // %block_below_<distance>%
                 int distance = Integer.parseInt(variable.replace("block_below_", ""));
                 Location l = block.getLocation().clone().add(0, -distance, 0);
-                return PostEventVariableResult.replaced(getBlockTypeInLocation(l));
+                return PostEventVariableResult.replaced(GlobalVariablesUtils.getBlockTypeInLocation(l));
             }else if(variable.startsWith("block_above_")){
                 // %block_above_<distance>%
                 int distance = Integer.parseInt(variable.replace("block_above_", ""));
                 Location l = block.getLocation().clone().add(0, distance, 0);
-                return PostEventVariableResult.replaced(getBlockTypeInLocation(l));
+                return PostEventVariableResult.replaced(GlobalVariablesUtils.getBlockTypeInLocation(l));
             }
         }
 
@@ -188,150 +188,50 @@ public class VariablesUtils {
 
         //Global variables
         if(variable.equals("player")){
-            return finalPlayer.getName();
+            // %player%
+            return GlobalVariablesUtils.variablePlayer(finalPlayer);
         }else if(variable.startsWith("playerblock_below_")){
             // %playerblock_below_<distance>%
-            int distance = Integer.parseInt(variable.replace("playerblock_below_", ""));
-            Location l = finalPlayer.getLocation().clone().add(0, -distance, 0);
-            return getBlockTypeInLocation(l);
+            return GlobalVariablesUtils.variablePlayerBlockBelow(finalPlayer,variable);
         }else if(variable.startsWith("playerblock_above_")){
             // %playerblock_above_<distance>%
-            int distance = Integer.parseInt(variable.replace("playerblock_above_", ""));
-            Location l = finalPlayer.getLocation().clone().add(0, distance, 0);
-            return getBlockTypeInLocation(l);
+            return GlobalVariablesUtils.variablePlayerBlockAbove(finalPlayer,variable);
         }else if(variable.equals("playerblock_inside")){
             // %playerblock_inside%
-            Location l = finalPlayer.getLocation();
-            return getBlockTypeInLocation(l);
+            return GlobalVariablesUtils.variablePlayerBlockInside(finalPlayer);
         }else if(variable.equals("player_is_outside")){
-            Location l = finalPlayer.getLocation();
-            Block block = getNextHighestBlock(l);
-            if(block == null){
-                return "true";
-            }else{
-                return "false";
-            }
+            // %player_is_outside%
+            return GlobalVariablesUtils.variablePlayerIsOutside(finalPlayer);
         }else if(variable.equals("random_player")) {
-            int random = new Random().nextInt(Bukkit.getOnlinePlayers().size());
-            ArrayList<Player> players = new ArrayList<Player>(Bukkit.getOnlinePlayers());
-            if(players.size() == 0) {
-                return "none";
-            }else {
-                return players.get(random).getName();
-            }
+            // %random_player%
+            return GlobalVariablesUtils.variableRandomPlayer();
         }else if(variable.startsWith("random_player_")) {
             // %random_player_<world>%
-            String worldName = variable.replace("random_player_", "");
-            try {
-                World world = Bukkit.getWorld(worldName);
-                List<Player> players = world.getPlayers();
-                if(players.size() == 0) {
-                    return "none";
-                }else {
-                    int random = new Random().nextInt(players.size());
-                    return players.get(random).getName();
-                }
-            }catch(Exception e) {
-                return "none";
-            }
+            return GlobalVariablesUtils.variableRandomPlayerWorld(variable);
         }else if(variable.startsWith("random_")) {
             // %random_min_max%
-            String variableLR = variable.replace("random_", "");
-            String[] variableLRSplit = variableLR.split("_");
-            int num1 = Integer.valueOf(variableLRSplit[0]);
-            int num2 = Integer.valueOf(variableLRSplit[1]);
-            int numFinal = MathUtils.getRandomNumber(num1, num2);
-            return numFinal+"";
+            return GlobalVariablesUtils.variableRandomMinMax(variable);
         }else if(variable.startsWith("randomword_")) {
             // %randomword_word1-word2-word3%
-            String variableLR = variable.replace("randomword_", "");
-            String[] variableLRSplit = variableLR.split("-");
-            Random r = new Random();
-            String word = variableLRSplit[r.nextInt(variableLRSplit.length)];
-            return word;
+            return GlobalVariablesUtils.variableRandomWorld(variable);
         }else if(variable.startsWith("playerarmor_name_")) {
             // %playerarmor_name_<type>%
-            String armorType = variable.replace("playerarmor_name_", "");
-            ItemStack item = getArmorItem(finalPlayer,armorType);
-            String name = "";
-            if(item != null && item.hasItemMeta()){
-                ItemMeta meta = item.getItemMeta();
-                if(meta.hasDisplayName()){
-                    name = ChatColor.stripColor(meta.getDisplayName());
-                }
-            }
-            return name;
+            return GlobalVariablesUtils.variablePlayerArmorName(finalPlayer,variable);
         }else if(variable.startsWith("playerarmor_")) {
             // %playerarmor_<type>%
-            String armorType = variable.replace("playerarmor_", "");
-            ItemStack item = getArmorItem(finalPlayer,armorType);
-            String material = "AIR";
-            if(item != null) {
-                material = item.getType().name();
-            }
-            return material;
+            return GlobalVariablesUtils.variablePlayerArmorType(finalPlayer,variable);
         }else if(variable.startsWith("block_at_")) {
             // %block_at_x_y_z_world%
-            String variableLR = variable.replace("block_at_", "");
-            String[] variableLRSplit = variableLR.split("_");
-            try {
-                int x = Integer.valueOf(variableLRSplit[0]);
-                int y = Integer.valueOf(variableLRSplit[1]);
-                int z = Integer.valueOf(variableLRSplit[2]);
-                String worldName = "";
-                for(int i=3;i<variableLRSplit.length;i++) {
-                    if(i == variableLRSplit.length - 1) {
-                        worldName = worldName+variableLRSplit[i];
-                    }else {
-                        worldName = worldName+variableLRSplit[i]+"_";
-                    }
-                }
-                World world = Bukkit.getWorld(worldName);
-                return world.getBlockAt(x, y, z).getType().name();
-            }catch(Exception e) {
-                return variable;
-            }
+            return GlobalVariablesUtils.variableBlockAt(variable);
         }else if(variable.startsWith("is_nearby_")) {
             // %is_nearby_x_y_z_world_radius%
-            String variableLR = variable.replace("is_nearby_", "");
-            String[] variableLRSplit = variableLR.split("_");
-            try {
-                int x = Integer.valueOf(variableLRSplit[0]);
-                int y = Integer.valueOf(variableLRSplit[1]);
-                int z = Integer.valueOf(variableLRSplit[2]);
-                String worldName = "";
-                for(int i=3;i<variableLRSplit.length-1;i++) {
-                    if(i == variableLRSplit.length - 2) {
-                        worldName = worldName+variableLRSplit[i];
-                    }else {
-                        worldName = worldName+variableLRSplit[i]+"_";
-                    }
-                }
-                World world = Bukkit.getWorld(worldName);
-                double radius = Double.valueOf(variableLRSplit[variableLRSplit.length-1]);
-
-                Location l1 = new Location(world,x,y,z);
-                Location l2 = finalPlayer.getLocation();
-                double distance = l1.distance(l2);
-
-                if(distance <= radius) {
-                    return "true";
-                }else {
-                    return "false";
-                }
-            }catch(Exception e) {
-                return "false";
-            }
+            return GlobalVariablesUtils.variableIsNearby(finalPlayer,variable);
         }else if(variable.startsWith("world_time_")) {
             // %world_time_<world>%
-            String variableLR = variable.replace("world_time_", "");
-            World world = Bukkit.getWorld(variableLR);
-            return world.getTime()+"";
+            return GlobalVariablesUtils.variableWorldTime(variable);
         }else if(variable.equals("world_is_raining")){
-            World world = finalPlayer.getWorld();
-            return world.hasStorm()+"";
-        }
-        else if(variable.equals("empty")) {
+            return GlobalVariablesUtils.variableWorldIsRaining(finalPlayer);
+        }else if(variable.equals("empty")) {
             return "";
         }
 
@@ -358,38 +258,9 @@ public class VariablesUtils {
         return variable;
     }
 
-    private static ItemStack getArmorItem(Player player,String armorType){
-        ItemStack item = null;
-        if(armorType.equals("helmet")) {
-            item = player.getEquipment().getHelmet();
-        }else if(armorType.equals("chestplate")) {
-            item = player.getEquipment().getChestplate();
-        }else if(armorType.equals("leggings")) {
-            item = player.getEquipment().getLeggings();
-        }else if(armorType.equals("boots")){
-            item = player.getEquipment().getBoots();
-        }
-        return item;
-    }
 
-    private static String getBlockTypeInLocation(Location location){
-        Block block = location.getBlock();
-        String blockType = "AIR";
-        if(block != null) {
-            blockType = block.getType().name();
-        }
-        return blockType;
-    }
 
-    private static Block getNextHighestBlock(Location location){
-        int y = location.getBlockY();
-        Location locationClone = location.clone();
-        for(int i=y+1;i<location.getWorld().getMaxHeight();i++){
-            Block nextBlock = locationClone.add(0,1,0).getBlock();
-            if(!nextBlock.getType().isAir()){
-                return nextBlock;
-            }
-        }
-        return null;
-    }
+
+
+
 }
