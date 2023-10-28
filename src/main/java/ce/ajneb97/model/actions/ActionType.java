@@ -27,6 +27,7 @@ public enum ActionType {
     CLOSE_INVENTORY,
     SET_ON_FIRE,
     FREEZE,
+    HEAL,
     GIVE_ITEM,
     DROP_ITEM,
     SET_ITEM,

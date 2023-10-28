@@ -1,5 +1,5 @@
 main: ce.ajneb97.ConditionalEvents
-version: 4.42.1
+version: 4.43.1
 name: ConditionalEvents
 api-version: 1.13
 softdepend: [PlaceholderAPI,Citizens,WorldGuardEvents,WorldGuard,ProtocolLib,DiscordSRV]

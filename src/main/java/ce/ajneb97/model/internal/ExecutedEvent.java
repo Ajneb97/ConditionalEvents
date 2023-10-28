@@ -357,6 +357,9 @@ public class ExecutedEvent {
             case FREEZE:
                 ActionUtils.freeze(player, actionLine);
                 return;
+            case HEAL:
+                ActionUtils.heal(player, actionLine);
+                return;
             case GIVE_ITEM:
                 ActionUtils.giveItem(player, actionLine);
                 return;

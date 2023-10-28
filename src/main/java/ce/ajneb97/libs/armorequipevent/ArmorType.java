@@ -1,5 +1,7 @@
 package ce.ajneb97.libs.armorequipevent;
 
+import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.utils.ServerVersion;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -25,6 +27,18 @@ public enum ArmorType{
 	public static ArmorType matchType(final ItemStack itemStack){
 		if(ArmorListener.isAirOrNull(itemStack)) return null;
 		String type = itemStack.getType().name();
+
+		ServerVersion serverVersion = ConditionalEvents.serverVersion;
+		if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_13_R1)){
+			if(type.equals("CARVED_PUMPKIN")){
+				return HELMET;
+			}
+		}else{
+			if(type.equals("PUMPKIN")){
+				return HELMET;
+			}
+		}
+
 		if(type.endsWith("_HELMET") || type.startsWith("SKULL_") || type.endsWith("_HEAD")) return HELMET;
 		else if(type.endsWith("_CHESTPLATE") || type.equals("ELYTRA")) return CHESTPLATE;
 		else if(type.endsWith("_LEGGINGS")) return LEGGINGS;

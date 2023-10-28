@@ -11,6 +11,7 @@ import ce.ajneb97.model.internal.ExecutedEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.ConsoleCommandSender;
@@ -513,6 +514,19 @@ public class ActionUtils {
         if(Bukkit.getVersion().contains("1.17") || Bukkit.getVersion().contains("1.18")
             || OtherUtils.isChatNew()) {
             player.setFreezeTicks(Integer.parseInt(actionLine));
+        }
+    }
+
+    public static void heal(Player player,String actionLine){
+        // heal: <amount>
+        //double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double maxHealth = player.getMaxHealth();
+        double currentHealth = player.getHealth();
+        double newHealth = currentHealth+Double.parseDouble(actionLine);
+        if(newHealth >= maxHealth){
+            player.setHealth(maxHealth);
+        }else{
+            player.setHealth(newHealth);
         }
     }
 

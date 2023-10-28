@@ -231,6 +231,16 @@ public class ArmorListener implements Listener{
 
 	public static boolean isHead(ItemStack item) {
 		String materialName = item.getType().name();
+		ServerVersion serverVersion = ConditionalEvents.serverVersion;
+		if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_13_R1)){
+			if(materialName.equals("CARVED_PUMPKIN")){
+				return true;
+			}
+		}else{
+			if(materialName.equals("PUMPKIN")){
+				return true;
+			}
+		}
 		return materialName.endsWith("_HEAD") || materialName.startsWith("SKULL_");
 	}
 }
