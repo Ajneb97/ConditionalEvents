@@ -23,8 +23,10 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -97,6 +99,65 @@ public class ActionUtils {
         }
     }
 
+    public static void removeItemSlot(Player player,String actionLine){
+        // remove_item_slot: <slot>;<amount>
+        // slot: HAND,OFF_HAND,CHEST,FEET,HEAD,LEGS
+        String[] sep = actionLine.split(";");
+        String slot = sep[0];
+        int amount = Integer.parseInt(sep[1]);
+
+        ItemStack item = null;
+        PlayerInventory inventory = player.getInventory();
+        switch(slot){
+            case "HAND":
+                item = inventory.getItemInHand();
+                break;
+            case "OFF_HAND":
+                item = inventory.getItemInOffHand();
+                break;
+            case "HELMET":
+                item = inventory.getHelmet();
+                break;
+            case "CHESTPLATE":
+                item = inventory.getChestplate();
+                break;
+            case "LEGGINGS":
+                item = inventory.getLeggings();
+                break;
+            case "BOOTS":
+                item = inventory.getBoots();
+                break;
+        }
+
+        if(item != null){
+            int newAmount = item.getAmount()-amount;
+            if(newAmount <= 0){
+                switch(slot){
+                    case "HAND":
+                        inventory.setItemInHand(null);
+                        break;
+                    case "OFF_HAND":
+                        inventory.setItemInOffHand(null);
+                        break;
+                    case "HELMET":
+                        inventory.setHelmet(null);
+                        break;
+                    case "CHESTPLATE":
+                        inventory.setChestplate(null);
+                        break;
+                    case "LEGGINGS":
+                        inventory.setLeggings(null);
+                        break;
+                    case "BOOTS":
+                        inventory.setBoots(null);
+                        break;
+                }
+            }else{
+                item.setAmount(newAmount);
+            }
+            player.updateInventory();
+        }
+    }
     public static void removeItem(Player player,String actionLine){
         // remove_item: <id>;<amount>;datavalue: <datavalue>;name: <name>;lorecontains: <lore_line>
         // remove_item: %checkitem_remove...%
@@ -574,10 +635,9 @@ public class ActionUtils {
         }
         if(minecraftEvent instanceof BlockBreakEvent) {
             BlockBreakEvent blockBreakEvent = (BlockBreakEvent) minecraftEvent;
-            boolean cancel = Boolean.valueOf(actionLine);
+            boolean cancel = Boolean.parseBoolean(actionLine);
             if(cancel){
                 blockBreakEvent.setDropItems(false);
-                blockBreakEvent.setExpToDrop(0);
             }
         }
     }
@@ -714,6 +774,17 @@ public class ActionUtils {
                 executedEvent.getTarget(),
                 plugin
         ).executeActions();
+    }
+
+    public static void setEventXp(String actionLine,Event minecraftEvent){
+        int xp = Integer.parseInt(actionLine.replace("set_event_xp: ",""));
+        if(minecraftEvent instanceof PlayerFishEvent){
+            PlayerFishEvent event = (PlayerFishEvent) minecraftEvent;
+            event.setExpToDrop(xp);
+        }else if(minecraftEvent instanceof BlockBreakEvent){
+            BlockBreakEvent event = (BlockBreakEvent) minecraftEvent;
+            event.setExpToDrop(xp);
+        }
     }
 
     /*

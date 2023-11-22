@@ -126,7 +126,7 @@ public class ItemUtils {
         if(name != null) {
             meta.setDisplayName(MessagesManager.getColoredMessage(name));
         }
-        if(lore != null) {
+        if(!lore.isEmpty()) {
             List<String> loreCopy = new ArrayList<>(lore);
             for(int i=0;i<loreCopy.size();i++) {
                 loreCopy.set(i, MessagesManager.getColoredMessage(loreCopy.get(i)));
@@ -138,7 +138,7 @@ public class ItemUtils {
             meta.setCustomModelData(customModelData);
         }
 
-        if(enchants != null) {
+        if(!enchants.isEmpty()) {
             for(int i=0;i<enchants.size();i++) {
                 String[] sep2 = enchants.get(i).split(";");
                 String enchantName = sep2[0];
@@ -146,7 +146,7 @@ public class ItemUtils {
                 meta.addEnchant(Enchantment.getByName(enchantName), enchantLevel, true);
             }
         }
-        if(flags != null) {
+        if(!flags.isEmpty()) {
             for(int i=0;i<flags.size();i++) {
                 meta.addItemFlags(ItemFlag.valueOf(flags.get(i)));
             }

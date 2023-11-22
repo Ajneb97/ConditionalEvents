@@ -262,6 +262,9 @@ public class ExecutedEvent {
             case PREVENT_JOIN:
                 ActionUtils.preventJoin(actionLine,minecraftEvent);
                 return;
+            case SET_EVENT_XP:
+                ActionUtils.setEventXp(actionLine,minecraftEvent);
+                return;
             case DISCORDSRV_EMBED:
                 ActionUtils.discordSRVEmbed(actionLine,plugin);
                 return;
@@ -326,6 +329,9 @@ public class ExecutedEvent {
                 return;
             case REMOVE_ITEM:
                 ActionUtils.removeItem(player, actionLine);
+                return;
+            case REMOVE_ITEM_SLOT:
+                ActionUtils.removeItemSlot(player, actionLine);
                 return;
             case GIVE_POTION_EFFECT:
                 ActionUtils.givePotionEffect(player, actionLine);
