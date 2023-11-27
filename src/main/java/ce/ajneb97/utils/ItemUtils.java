@@ -1,17 +1,24 @@
 package ce.ajneb97.utils;
 
+import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.managers.MessagesManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,21 +55,40 @@ public class ItemUtils {
             return;
         }
 
-        GameProfile profile = null;
-        if(id == null) {
-            profile = new GameProfile(UUID.randomUUID(), "");
-        }else {
-            profile = new GameProfile(UUID.fromString(id), "");
-        }
-        profile.getProperties().put("textures", new Property("textures", texture));
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R2)){
+            UUID uuid = id != null ? UUID.fromString(id) : UUID.randomUUID();
+            PlayerProfile profile = Bukkit.createPlayerProfile(uuid);
+            PlayerTextures textures = profile.getTextures();
+            URL url;
+            try {
+                String decoded = new String(Base64.getDecoder().decode(texture));
+                url = new URL(decoded.substring("{\"textures\":{\"SKIN\":{\"url\":\"".length(), decoded.length() - "\"}}}".length()));
+            } catch (MalformedURLException error) {
+                error.printStackTrace();
+                return;
+            }
+            textures.setSkin(url);
+            profile.setTextures(textures);
+            skullMeta.setOwnerProfile(profile);
+        }else{
+            GameProfile profile = null;
+            if(id == null) {
+                profile = new GameProfile(UUID.randomUUID(), owner != null ? owner : "");
+            }else {
+                profile = new GameProfile(UUID.fromString(id), owner != null ? owner : "");
+            }
+            profile.getProperties().put("textures", new Property("textures", texture));
 
-        try {
-            Field profileField = skullMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(skullMeta, profile);
-        } catch (IllegalArgumentException|NoSuchFieldException|SecurityException|IllegalAccessException error) {
-            error.printStackTrace();
+            try {
+                Field profileField = skullMeta.getClass().getDeclaredField("profile");
+                profileField.setAccessible(true);
+                profileField.set(skullMeta, profile);
+            } catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException error) {
+                error.printStackTrace();
+            }
         }
+
         item.setItemMeta(skullMeta);
     }
 

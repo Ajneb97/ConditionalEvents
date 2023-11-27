@@ -1,11 +1,9 @@
 package ce.ajneb97.managers.dependencies;
 
 import ce.ajneb97.ConditionalEvents;
-import ce.ajneb97.utils.OtherUtils;
 import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageChannel;
-import github.scarsz.discordsrv.dependencies.jda.api.entities.User;
 import org.bukkit.Bukkit;
 import java.awt.Color;
 import org.bukkit.entity.Player;

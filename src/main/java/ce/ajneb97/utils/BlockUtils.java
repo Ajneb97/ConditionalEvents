@@ -9,9 +9,14 @@ import org.bukkit.SkullType;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -69,15 +74,33 @@ public class BlockUtils {
             return;
         }
 
-        GameProfile profile = new GameProfile(UUID.randomUUID(), "");
-        profile.getProperties().put("textures", new Property("textures", texture));
-        try {
-            Field profileField = skullBlock.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(skullBlock, profile);
-        } catch (IllegalArgumentException|NoSuchFieldException|SecurityException|IllegalAccessException error) {
-            error.printStackTrace();
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R2)){
+            PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
+            PlayerTextures textures = profile.getTextures();
+            URL url;
+            try {
+                String decoded = new String(Base64.getDecoder().decode(texture));
+                url = new URL(decoded.substring("{\"textures\":{\"SKIN\":{\"url\":\"".length(), decoded.length() - "\"}}}".length()));
+            } catch (MalformedURLException error) {
+                error.printStackTrace();
+                return;
+            }
+            textures.setSkin(url);
+            profile.setTextures(textures);
+            skullBlock.setOwnerProfile(profile);
+        }else{
+            GameProfile profile = new GameProfile(UUID.randomUUID(), "");
+            profile.getProperties().put("textures", new Property("textures", texture));
+            try {
+                Field profileField = skullBlock.getClass().getDeclaredField("profile");
+                profileField.setAccessible(true);
+                profileField.set(skullBlock, profile);
+            } catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException error) {
+                error.printStackTrace();
+            }
         }
+
         skullBlock.update();
     }
 
