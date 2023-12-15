@@ -127,6 +127,9 @@ public class ActionUtils {
             case "BOOTS":
                 item = inventory.getBoots();
                 break;
+            default:
+                item = inventory.getItem(Integer.parseInt(slot));
+                break;
         }
 
         if(item != null){
@@ -150,6 +153,9 @@ public class ActionUtils {
                         break;
                     case "BOOTS":
                         inventory.setBoots(null);
+                        break;
+                    default:
+                        inventory.setItem(Integer.parseInt(slot),null);
                         break;
                 }
             }else{

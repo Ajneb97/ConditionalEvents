@@ -8,6 +8,7 @@ import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.utils.OtherUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -139,9 +140,11 @@ public class ItemEventsListener implements Listener {
             items.add(item2);
         }
         String inventoryType = "";
+        String inventoryTitle = "";
         InventoryView view = player.getOpenInventory();
         if(view != null) {
             inventoryType = view.getType().name();
+            inventoryTitle = ChatColor.stripColor(view.getTitle());
         }
         int slot = event.getSlot();
 
@@ -150,7 +153,8 @@ public class ItemEventsListener implements Listener {
             if(!conditionEvent.containsValidEvents()) return;
             conditionEvent.addVariables(
                             new StoredVariable("%inventory_type%",inventoryType),
-                            new StoredVariable("%slot%",slot+"")
+                            new StoredVariable("%slot%",slot+""),
+                            new StoredVariable("%inventory_title%", inventoryTitle)
                     ).setCommonItemVariables(i)
                     .checkEvent();
         }

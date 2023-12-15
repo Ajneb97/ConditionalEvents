@@ -17,6 +17,7 @@ import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -116,7 +117,8 @@ public class ProtocolLibManager {
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, messageEvent, EventType.PROTOCOLLIB_RECEIVE_MESSAGE, null);
         conditionEvent.addVariables(
                 new StoredVariable("%json_message%",jsonMessage),
-                new StoredVariable("%normal_message%",normalMessage.replace("§", "&"))
+                new StoredVariable("%normal_message%",normalMessage.replace("§", "&")),
+                new StoredVariable("%normal_message_without_color_codes%",ChatColor.stripColor(normalMessage))
         ).checkEvent();
 
         if(messageEvent.isCancelled()){

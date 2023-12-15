@@ -133,15 +133,8 @@ public class ExecutedEvent {
                 eventVariables,player,target,isPlaceholderAPI,event,minecraftEvent
             );
 
-            actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties,false);
-
             ActionTargeter targeter = action.getTargeter();
             ActionTargeterType targeterType = targeter.getType();
-
-            //Debug if enabled
-            if(isDebugActions){
-                debugManager.sendActionMessage(event.getName(), actionLine, player, actionType, targeter);
-            }
 
             String parametersLine = targeter.getParameter();
             if(parametersLine != null){
@@ -150,7 +143,7 @@ public class ExecutedEvent {
 
             if(targeterType.equals(ActionTargeterType.TO_ALL)) {
                 for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
-                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType);
+                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,isDebugActions,targeter,debugManager);
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_TARGET)){
                 executeAction(target,actionType,actionLine);
@@ -158,14 +151,14 @@ public class ExecutedEvent {
                 String world = parametersLine;
                 for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
                     if(globalPlayer.getWorld().getName().equals(world)){
-                        executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType);
+                        executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,isDebugActions,targeter,debugManager);
                     }
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_PLAYER)){
                 String playerName = parametersLine;
                 Player onlinePlayer = Bukkit.getPlayer(playerName);
                 if(onlinePlayer != null){
-                    executeActionsFromToTarget(variablesProperties,onlinePlayer,actionLine,actionType);
+                    executeActionsFromToTarget(variablesProperties,onlinePlayer,actionLine,actionType,isDebugActions,targeter,debugManager);
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_RANGE)){
                 String[] sep = parametersLine.split(";");
@@ -184,7 +177,7 @@ public class ExecutedEvent {
                     }
                 }
                 for(Player globalPlayer : globalPlayers){
-                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType);
+                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,isDebugActions,targeter,debugManager);
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_CONDITION)) {
                 String toConditionGroup = parametersLine;
@@ -196,18 +189,23 @@ public class ExecutedEvent {
                 ArrayList<Player> players = new ArrayList<Player>();
                 for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
                     //Check for conditions
+                    variablesProperties.setToTarget(player);
                     boolean accomplishesConditions = eventsManager.checkToConditionAction(group.getConditions()
                             ,globalPlayer,isPlaceholderAPI,event,minecraftEvent);
                     if(accomplishesConditions){
                         players.add(globalPlayer);
                     }
                 }
-
                 for(Player globalPlayer : players){
-                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType);
+                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,isDebugActions,targeter,debugManager);
                 }
             }
             else {
+                actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties,false);
+                //Debug if enabled
+                if(isDebugActions){
+                    debugManager.sendActionMessage(event.getName(), actionLine, player, actionType, targeter);
+                }
                 executeAction(player,actionType,actionLine);
             }
 
@@ -218,11 +216,14 @@ public class ExecutedEvent {
         }
     }
 
-    private void executeActionsFromToTarget(VariablesProperties variablesProperties,Player player,String actionLine,ActionType actionType){
+    private void executeActionsFromToTarget(VariablesProperties variablesProperties,Player player,String actionLine,ActionType actionType,
+                                            boolean isDebugActions,ActionTargeter targeter,DebugManager debugManager){
         //Replaces %to:<variable>% variables
         variablesProperties.setToTarget(player);
         String toActionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties,false);
-
+        if(isDebugActions){
+            debugManager.sendActionMessage(event.getName(), toActionLine, player, actionType, targeter);
+        }
         executeAction(player,actionType,toActionLine);
     }
 

@@ -17,7 +17,7 @@ public class PlayerEventsListenerNew1_16 implements Listener {
     }
 
     @EventHandler
-    public void onPlayerSwapHand(FoodLevelChangeEvent event){
+    public void onPlayerFoodLevelChange(FoodLevelChangeEvent event){
         Player player = (Player) event.getEntity();
 
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_CHANGE_FOOD, null);
