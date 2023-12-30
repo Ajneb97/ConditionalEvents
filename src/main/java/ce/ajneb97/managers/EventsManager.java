@@ -9,7 +9,6 @@ import ce.ajneb97.model.internal.*;
 import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.TimeUtils;
 import ce.ajneb97.utils.VariablesUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -221,10 +220,10 @@ public class EventsManager {
                         String firstArgLower = firstArg.toLowerCase();String secondArgLower = secondArg.toLowerCase();
                         double firstArgNum = 0;
                         double secondArgNum = 0;
-                        if(NumberUtils.isParsable(firstArg)){
+                        if(MathUtils.isParsable(firstArg)){
                             firstArgNum = Double.parseDouble(firstArg);
                         }
-                        if(NumberUtils.isParsable(secondArg)){
+                        if(MathUtils.isParsable(secondArg)){
                             secondArgNum = Double.parseDouble(secondArg);
                         }
 
@@ -346,10 +345,10 @@ public class EventsManager {
                         String firstArgLower = firstArg.toLowerCase();String secondArgLower = secondArg.toLowerCase();
                         double firstArgNum = 0;
                         double secondArgNum = 0;
-                        if(NumberUtils.isParsable(firstArg)){
+                        if(MathUtils.isParsable(firstArg)){
                             firstArgNum = Double.parseDouble(firstArg);
                         }
-                        if(NumberUtils.isParsable(secondArg)){
+                        if(MathUtils.isParsable(secondArg)){
                             secondArgNum = Double.parseDouble(secondArg);
                         }
 
