@@ -146,7 +146,7 @@ public class ExecutedEvent {
                     executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,isDebugActions,targeter,debugManager);
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_TARGET)){
-                executeAction(target,actionType,actionLine);
+                executeActionsFromToTarget(variablesProperties,target,actionLine,actionType,isDebugActions,targeter,debugManager);
             }else if(targeterType.equals(ActionTargeterType.TO_WORLD)){
                 String world = parametersLine;
                 for(Player globalPlayer : Bukkit.getOnlinePlayers()) {

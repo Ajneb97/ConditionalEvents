@@ -28,13 +28,13 @@ public class CustomEventListener implements Listener {
     }
 
     public void configure(){
-        ArrayList<CEEvent> validEvents = plugin.getEventsManager().getValidEvents(EventType.CUSTOM);
+        ArrayList<CEEvent> validEvents = plugin.getEventsManager().getEventsByType(EventType.CUSTOM);
         for(CEEvent ceEvent : validEvents) {
             CustomEventProperties properties = ceEvent.getCustomEventProperties();
             String eventPackage = properties.getEventPackage();
             try {
                 Class<? extends Event> eventClass = (Class<? extends Event>) Class.forName(eventPackage);
-                EventExecutor eventExecutor = (listener, event) -> executeEvent(event, ceEvent);
+                EventExecutor eventExecutor = (listener, event) -> executeEvent(event, ceEvent.getName());
                 plugin.getServer().getPluginManager().registerEvent(eventClass, this, EventPriority.MONITOR, eventExecutor, plugin);
             } catch (ClassNotFoundException ex) {
                 Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix
@@ -43,8 +43,14 @@ public class CustomEventListener implements Listener {
         }
     }
 
-    public void executeEvent(Event event,CEEvent ceEvent) {
+    public void executeEvent(Event event,String ceEventName) {
         Class<?> classObject = event.getClass();
+
+        CEEvent ceEvent = plugin.getEventsManager().getEvent(ceEventName);
+        if(ceEvent == null || !ceEvent.isEnabled()){
+            return;
+        }
+
         CustomEventProperties properties = ceEvent.getCustomEventProperties();
         try {
             if (!Class.forName(properties.getEventPackage()).isAssignableFrom(classObject)) {

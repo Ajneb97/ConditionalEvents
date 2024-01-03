@@ -17,7 +17,7 @@ public class DiscordSRVManager {
 
     public void sendEmbedMessage(String actionLine){
         // discordsrv_embed: channel:<channel>;author_name:<name>;title:<title>;player_skin_name:<name>;
-        //color:<r>,<g>,<b>
+        //color:<r>,<g>,<b>;image:<url>
         EmbedBuilder embed = new EmbedBuilder();
 
         String channel = null;
@@ -26,6 +26,8 @@ public class DiscordSRVManager {
         String title = null;
         String footer = null;
         String description = null;
+        String imageUrl = null;
+        String thumbnailUrl = null;
         int colorR = 0;
         int colorG = 0;
         int colorB = 0;
@@ -69,6 +71,12 @@ public class DiscordSRVManager {
                 case "description":
                     description = value;
                     break;
+                case "image":
+                    imageUrl = value;
+                    break;
+                case "thumbnail":
+                    thumbnailUrl = value;
+                    break;
             }
         }
 
@@ -77,8 +85,10 @@ public class DiscordSRVManager {
         embed.setFooter(footer);
         embed.setColor(new Color(colorR, colorG, colorB));
         embed.setDescription(description);
+        embed.setImage(imageUrl);
+        embed.setThumbnail(thumbnailUrl);
 
         MessageChannel messageChannel = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName(channel);
-        messageChannel.sendMessage(embed.build()).queue();
+        messageChannel.sendMessageEmbeds(embed.build()).queue();
     }
 }

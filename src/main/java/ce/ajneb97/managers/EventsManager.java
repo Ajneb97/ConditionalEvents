@@ -143,6 +143,16 @@ public class EventsManager {
         return validEvents;
     }
 
+    public ArrayList<CEEvent> getEventsByType(EventType eventType){
+        ArrayList<CEEvent> validEvents = new ArrayList<>();
+        for(CEEvent event : events){
+            if(event.getEventType().equals(eventType)){
+                validEvents.add(event);
+            }
+        }
+        return validEvents;
+    }
+
     private CheckConditionsResult checkConditions(ConditionEvent conditionEvent, boolean isPlaceholderAPI){
         List<String> conditions = new ArrayList<String>(conditionEvent.getCurrentEvent().getConditions());
         String eventName = conditionEvent.getCurrentEvent().getName();
