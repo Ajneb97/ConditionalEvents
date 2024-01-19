@@ -11,20 +11,15 @@ import ce.ajneb97.model.internal.ExecutedEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.*;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -334,6 +329,30 @@ public class ActionUtils {
         player.playSound(player.getLocation(), sound, volume, pitch);
     }
 
+    public static void stopSound(Player player,String actionLine){
+        // stopsound: sound/all
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_10_R1)) {
+            Sound sound = null;
+            if(actionLine.equals("all")){
+                if(!serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_17_R1)){
+                    return;
+                }
+                player.stopAllSounds();
+            }else{
+                try {
+                    sound = Sound.valueOf(actionLine);
+                }catch(Exception e ) {
+                    Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix+
+                            MessagesManager.getColoredMessage(" &7Sound Name: &c"+actionLine+" &7is not valid. Change it in the config!"));
+                    return;
+                }
+                player.stopSound(sound);
+            }
+
+        }
+    }
+
     public static void giveItem(Player player,String actionLine){
         // give_item: id:<id>;amount:<amount>;durability:<durability>;custom_model_data:<data>;name:<name>;
         // lore:<lore_line1>|<lore_lineN>;enchants:<name1>-<level1>|<nameN>-<levelN>;
@@ -578,8 +597,8 @@ public class ActionUtils {
 
     public static void freeze(Player player,String actionLine){
         // freeze: <duration_on_ticks>
-        if(Bukkit.getVersion().contains("1.17") || Bukkit.getVersion().contains("1.18")
-            || OtherUtils.isChatNew()) {
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_17_R1)) {
             player.setFreezeTicks(Integer.parseInt(actionLine));
         }
     }

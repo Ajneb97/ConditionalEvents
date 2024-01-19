@@ -78,7 +78,9 @@ public class ConditionalEvents extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &eThanks for using my plugin!   &f~Ajneb97"));
 
 		updateCheckerManager = new UpdateCheckerManager(version);
-		updateMessage(updateCheckerManager.check());
+		if(configsManager.getMainConfigManager().isUpdateNotifications()){
+			updateMessage(updateCheckerManager.check());
+		}
 
 		new ConditionEvent(this, null, null, EventType.SERVER_START, null)
 				.checkEvent();

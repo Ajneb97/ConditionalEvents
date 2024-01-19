@@ -230,8 +230,13 @@ public class VariablesUtils {
             // %world_time_<world>%
             return GlobalVariablesUtils.variableWorldTime(variable);
         }else if(variable.equals("world_is_raining")){
+            // %world_is_raining%
             return GlobalVariablesUtils.variableWorldIsRaining(finalPlayer);
-        }else if(variable.equals("empty")) {
+        }else if(variable.startsWith("is_number_")) {
+            // %is_number_<variable>%
+            return GlobalVariablesUtils.isNumber(variable);
+        }
+        else if(variable.equals("empty")) {
             return "";
         }
 

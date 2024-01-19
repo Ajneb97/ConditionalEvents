@@ -2,6 +2,7 @@ package ce.ajneb97.utils;
 import ce.ajneb97.ConditionalEvents;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 
 public class OtherUtils {
@@ -43,8 +44,12 @@ public class OtherUtils {
     }
 
     public static String fromJsonMessageToNormalMessage(String jsonMessage){
-        BaseComponent[] base = ComponentSerializer.parse(jsonMessage);
-        return BaseComponent.toLegacyText(base);
+        try{
+            BaseComponent[] base = ComponentSerializer.parse(jsonMessage);
+            return BaseComponent.toLegacyText(base);
+        }catch(Exception e){
+            return null;
+        }
     }
 
     public static String getFileExtension(String filePath) {

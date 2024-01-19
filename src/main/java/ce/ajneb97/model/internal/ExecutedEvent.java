@@ -370,6 +370,9 @@ public class ExecutedEvent {
             case GIVE_ITEM:
                 ActionUtils.giveItem(player, actionLine);
                 return;
+            case STOPSOUND:
+                ActionUtils.stopSound(player, actionLine);
+                return;
         }
     }
 

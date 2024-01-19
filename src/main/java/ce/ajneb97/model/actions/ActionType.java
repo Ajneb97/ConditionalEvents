@@ -19,6 +19,7 @@ public enum ActionType {
     CANCEL_EVENT,
     PLAYSOUND,
     PLAYSOUND_RESOURCE_PACK,
+    STOPSOUND,
     ACTIONBAR,
     TITLE,
     FIREWORK,

@@ -14,6 +14,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.*;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
@@ -88,13 +89,12 @@ public class ProtocolLibManager {
                         if(object instanceof Component){
                             WrappedChatComponent wrappedChatComponent = AdventureComponentConverter
                                     .fromComponent((Component)object);
-
                             jsonMessage = wrappedChatComponent.getJson();
                             normalMessage = OtherUtils.fromJsonMessageToNormalMessage(jsonMessage);
                         }
                     }
 
-                    if(jsonMessage != null) {
+                    if(jsonMessage != null && normalMessage != null) {
                         executeEvent(player,jsonMessage,normalMessage,event);
                         return;
                     }
@@ -103,8 +103,16 @@ public class ProtocolLibManager {
                 for(WrappedChatComponent wrappedChatComponent : packet.getChatComponents().getValues()) {
                     if(wrappedChatComponent != null) {
                         String jsonMessage = wrappedChatComponent.getJson();
-                        String normalMessage = OtherUtils.fromJsonMessageToNormalMessage(jsonMessage);
-                        executeEvent(player,jsonMessage,normalMessage,event);
+                        String normalMessage = null;
+                        if(isPaper && OtherUtils.isChatNew()){
+                            normalMessage = LegacyComponentSerializer.legacyAmpersand().serialize(AdventureComponentConverter.fromWrapper(wrappedChatComponent));
+                        }else{
+                            normalMessage = OtherUtils.fromJsonMessageToNormalMessage(jsonMessage);
+                        }
+
+                        if(jsonMessage != null && normalMessage != null){
+                            executeEvent(player,jsonMessage,normalMessage,event);
+                        }
                         return;
                     }
                 }

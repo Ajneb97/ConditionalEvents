@@ -177,6 +177,10 @@ public class GlobalVariablesUtils {
         return world.hasStorm()+"";
     }
 
+    public static String isNumber(String variable){
+        String variableLR = variable.replace("is_number_", "");
+        return MathUtils.isParsable(variableLR) ? "true" : "false";
+    }
 
 
     public static ItemStack getArmorItem(Player player, String armorType){
