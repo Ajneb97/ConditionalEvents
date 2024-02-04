@@ -126,6 +126,7 @@ public class ExecutedEvent {
         for(int i=currentActionPos;i<actions.size();i++){
             CEAction action = actions.get(i);
             ActionType actionType = action.getType();
+            String apiType = action.getApiType();
 
             //Replace variables
             String actionLine = action.getActionLine();
@@ -143,22 +144,22 @@ public class ExecutedEvent {
 
             if(targeterType.equals(ActionTargeterType.TO_ALL)) {
                 for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
-                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,isDebugActions,targeter,debugManager);
+                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,apiType,isDebugActions,targeter,debugManager);
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_TARGET)){
-                executeActionsFromToTarget(variablesProperties,target,actionLine,actionType,isDebugActions,targeter,debugManager);
+                executeActionsFromToTarget(variablesProperties,target,actionLine,actionType,apiType,isDebugActions,targeter,debugManager);
             }else if(targeterType.equals(ActionTargeterType.TO_WORLD)){
                 String world = parametersLine;
                 for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
                     if(globalPlayer.getWorld().getName().equals(world)){
-                        executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,isDebugActions,targeter,debugManager);
+                        executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,apiType,isDebugActions,targeter,debugManager);
                     }
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_PLAYER)){
                 String playerName = parametersLine;
                 Player onlinePlayer = Bukkit.getPlayer(playerName);
                 if(onlinePlayer != null){
-                    executeActionsFromToTarget(variablesProperties,onlinePlayer,actionLine,actionType,isDebugActions,targeter,debugManager);
+                    executeActionsFromToTarget(variablesProperties,onlinePlayer,actionLine,actionType,apiType,isDebugActions,targeter,debugManager);
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_RANGE)){
                 String[] sep = parametersLine.split(";");
@@ -177,7 +178,7 @@ public class ExecutedEvent {
                     }
                 }
                 for(Player globalPlayer : globalPlayers){
-                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,isDebugActions,targeter,debugManager);
+                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,apiType,isDebugActions,targeter,debugManager);
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_CONDITION)) {
                 String toConditionGroup = parametersLine;
@@ -197,7 +198,7 @@ public class ExecutedEvent {
                     }
                 }
                 for(Player globalPlayer : players){
-                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,isDebugActions,targeter,debugManager);
+                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,apiType,isDebugActions,targeter,debugManager);
                 }
             }
             else {
@@ -206,7 +207,7 @@ public class ExecutedEvent {
                 if(isDebugActions){
                     debugManager.sendActionMessage(event.getName(), actionLine, player, actionType, targeter);
                 }
-                executeAction(player,actionType,actionLine);
+                executeAction(player,actionType,apiType,actionLine);
             }
 
             if(onWait){
@@ -217,17 +218,17 @@ public class ExecutedEvent {
     }
 
     private void executeActionsFromToTarget(VariablesProperties variablesProperties,Player player,String actionLine,ActionType actionType,
-                                            boolean isDebugActions,ActionTargeter targeter,DebugManager debugManager){
+                                            String apiType,boolean isDebugActions,ActionTargeter targeter,DebugManager debugManager){
         //Replaces %to:<variable>% variables
         variablesProperties.setToTarget(player);
         String toActionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties,false);
         if(isDebugActions){
             debugManager.sendActionMessage(event.getName(), toActionLine, player, actionType, targeter);
         }
-        executeAction(player,actionType,toActionLine);
+        executeAction(player,actionType,apiType,toActionLine);
     }
 
-    private void executeAction(Player player,ActionType type,String actionLine){
+    private void executeAction(Player player,ActionType type,String apiType,String actionLine){
         //Non player actions
         switch(type){
             case CONSOLE_MESSAGE:
@@ -296,6 +297,9 @@ public class ExecutedEvent {
                 return;
             case EXECUTE_ACTION_GROUP:
                 ActionUtils.executeActionGroup(actionLine,this,plugin);
+                return;
+            case API:
+                plugin.getApiManager().executeAction(apiType,player,actionLine);
                 return;
         }
 

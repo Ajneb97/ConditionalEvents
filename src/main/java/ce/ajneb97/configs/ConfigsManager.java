@@ -116,6 +116,7 @@ public class ConfigsManager {
 
                                 String actionTypeText = null;
                                 ActionType actionType = null;
+                                String actionApiType = null;
                                 try{
                                     if(action.equalsIgnoreCase("close_inventory")){
                                         actionTypeText = action;
@@ -123,7 +124,13 @@ public class ConfigsManager {
                                         actionTypeText = action.substring(0,action.indexOf(":"));
                                     }
 
-                                    actionType = ActionType.valueOf(actionTypeText.toUpperCase());
+                                    //Check API actions
+                                    if(plugin.getApiManager().getApiAction(actionTypeText) != null){
+                                        actionType = ActionType.API;
+                                        actionApiType = actionTypeText;
+                                    }else{
+                                        actionType = ActionType.valueOf(actionTypeText.toUpperCase());
+                                    }
                                 }catch(Exception e){
                                     continue;
                                 }
@@ -131,6 +138,7 @@ public class ConfigsManager {
                                 String actionLine = action.replace(actionTypeText+": ","");
 
                                 CEAction ceAction = new CEAction(actionType,actionLine,targeter);
+                                ceAction.setApiType(actionApiType);
                                 ceActions.add(ceAction);
                             }
 

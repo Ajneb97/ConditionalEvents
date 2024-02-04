@@ -95,8 +95,19 @@ public class VerifyManager {
                         }
 
                         try{
-                            String actionTypeText = action.substring(0,action.indexOf(":"));
-                            ActionType.valueOf(actionTypeText.toUpperCase());
+                            String actionTypeText;
+                            if(action.equalsIgnoreCase("close_inventory")){
+                                actionTypeText = action;
+                            }else{
+                                actionTypeText = action.substring(0,action.indexOf(":"));
+                            }
+
+                            //Check API actions
+                            if(plugin.getApiManager().getApiAction(actionTypeText) != null){
+                                continue;
+                            }else{
+                                ActionType.valueOf(actionTypeText.toUpperCase());
+                            }
                         }catch(Exception e){
                             errors.add(new CEErrorAction(key, actionOriginal, (i+1), groupName));
                         }

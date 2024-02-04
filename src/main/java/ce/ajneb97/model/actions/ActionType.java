@@ -46,5 +46,6 @@ public enum ActionType {
     SET_EVENT_XP,
     DISCORDSRV_EMBED,
     CALL_EVENT,
-    EXECUTE_ACTION_GROUP
+    EXECUTE_ACTION_GROUP,
+    API
 }

@@ -42,6 +42,7 @@ public class ConditionalEvents extends JavaPlugin {
 	private VerifyManager verifyManager;
 	private UpdateCheckerManager updateCheckerManager;
 	private CommandRegisterManager commandRegisterManager;
+	private APIManager apiManager;
 
 	private PlayerDataSaveTask playerDataSaveTask;
 
@@ -57,6 +58,7 @@ public class ConditionalEvents extends JavaPlugin {
 		this.playerManager =  new PlayerManager(this);
 		this.configsManager = new ConfigsManager(this);
 		this.configsManager.configure();
+		this.apiManager = new APIManager(this);
 		registerEvents();
 		registerCommands();
 
@@ -65,6 +67,8 @@ public class ConditionalEvents extends JavaPlugin {
 
 		this.commandRegisterManager = new CommandRegisterManager(this);
 		commandRegisterManager.registerCommands();
+
+
 
 		reloadPlayerDataSaveTask();
 
@@ -186,6 +190,10 @@ public class ConditionalEvents extends JavaPlugin {
 
 	public CommandRegisterManager getCommandRegisterManager() {
 		return commandRegisterManager;
+	}
+
+	public APIManager getApiManager() {
+		return apiManager;
 	}
 
 	public void updateMessage(UpdateCheckerResult result){

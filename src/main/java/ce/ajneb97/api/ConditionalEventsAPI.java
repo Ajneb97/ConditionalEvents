@@ -5,6 +5,7 @@ import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.utils.TimeUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class ConditionalEventsAPI {
 
@@ -45,5 +46,13 @@ public class ConditionalEventsAPI {
         }else{
             return "no";
         }
+    }
+
+    public static void registerApiActions(JavaPlugin p, ConditionalEventsAction... actions){
+        plugin.getApiManager().registerApiActions(p,actions);
+    }
+
+    public static void unregisterApiActions(JavaPlugin p){
+        plugin.getApiManager().unregisterApiActions(p);
     }
 }

@@ -40,6 +40,3 @@ dependency-reduced-pom.xml
 .recommenders
 .idea/
 target/
-/src/main/java/ce/ajneb97/api/ExampleAction.java
-/src/main/java/ce/ajneb97/api/ConditionalEventsAction.java
-/src/main/java/ce/ajneb97/managers/APIManager.java
