@@ -56,9 +56,10 @@ public class ConditionalEvents extends JavaPlugin {
 		this.bungeeMessagingManager = new BungeeMessagingManager(this);
 		this.debugManager = new DebugManager(this);
 		this.playerManager =  new PlayerManager(this);
+		this.apiManager = new APIManager(this);
 		this.configsManager = new ConfigsManager(this);
 		this.configsManager.configure();
-		this.apiManager = new APIManager(this);
+
 		registerEvents();
 		registerCommands();
 
