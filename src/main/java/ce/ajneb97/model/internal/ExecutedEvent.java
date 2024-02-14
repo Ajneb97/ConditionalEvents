@@ -82,34 +82,30 @@ public class ExecutedEvent {
         //For API only
         ConditionalEventsEvent ceEvent = new ConditionalEventsEvent(player, event.getName(), actionGroupName);
 
-        //Check cancel event, always first to prevent issues with async events.
-        executeCancelEventAction();
-
-        boolean isPlayerPreJoin = event.getEventType().equals(EventType.PLAYER_PRE_JOIN);
+        //Check cancel event or prevent join, always first to prevent issues with async events.
+        executeCancelActions();
 
         if(!Bukkit.isPrimaryThread()){
             new BukkitRunnable(){
                 @Override
                 public void run() {
                     plugin.getServer().getPluginManager().callEvent(ceEvent);
-                    if(!isPlayerPreJoin){
-                        executeActionsFinal();
-                    }
+                    executeActionsFinal();
                 }
             }.runTask(plugin);
-            if(isPlayerPreJoin){
-                executeActionsFinal();
-            }
         }else{
             plugin.getServer().getPluginManager().callEvent(ceEvent);
             executeActionsFinal();
         }
     }
 
-    public void executeCancelEventAction(){
+    public void executeCancelActions(){
         for(CEAction ceAction : actions){
             if(ceAction.getType().equals(ActionType.CANCEL_EVENT)){
                 ActionUtils.cancelEvent(ceAction.getActionLine(),minecraftEvent);
+                return;
+            }else if(ceAction.getType().equals(ActionType.PREVENT_JOIN)){
+                ActionUtils.preventJoin(ceAction.getActionLine(),minecraftEvent);
                 return;
             }
         }
@@ -260,9 +256,6 @@ public class ExecutedEvent {
                 return;
             case SET_DEATH_MESSAGE:
                 ActionUtils.setDeathMessage(actionLine,minecraftEvent);
-                return;
-            case PREVENT_JOIN:
-                ActionUtils.preventJoin(actionLine,minecraftEvent);
                 return;
             case SET_EVENT_XP:
                 ActionUtils.setEventXp(actionLine,minecraftEvent);

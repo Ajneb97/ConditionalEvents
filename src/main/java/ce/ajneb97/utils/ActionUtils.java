@@ -101,58 +101,11 @@ public class ActionUtils {
         String slot = sep[0];
         int amount = Integer.parseInt(sep[1]);
 
-        ItemStack item = null;
-        PlayerInventory inventory = player.getInventory();
-        switch(slot){
-            case "HAND":
-                item = inventory.getItemInHand();
-                break;
-            case "OFF_HAND":
-                item = inventory.getItemInOffHand();
-                break;
-            case "HELMET":
-                item = inventory.getHelmet();
-                break;
-            case "CHESTPLATE":
-                item = inventory.getChestplate();
-                break;
-            case "LEGGINGS":
-                item = inventory.getLeggings();
-                break;
-            case "BOOTS":
-                item = inventory.getBoots();
-                break;
-            default:
-                item = inventory.getItem(Integer.parseInt(slot));
-                break;
-        }
-
+        ItemStack item = PlayerUtils.getItemBySlot(player,slot);
         if(item != null){
             int newAmount = item.getAmount()-amount;
             if(newAmount <= 0){
-                switch(slot){
-                    case "HAND":
-                        inventory.setItemInHand(null);
-                        break;
-                    case "OFF_HAND":
-                        inventory.setItemInOffHand(null);
-                        break;
-                    case "HELMET":
-                        inventory.setHelmet(null);
-                        break;
-                    case "CHESTPLATE":
-                        inventory.setChestplate(null);
-                        break;
-                    case "LEGGINGS":
-                        inventory.setLeggings(null);
-                        break;
-                    case "BOOTS":
-                        inventory.setBoots(null);
-                        break;
-                    default:
-                        inventory.setItem(Integer.parseInt(slot),null);
-                        break;
-                }
+                PlayerUtils.setItemBySlot(player, slot, item);
             }else{
                 item.setAmount(newAmount);
             }
@@ -357,12 +310,45 @@ public class ActionUtils {
         // give_item: id:<id>;amount:<amount>;durability:<durability>;custom_model_data:<data>;name:<name>;
         // lore:<lore_line1>|<lore_lineN>;enchants:<name1>-<level1>|<nameN>-<levelN>;
         // flags:<flag1>|<flag2>
+        // slot:<slot>
 
         String[] sep = actionLine.replace("give_item: ","").split(";");
         ItemStack item = ItemUtils.getItemFromProperties(sep);
 
-        //Give Item
-        player.getInventory().addItem(item);
+        String slot = null;
+        boolean replace = true;
+        for(String property : sep) {
+            if(property.startsWith("slot:")){
+                slot = property.replace("slot:", "");
+            }else if(property.startsWith("slot_replace:")){
+                replace = Boolean.parseBoolean(property.replace("slot_replace:",""));
+            }
+        }
+
+        if(slot != null){
+            ItemStack itemSlot = PlayerUtils.getItemBySlot(player,slot);
+            if(replace){
+                PlayerUtils.setItemBySlot(player,slot,item);
+            }else{
+                if(itemSlot == null || itemSlot.getType().equals(Material.AIR)){
+                    // If empty, set
+                    PlayerUtils.setItemBySlot(player,slot,item);
+                }else if(itemSlot != null && itemSlot.isSimilar(item)){
+                    // If same item, increase
+                    int newAmount = itemSlot.getAmount()+1;
+                    if(newAmount <= itemSlot.getType().getMaxStackSize()){
+                        itemSlot.setAmount(newAmount);
+                    }
+                }
+            }
+            player.updateInventory();
+        }else{
+            player.getInventory().addItem(item);
+        }
+    }
+
+    private void setItemSlot(ItemStack itemCheck,ItemStack itemOriginal){
+
     }
 
     public static void dropItem(String actionLine) {
