@@ -88,13 +88,13 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
 		PlayerManager playerManager = plugin.getPlayerManager();
 		PlayerData playerData = playerManager.getPlayerDataByName(player);
-		if(!player.equals("all") && playerData == null){
+		if(!player.equals("*") && playerData == null){
 			msgManager.sendMessage(sender,config.getString("Messages.playerDoesNotExists"),true);
 			return;
 		}
 
 		if(eventName.equals("all")){
-			if(player.equals("all")){
+			if(player.equals("*")){
 				//ALL player data reset
 				playerManager.resetAllDataForPlayers();
 				msgManager.sendMessage(sender,config.getString("Messages.eventDataResetAllForAllPlayers"),true);
@@ -110,7 +110,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 				msgManager.sendMessage(sender,config.getString("Messages.eventDoesNotExists"),true);
 				return;
 			}
-			if(player.equals("all")){
+			if(player.equals("*")){
 				//Reset an event for ALL players
 				playerManager.resetEventDataForPlayers(eventName);
 				msgManager.sendMessage(sender,config.getString("Messages.eventDataResetForAllPlayers")
@@ -204,7 +204,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 	}
 
 	public void call(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager) {
-		// /ce call <event> (optional)%variable1%=<value1>;%variable2%=<value2> (optional)player:<player>
+		// /ce call <event> (optional)%variable1%=<value1>;%variable2%=<value2> (optional)player:<player> (optional)silent:true
 		if(args.length <= 1) {
 			msgManager.sendMessage(sender,config.getString("Messages.commandCallError"),true);
 			return;
@@ -223,15 +223,19 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
 		String actionLine = eventName;
 		String playerName = null;
+		boolean silent = false;
+
 		if(args.length >= 3){
-			if(args[2].startsWith("player:")){
-				playerName = args[2].replace("player:","");
-			}else{
-				actionLine += ";"+args[2];
+			for(int i=2;i<args.length;i++){
+				String arg = args[i];
+				if(arg.contains("%")){
+					actionLine += ";"+args[i];
+				}else if(arg.startsWith("player:")){
+					playerName = args[i].replace("player:","");
+				}else if(args[i].equals("silent:true")){
+					silent = true;
+				}
 			}
-		}
-		if(args.length >= 4 && args[3].startsWith("player:")){
-			playerName = args[3].replace("player:","");
 		}
 
 		Player player = null;
@@ -246,6 +250,9 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		}
 
 		if(ActionUtils.callEvent(actionLine,player,plugin)){
+			if(silent){
+				return;
+			}
 			if(player != null){
 				msgManager.sendMessage(sender,config.getString("Messages.commandCallCorrectPlayer")
 						.replace("%event%",eventName).replace("%player%",player.getName()),true);
@@ -254,6 +261,9 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 						.replace("%event%",eventName),true);
 			}
 		}else{
+			if(silent){
+				return;
+			}
 			msgManager.sendMessage(sender,config.getString("Messages.commandCallFailed")
 					.replace("%event%",eventName),true);
 		}
@@ -307,8 +317,8 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 							completions.add(p.getName());
 						}
 					}
-					if(args[1].toLowerCase().isEmpty() || "all".startsWith(args[1].toLowerCase())) {
-						completions.add("all");
+					if(args[1].toLowerCase().isEmpty() || "*".startsWith(args[1].toLowerCase())) {
+						completions.add("*");
 					}
 					return completions;
 				}
