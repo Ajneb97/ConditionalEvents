@@ -256,6 +256,14 @@ public class EventsManager {
                                 if(firstArgLower.contains(secondArgLower)) approvedLine = true;break;
                             case NOT_CONTAINS:
                                 if(!firstArgLower.contains(secondArgLower)) approvedLine = true;break;
+                            case ENDS_WITH:
+                                if(firstArgLower.endsWith(secondArgLower)) approvedLine = true;break;
+                            case NOT_ENDS_WITH:
+                                if(!firstArgLower.endsWith(secondArgLower)) approvedLine = true;break;
+                            case MATCHES:
+                                if(firstArgLower.matches(secondArgLower)) approvedLine = true;break;
+                            case NOT_MATCHES:
+                                if(!firstArgLower.matches(secondArgLower)) approvedLine = true;break;
                             case GREATER:
                                 if(firstArgNum > secondArgNum) approvedLine = true;break;
                             case GREATER_EQUALS:
@@ -381,6 +389,14 @@ public class EventsManager {
                                 if(firstArgLower.contains(secondArgLower)) approvedLine = true;break;
                             case NOT_CONTAINS:
                                 if(!firstArgLower.contains(secondArgLower)) approvedLine = true;break;
+                            case ENDS_WITH:
+                                if(firstArgLower.endsWith(secondArgLower)) approvedLine = true;break;
+                            case NOT_ENDS_WITH:
+                                if(!firstArgLower.endsWith(secondArgLower)) approvedLine = true;break;
+                            case MATCHES:
+                                if(firstArgLower.matches(secondArgLower)) approvedLine = true;break;
+                            case NOT_MATCHES:
+                                if(!firstArgLower.matches(secondArgLower)) approvedLine = true;break;
                             case GREATER:
                                 if(firstArgNum > secondArgNum) approvedLine = true;break;
                             case GREATER_EQUALS:

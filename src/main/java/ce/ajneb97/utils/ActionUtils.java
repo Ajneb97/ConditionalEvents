@@ -105,7 +105,7 @@ public class ActionUtils {
         if(item != null){
             int newAmount = item.getAmount()-amount;
             if(newAmount <= 0){
-                PlayerUtils.setItemBySlot(player, slot, item);
+                PlayerUtils.setItemBySlot(player, slot, null);
             }else{
                 item.setAmount(newAmount);
             }
