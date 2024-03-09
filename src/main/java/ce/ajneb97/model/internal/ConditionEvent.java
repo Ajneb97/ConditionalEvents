@@ -162,7 +162,7 @@ public class ConditionEvent {
         return this;
     }
 
-    public ConditionEvent setCommonItemVariables(ItemStack item){
+    public ConditionEvent setCommonItemVariables(ItemStack item,String otherItemTag){
         String name = "";
         String colorFormatName = "";
         String material = "";
@@ -206,20 +206,27 @@ public class ConditionEvent {
             }
         }
 
-        eventVariables.add(new StoredVariable("%item%",material));
-        eventVariables.add(new StoredVariable("%item_name%",name));
-        eventVariables.add(new StoredVariable("%item_color_format_name%",colorFormatName));
-        eventVariables.add(new StoredVariable("%item_durability%",durability+""));
-        eventVariables.add(new StoredVariable("%item_amount%",amount+""));
-        eventVariables.add(new StoredVariable("%item_lore%",loreString));
-        eventVariables.add(new StoredVariable("%item_color_format_lore%",colorFormatLoreString));
-        eventVariables.add(new StoredVariable("%item_custom_model_data%",customModelData+""));
-        eventVariables.add(new StoredVariable("%item_meta%",metaString));
+        //Example: %offhand:<variable>%
+        if(otherItemTag == null){
+            otherItemTag = "%";
+        }else{
+            otherItemTag = "%"+otherItemTag+":";
+        }
+
+        eventVariables.add(new StoredVariable(otherItemTag+"item%",material));
+        eventVariables.add(new StoredVariable(otherItemTag+"item_name%",name));
+        eventVariables.add(new StoredVariable(otherItemTag+"item_color_format_name%",colorFormatName));
+        eventVariables.add(new StoredVariable(otherItemTag+"item_durability%",durability+""));
+        eventVariables.add(new StoredVariable(otherItemTag+"item_amount%",amount+""));
+        eventVariables.add(new StoredVariable(otherItemTag+"item_lore%",loreString));
+        eventVariables.add(new StoredVariable(otherItemTag+"item_color_format_lore%",colorFormatLoreString));
+        eventVariables.add(new StoredVariable(otherItemTag+"item_custom_model_data%",customModelData+""));
+        eventVariables.add(new StoredVariable(otherItemTag+"item_meta%",metaString));
         for(int i=0;i<loreList.size();i++) {
-            eventVariables.add(new StoredVariable("%item_lore_line_"+(i+1)+"%", loreList.get(i)));
+            eventVariables.add(new StoredVariable(otherItemTag+"item_lore_line_"+(i+1)+"%", loreList.get(i)));
         }
         for(int i=0;i<colorFormatLoreList.size();i++) {
-            eventVariables.add(new StoredVariable("%item_color_format_lore_line_"+(i+1)+"%", colorFormatLoreList.get(i)));
+            eventVariables.add(new StoredVariable(otherItemTag+"item_color_format_lore_line_"+(i+1)+"%", colorFormatLoreList.get(i)));
         }
 
         return this;

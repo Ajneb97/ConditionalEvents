@@ -62,7 +62,7 @@ public class ItemEventsListener implements Listener {
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.ITEM_INTERACT, null);
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.setCommonActionVariables(event.getAction(),player)
-                .setCommonItemVariables(item)
+                .setCommonItemVariables(item,null)
                 .checkEvent();
     }
 
@@ -73,7 +73,7 @@ public class ItemEventsListener implements Listener {
 
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.ITEM_CONSUME, null);
         if(!conditionEvent.containsValidEvents()) return;
-        conditionEvent.setCommonItemVariables(item)
+        conditionEvent.setCommonItemVariables(item,null)
                 .checkEvent();
     }
 
@@ -84,7 +84,7 @@ public class ItemEventsListener implements Listener {
 
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.ITEM_PICKUP, null);
         if(!conditionEvent.containsValidEvents()) return;
-        conditionEvent.setCommonItemVariables(item)
+        conditionEvent.setCommonItemVariables(item,null)
                 .checkEvent();
     }
 
@@ -120,7 +120,7 @@ public class ItemEventsListener implements Listener {
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.addVariables(
                         new StoredVariable("%rename_text%",renameText)
-                ).setCommonItemVariables(item)
+                ).setCommonItemVariables(item,null)
                 .checkEvent();
     }
 
@@ -155,7 +155,7 @@ public class ItemEventsListener implements Listener {
                             new StoredVariable("%inventory_type%",inventoryType),
                             new StoredVariable("%slot%",slot+""),
                             new StoredVariable("%inventory_title%", inventoryTitle)
-                    ).setCommonItemVariables(i)
+                    ).setCommonItemVariables(i,null)
                     .checkEvent();
         }
     }
@@ -167,7 +167,7 @@ public class ItemEventsListener implements Listener {
 
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.ITEM_CRAFT, null);
         if(!conditionEvent.containsValidEvents()) return;
-        conditionEvent.setCommonItemVariables(item)
+        conditionEvent.setCommonItemVariables(item,null)
                 .checkEvent();
     }
 
@@ -178,7 +178,7 @@ public class ItemEventsListener implements Listener {
 
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.ITEM_DROP, null);
         if(!conditionEvent.containsValidEvents()) return;
-        conditionEvent.setCommonItemVariables(item)
+        conditionEvent.setCommonItemVariables(item,null)
                 .checkEvent();
     }
 
@@ -191,7 +191,7 @@ public class ItemEventsListener implements Listener {
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.addVariables(
                 new StoredVariable("%select_type%",event.getSelectType().name())
-        ).setCommonItemVariables(item)
+        ).setCommonItemVariables(item,null)
                 .checkEvent();
     }
 
@@ -215,7 +215,7 @@ public class ItemEventsListener implements Listener {
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.addVariables(
                 new StoredVariable("%enchantment_list%",enchantmentStringList)
-        ).setCommonItemVariables(item)
+        ).setCommonItemVariables(item,null)
                 .checkEvent();
     }
 }

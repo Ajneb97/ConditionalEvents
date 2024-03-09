@@ -96,7 +96,8 @@ public class VerifyManager {
 
                         try{
                             String actionTypeText;
-                            if(action.equalsIgnoreCase("close_inventory")){
+                            if(action.equalsIgnoreCase("close_inventory") ||
+                                    action.equalsIgnoreCase("clear_inventory")){
                                 actionTypeText = action;
                             }else{
                                 actionTypeText = action.substring(0,action.indexOf(":"));

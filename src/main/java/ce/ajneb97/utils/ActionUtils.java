@@ -575,6 +575,10 @@ public class ActionUtils {
         player.closeInventory();
     }
 
+    public static void clearInventory(Player player){
+        player.getInventory().clear();
+    }
+
     public static void setOnFire(Player player,String actionLine){
         // set_on_fire: <duration_on_ticks>
         player.setFireTicks(Integer.parseInt(actionLine));

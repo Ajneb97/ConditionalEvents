@@ -118,7 +118,8 @@ public class ConfigsManager {
                                 ActionType actionType = null;
                                 String actionApiType = null;
                                 try{
-                                    if(action.equalsIgnoreCase("close_inventory")){
+                                    if(action.equalsIgnoreCase("close_inventory")
+                                        || action.equalsIgnoreCase("clear_inventory")){
                                         actionTypeText = action;
                                     }else{
                                         actionTypeText = action.substring(0,action.indexOf(":"));

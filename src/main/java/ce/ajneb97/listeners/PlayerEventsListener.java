@@ -131,7 +131,7 @@ public class PlayerEventsListener implements Listener {
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.setCommonBlockVariables(block)
                 .setCommonActionVariables(event.getAction(),player)
-                .setCommonItemVariables(player.getItemInHand())
+                .setCommonItemVariables(player.getItemInHand(),null)
                 .checkEvent();
     }
 
@@ -153,7 +153,7 @@ public class PlayerEventsListener implements Listener {
 
         new ConditionEvent(plugin, player, event, EventType.ENTITY_INTERACT, target)
                 .setCommonEntityVariables(entity)
-                .setCommonItemVariables(player.getItemInHand())
+                .setCommonItemVariables(player.getItemInHand(),null)
                 .checkEvent();
     }
 
@@ -203,7 +203,7 @@ public class PlayerEventsListener implements Listener {
                 new StoredVariable("%damage%",MathUtils.truncate(event.getFinalDamage())+""),
                 new StoredVariable("%original_damage%",MathUtils.truncate(event.getDamage())+""),
                 new StoredVariable("%attack_type%", attackType)
-        ).setCommonItemVariables(item)
+        ).setCommonItemVariables(item,null)
                 .setCommonVictimVariables(damaged)
                 .checkEvent();
     }
@@ -270,7 +270,7 @@ public class PlayerEventsListener implements Listener {
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_KILL, target);
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.setCommonVictimVariables(entity).
-                setCommonItemVariables(player.getItemInHand())
+                setCommonItemVariables(player.getItemInHand(),null)
                 .checkEvent();
     }
 
@@ -281,7 +281,7 @@ public class PlayerEventsListener implements Listener {
 
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.BLOCK_PLACE, null);
         if(!conditionEvent.containsValidEvents()) return;
-        conditionEvent.setCommonItemVariables(player.getItemInHand())
+        conditionEvent.setCommonItemVariables(player.getItemInHand(),null)
                 .setCommonBlockVariables(block)
                 .checkEvent();
     }
@@ -293,7 +293,7 @@ public class PlayerEventsListener implements Listener {
 
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.BLOCK_BREAK, null);
         if(!conditionEvent.containsValidEvents()) return;
-        conditionEvent.setCommonItemVariables(player.getItemInHand())
+        conditionEvent.setCommonItemVariables(player.getItemInHand(),null)
                 .setCommonBlockVariables(block)
                 .checkEvent();
     }
@@ -362,7 +362,7 @@ public class PlayerEventsListener implements Listener {
         conditionEvent.addVariables(
                 new StoredVariable("%armor_type%",type),
                 new StoredVariable("%equip_type%",equipType)
-        ).setCommonItemVariables(selectedItem)
+        ).setCommonItemVariables(selectedItem,null)
                 .checkEvent();
     }
 
@@ -425,7 +425,7 @@ public class PlayerEventsListener implements Listener {
                 .addVariables(
                         new StoredVariable("%state%",state.name()+""),
                         new StoredVariable("%caught_type%",caughtType)
-                ).setCommonItemVariables(caughtItem).checkEvent();
+                ).setCommonItemVariables(caughtItem,null).checkEvent();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

@@ -27,6 +27,7 @@ public enum ActionType {
     GAMEMODE,
     DAMAGE,
     CLOSE_INVENTORY,
+    CLEAR_INVENTORY,
     SET_ON_FIRE,
     FREEZE,
     HEAL,

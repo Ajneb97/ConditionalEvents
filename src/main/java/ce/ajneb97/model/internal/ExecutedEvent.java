@@ -355,6 +355,9 @@ public class ExecutedEvent {
             case CLOSE_INVENTORY:
                 ActionUtils.closeInventory(player);
                 return;
+            case CLEAR_INVENTORY:
+                ActionUtils.clearInventory(player);
+                return;
             case SET_ON_FIRE:
                 ActionUtils.setOnFire(player, actionLine);
                 return;

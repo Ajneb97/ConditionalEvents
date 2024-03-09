@@ -20,10 +20,10 @@ public class PlayerEventsListenerNew1_9 implements Listener {
     public void onPlayerSwapHand(PlayerSwapHandItemsEvent event){
         Player player = event.getPlayer();
         ItemStack item = event.getMainHandItem();
-
+        ItemStack itemOffHand = event.getOffHandItem();
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_SWAP_HAND, null);
         if(!conditionEvent.containsValidEvents()) return;
-        conditionEvent.setCommonItemVariables(item)
+        conditionEvent.setCommonItemVariables(item,null).setCommonItemVariables(itemOffHand,"offhand")
                 .checkEvent();
     }
 }

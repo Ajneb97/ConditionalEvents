@@ -50,10 +50,14 @@ public class DiscordSRVManager {
                 case "footer":
                     footer = value;
                     break;
-                case "player_skin_name":
-                    Player player = Bukkit.getPlayer(value);
-                    if(player != null){
-                        authorAvatarURL = DiscordSRV.getAvatarUrl(player);
+                case "author_avatar":
+                    if(value.startsWith("http:/") || value.startsWith("https:/")){
+                        authorAvatarURL = value;
+                    }else{
+                        Player player = Bukkit.getPlayer(value);
+                        if(player != null){
+                            authorAvatarURL = DiscordSRV.getAvatarUrl(player);
+                        }
                     }
                     break;
                 case "color":
