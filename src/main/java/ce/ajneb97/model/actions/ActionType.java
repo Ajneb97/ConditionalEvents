@@ -35,6 +35,7 @@ public enum ActionType {
     DROP_ITEM,
     SET_ITEM,
     SET_BLOCK,
+    SUMMON,
     WAIT,
     WAIT_TICKS,
     KEEP_ITEMS,

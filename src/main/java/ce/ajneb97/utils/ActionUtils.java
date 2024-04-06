@@ -20,6 +20,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -427,6 +428,87 @@ public class ActionUtils {
             }
             if(skullTexture != null || skullOwner != null){
                 BlockUtils.setHeadTextureData(block,skullTexture,skullOwner);
+            }
+        }
+    }
+
+    public static void summon(String actionLine) {
+        // summon: location:<x>,<y>,<z>,<world>;entity:<id>,<property>:<value>
+        // custom_name:<value>
+        // health:<value>
+        // equipment:<helmet>,<chestplate>,<leggings>,<boots> (material or 'none')
+        // amount:<amount>
+
+        String[] sep = actionLine.replace("summon: ","").split(";");
+        Location location = null;
+        EntityType type = null;
+
+        String customName = null;
+        double health = 0;
+        String equipmentString = null;
+        int amount = 1;
+
+        for(String property : sep){
+            if(property.startsWith("location:")){
+                String[] locationSplit = property.replace("location:", "").split(",");
+                location = new Location(
+                        Bukkit.getWorld(locationSplit[3]),
+                        Double.parseDouble(locationSplit[0]),
+                        Double.parseDouble(locationSplit[1]),
+                        Double.parseDouble(locationSplit[2])
+                );
+            }else if(property.startsWith("entity:")){
+                type = EntityType.valueOf(property.replace("entity:",""));
+            }else if(property.startsWith("custom_name:")){
+                customName = property.replace("custom_name:","");
+            }else if(property.startsWith("health:")){
+                health = Double.parseDouble(property.replace("health:",""));
+            }else if(property.startsWith("equipment:")){
+                equipmentString = property.replace("equipment:","");
+            }else if(property.startsWith("amount:")){
+                amount = Integer.parseInt(property.replace("amount:",""));
+            }
+        }
+
+        if(location != null){
+            for(int i=0;i<amount;i++){
+                LivingEntity entity = (LivingEntity) location.getWorld().spawnEntity(location,type);
+                if(customName != null){
+                    entity.setCustomNameVisible(true);
+                    entity.setCustomName(MessagesManager.getColoredMessage(customName));
+                }
+                if(health != 0){
+                    entity.setMaxHealth(health);
+                    entity.setHealth(health);
+                }
+
+                EntityEquipment equipment = entity.getEquipment();
+                if(equipmentString != null){
+                    String[] equipmentSplit = equipmentString.split(",");
+
+                    //Helmet
+                    if(!equipmentSplit[0].equals("none")){
+                        ItemStack item = null;
+                        if(equipmentSplit[0].startsWith("e")){
+                            item = ItemUtils.createHead();
+                            ItemUtils.setSkullData(item,equipmentSplit[0],null,null);
+                        }else{
+                            item = ItemUtils.createItemFromID(equipmentSplit[0]);
+                        }
+                        equipment.setHelmet(item);
+                        equipment.setHelmetDropChance(0);
+                    }
+
+                    //Chestplate
+                    equipment.setChestplate(!equipmentSplit[1].equals("none") ? ItemUtils.createItemFromID(equipmentSplit[1]) : null);
+                    equipment.setChestplateDropChance(0);
+                    //Leggings
+                    equipment.setLeggings(!equipmentSplit[2].equals("none") ? ItemUtils.createItemFromID(equipmentSplit[2]) : null);
+                    equipment.setLeggingsDropChance(0);
+                    //Boots
+                    equipment.setBoots(!equipmentSplit[3].equals("none") ? ItemUtils.createItemFromID(equipmentSplit[3]) : null);
+                    equipment.setBootsDropChance(0);
+                }
             }
         }
     }

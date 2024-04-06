@@ -272,6 +272,9 @@ public class ExecutedEvent {
             case SET_ITEM:
                 ActionUtils.setItem(actionLine,minecraftEvent);
                 return;
+            case SUMMON:
+                ActionUtils.summon(actionLine);
+                return;
             // Could or could not be a player event
             case FIREWORK:
                 ActionUtils.firework(player, actionLine, plugin);
