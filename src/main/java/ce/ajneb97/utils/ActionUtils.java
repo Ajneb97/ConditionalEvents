@@ -22,14 +22,17 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import java.util.*;
+import org.bukkit.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class ActionUtils {
 
@@ -537,6 +540,18 @@ public class ActionUtils {
         TitleAPI.sendTitle(player,fadeIn,stay,fadeOut,title,subtitle);
     }
 
+    /*
+    public static void vector(Player player,String actionLine){
+        // vector: <front>;<height>
+        String[] sep = actionLine.split(";");
+        double front = Double.parseDouble(sep[0]);
+        double height = Double.parseDouble(sep[1]);
+
+        Vector direction = player.getLocation().getDirection().normalize();
+        Vector newDirection = new Vector(direction.getX()*front,height,direction.getZ()*front);
+        player.setVelocity(player.getVelocity().add(newDirection));
+    }*/
+
     public static void firework(Player player,String actionLine,ConditionalEvents plugin){
         // firework: colors:<color1>,<color2> type:<type> fade:<color1>,<color2> power:<power> location(optional):<x>;<y>;<z>;<world>
         ArrayList<Color> colors = new ArrayList<Color>();
@@ -577,7 +592,14 @@ public class ActionUtils {
             location = player.getLocation();
         }
 
-        Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK);
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        EntityType entityType = null;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R4)){
+            entityType = EntityType.FIREWORK_ROCKET;
+        }else{
+            entityType = EntityType.valueOf("FIREWORK");
+        }
+        Firework firework = (Firework) location.getWorld().spawnEntity(location, entityType);
         FireworkMeta fireworkMeta = firework.getFireworkMeta();
         FireworkEffect effect = FireworkEffect.builder().flicker(false)
                 .withColor(colors)
@@ -627,14 +649,15 @@ public class ActionUtils {
         }
 
         try {
-            if(effectName.startsWith("REDSTONE;")) {
+            if(effectName.startsWith("REDSTONE;") || effectName.startsWith("DUST;")) {
                 String[] effectSeparated = effectName.split(";");
                 int red = Integer.parseInt(effectSeparated[1]);
                 int green = Integer.parseInt(effectSeparated[2]);
                 int blue = Integer.parseInt(effectSeparated[3]);
                 Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(red,green,blue), 1);
+
                 location.getWorld().spawnParticle(
-                        Particle.REDSTONE,location,amount,offsetX,offsetY,offsetZ,speed,dustOptions,false);
+                        Particle.valueOf(effectSeparated[0]),location,amount,offsetX,offsetY,offsetZ,speed,dustOptions,false);
             }else {
                 location.getWorld().spawnParticle(
                         Particle.valueOf(effectName),location,amount,offsetX,offsetY,offsetZ,speed,null,false);
