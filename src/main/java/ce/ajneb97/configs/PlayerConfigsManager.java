@@ -133,26 +133,34 @@ public class PlayerConfigsManager {
 		}
 		plugin.getPlayerManager().setPlayerData(playerData);
 	}
+
+	public void savePlayer(PlayerData player){
+		String playerName = player.getName();
+		PlayerConfig playerConfig = getPlayerConfig(player.getUuid()+".yml");
+		if(playerConfig == null) {
+			registerPlayer(player.getUuid()+".yml");
+			playerConfig = getPlayerConfig(player.getUuid()+".yml");
+		}
+		FileConfiguration players = playerConfig.getConfig();
+
+		players.set("name", playerName);
+		players.set("events", null);
+
+		for(EventData event : player.getEventData()){
+			String path = "events."+event.getName();
+			players.set(path+".one_time", event.isOneTime());
+			players.set(path+".cooldown", event.getCooldown());
+		}
+
+		playerConfig.savePlayerConfig();
+	}
 	
 	public void savePlayerData() {
 		for(PlayerData player : plugin.getPlayerManager().getPlayerData()) {
-			String playerName = player.getName();
-			PlayerConfig playerConfig = getPlayerConfig(player.getUuid()+".yml");
-			if(playerConfig == null) {
-				registerPlayer(player.getUuid()+".yml");
-				playerConfig = getPlayerConfig(player.getUuid()+".yml");
+			if(player.isModified()){
+				savePlayer(player);
 			}
-			FileConfiguration players = playerConfig.getConfig();
-			
-			players.set("name", playerName);
-			players.set("events", null);
-
-			for(EventData event : player.getEventData()){
-				String path = "events."+event.getName();
-				players.set(path+".one_time", event.isOneTime());
-				players.set(path+".cooldown", event.getCooldown());
-			}
+			player.setModified(false);
 		}
-		savePlayers();
 	}
 }

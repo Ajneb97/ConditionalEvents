@@ -45,6 +45,7 @@ public class PlayerManager {
         PlayerData p = getPlayerData(player);
         if(p == null){
             p = new PlayerData(player.getUniqueId().toString(),player.getName());
+            p.setModified(true);
             playerData.add(p);
         }
         return p;
@@ -53,6 +54,7 @@ public class PlayerManager {
     public void setEventCooldown(String eventName,Player player){
         PlayerData p = createPlayerData(player);
         p.setCooldown(eventName,System.currentTimeMillis());
+        p.setModified(true);
     }
 
     public long getEventCooldown(String eventName,Player player){
@@ -67,6 +69,7 @@ public class PlayerManager {
     public void setEventOneTime(String eventName,Player player){
         PlayerData p = createPlayerData(player);
         p.setOneTime(eventName,true);
+        p.setModified(true);
     }
 
     public boolean getEventOneTime(String eventName,Player player){
@@ -82,12 +85,14 @@ public class PlayerManager {
         for(PlayerData p : playerData){
             p.resetCooldown(eventName);
             p.setOneTime(eventName,false);
+            p.setModified(true);
         }
     }
 
     public void resetAllDataForPlayers(){
         for(PlayerData p : playerData){
             p.resetAll();
+            p.setModified(true);
         }
     }
 }

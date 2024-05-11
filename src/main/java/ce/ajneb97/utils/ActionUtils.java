@@ -8,9 +8,11 @@ import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.managers.dependencies.DiscordSRVManager;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ExecutedEvent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.*;
@@ -18,6 +20,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EntityEquipment;
@@ -52,6 +55,13 @@ public class ActionUtils {
     public static void jsonMessage(Player player,String actionLine){
         BaseComponent[] base = ComponentSerializer.parse(actionLine);
         player.spigot().sendMessage(base);
+    }
+
+    public static void miniMessage(Player player,String actionLine,ConditionalEvents plugin){
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(plugin.getDependencyManager().isPaper() && serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_19_R3)) {
+            player.sendRichMessage(actionLine);
+        }
     }
 
     public static void consoleCommand(String actionLine){
@@ -475,43 +485,48 @@ public class ActionUtils {
 
         if(location != null){
             for(int i=0;i<amount;i++){
-                LivingEntity entity = (LivingEntity) location.getWorld().spawnEntity(location,type);
+                Entity entity = location.getWorld().spawnEntity(location,type);
                 if(customName != null){
                     entity.setCustomNameVisible(true);
                     entity.setCustomName(MessagesManager.getColoredMessage(customName));
                 }
-                if(health != 0){
-                    entity.setMaxHealth(health);
-                    entity.setHealth(health);
-                }
 
-                EntityEquipment equipment = entity.getEquipment();
-                if(equipmentString != null){
-                    String[] equipmentSplit = equipmentString.split(",");
-
-                    //Helmet
-                    if(!equipmentSplit[0].equals("none")){
-                        ItemStack item = null;
-                        if(equipmentSplit[0].startsWith("e")){
-                            item = ItemUtils.createHead();
-                            ItemUtils.setSkullData(item,equipmentSplit[0],null,null);
-                        }else{
-                            item = ItemUtils.createItemFromID(equipmentSplit[0]);
-                        }
-                        equipment.setHelmet(item);
-                        equipment.setHelmetDropChance(0);
+                if(entity instanceof LivingEntity){
+                    LivingEntity livingEntity = (LivingEntity) entity;
+                    if(health != 0){
+                        livingEntity.setMaxHealth(health);
+                        livingEntity.setHealth(health);
                     }
 
-                    //Chestplate
-                    equipment.setChestplate(!equipmentSplit[1].equals("none") ? ItemUtils.createItemFromID(equipmentSplit[1]) : null);
-                    equipment.setChestplateDropChance(0);
-                    //Leggings
-                    equipment.setLeggings(!equipmentSplit[2].equals("none") ? ItemUtils.createItemFromID(equipmentSplit[2]) : null);
-                    equipment.setLeggingsDropChance(0);
-                    //Boots
-                    equipment.setBoots(!equipmentSplit[3].equals("none") ? ItemUtils.createItemFromID(equipmentSplit[3]) : null);
-                    equipment.setBootsDropChance(0);
+                    EntityEquipment equipment = livingEntity.getEquipment();
+                    if(equipmentString != null){
+                        String[] equipmentSplit = equipmentString.split(",");
+
+                        //Helmet
+                        if(!equipmentSplit[0].equals("none")){
+                            ItemStack item = null;
+                            if(equipmentSplit[0].startsWith("e")){
+                                item = ItemUtils.createHead();
+                                ItemUtils.setSkullData(item,equipmentSplit[0],null,null);
+                            }else{
+                                item = ItemUtils.createItemFromID(equipmentSplit[0]);
+                            }
+                            equipment.setHelmet(item);
+                            equipment.setHelmetDropChance(0);
+                        }
+
+                        //Chestplate
+                        equipment.setChestplate(!equipmentSplit[1].equals("none") ? ItemUtils.createItemFromID(equipmentSplit[1]) : null);
+                        equipment.setChestplateDropChance(0);
+                        //Leggings
+                        equipment.setLeggings(!equipmentSplit[2].equals("none") ? ItemUtils.createItemFromID(equipmentSplit[2]) : null);
+                        equipment.setLeggingsDropChance(0);
+                        //Boots
+                        equipment.setBoots(!equipmentSplit[3].equals("none") ? ItemUtils.createItemFromID(equipmentSplit[3]) : null);
+                        equipment.setBootsDropChance(0);
+                    }
                 }
+
             }
         }
     }
@@ -750,14 +765,20 @@ public class ActionUtils {
     }
 
     public static void cancelDrop(String actionLine,Event minecraftEvent){
-        if(OtherUtils.isLegacy()){
-            return;
-        }
         if(minecraftEvent instanceof BlockBreakEvent) {
+            if(OtherUtils.isLegacy()){
+                return;
+            }
             BlockBreakEvent blockBreakEvent = (BlockBreakEvent) minecraftEvent;
             boolean cancel = Boolean.parseBoolean(actionLine);
             if(cancel){
                 blockBreakEvent.setDropItems(false);
+            }
+        }else if(minecraftEvent instanceof EntityDeathEvent){
+            EntityDeathEvent entityDeathEvent = (EntityDeathEvent) minecraftEvent;
+            boolean cancel = Boolean.parseBoolean(actionLine);
+            if(cancel){
+                entityDeathEvent.getDrops().clear();
             }
         }
     }

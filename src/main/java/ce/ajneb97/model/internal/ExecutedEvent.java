@@ -313,6 +313,9 @@ public class ExecutedEvent {
             case JSON_MESSAGE:
                 ActionUtils.jsonMessage(player, actionLine);
                 return;
+            case MINI_MESSAGE:
+                ActionUtils.miniMessage(player, actionLine, plugin);
+                return;
             case PLAYER_COMMAND:
                 ActionUtils.playerCommand(player, actionLine);
                 return;
@@ -376,6 +379,9 @@ public class ExecutedEvent {
             case STOPSOUND:
                 ActionUtils.stopSound(player, actionLine);
                 return;
+            //case VECTOR:
+            //    ActionUtils.vector(player, actionLine);
+            //    return;
         }
     }
 

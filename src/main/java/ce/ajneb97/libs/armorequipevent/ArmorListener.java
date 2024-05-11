@@ -96,8 +96,11 @@ public class ArmorListener implements Listener{
 				if(ConditionalEvents.serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_9_R1)){
 					ItemStack offhandItem = e.getWhoClicked().getInventory().getItemInOffHand();
 					if(e.getSlotType() == SlotType.ARMOR && !isAirOrNull(offhandItem)){
-						newArmorType = ArmorType.matchType(offhandItem);
-						newArmorPiece = offhandItem;
+						ArmorType offhandArmorType = ArmorType.matchType(offhandItem);
+						if(offhandArmorType != null){
+							newArmorType = offhandArmorType;
+							newArmorPiece = offhandItem;
+						}
 					}
 				}
 			}

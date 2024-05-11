@@ -7,12 +7,14 @@ import java.util.ArrayList;
 public class PlayerData {
     private String uuid;
     private String name;
+    private boolean modified;
     private ArrayList<EventData> eventData;
 
     public PlayerData(String uuid, String name) {
         this.uuid = uuid;
         this.name = name;
         this.eventData = new ArrayList<EventData>();
+        this.modified = false;
     }
 
     public String getUuid() {
@@ -94,4 +96,11 @@ public class PlayerData {
         }
     }
 
+    public boolean isModified() {
+        return modified;
+    }
+
+    public void setModified(boolean modified) {
+        this.modified = modified;
+    }
 }
