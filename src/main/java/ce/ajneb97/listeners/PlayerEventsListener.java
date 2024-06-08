@@ -339,6 +339,7 @@ public class PlayerEventsListener implements Listener {
                 ).checkEvent();
     }
 
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onArmorEquip(ArmorEquipEvent event) {
         Player player = event.getPlayer();
@@ -357,6 +358,16 @@ public class PlayerEventsListener implements Listener {
             type = event.getType().name();
         }
 
+        if(newItem != null && !newItem.getType().name().equals("AIR")
+                && previousItem != null && !previousItem.getType().name().equals("AIR")) {
+            ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_ARMOR, null);
+            if(!conditionEvent.containsValidEvents()) return;
+            conditionEvent.addVariables(
+                            new StoredVariable("%armor_type%",type),
+                            new StoredVariable("%equip_type%","UNEQUIP")
+                    ).setCommonItemVariables(previousItem,null)
+                    .checkEvent();
+        }
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_ARMOR, null);
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.addVariables(
@@ -364,6 +375,8 @@ public class PlayerEventsListener implements Listener {
                 new StoredVariable("%equip_type%",equipType)
         ).setCommonItemVariables(selectedItem,null)
                 .checkEvent();
+
+
     }
 
 

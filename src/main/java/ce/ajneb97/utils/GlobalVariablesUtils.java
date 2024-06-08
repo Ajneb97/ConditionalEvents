@@ -115,22 +115,45 @@ public class GlobalVariablesUtils {
     public static String variableBlockAt(String variable){
         String variableLR = variable.replace("block_at_", "");
         String[] variableLRSplit = variableLR.split("_");
+        Block block = getBlockFromFormat(variableLRSplit);
+        if(block == null){
+            return variable;
+        }
+        return block.getType().name();
+    }
+
+    public static String variableBlockDataAt(String variable){
+        String variableLR = variable.replace("block_data_at_", "");
+        String[] variableLRSplit = variableLR.split("_");
+        Block block = getBlockFromFormat(variableLRSplit);
+        if(block == null){
+            return variable;
+        }
+
+        if(OtherUtils.isLegacy()){
+            return block.getData()+"";
+        }else{
+            return BlockUtils.getBlockDataStringFromObject(block.getBlockData());
+        }
+    }
+
+    private static Block getBlockFromFormat(String[] variableLRSplit) {
         try {
-            int x = Integer.valueOf(variableLRSplit[0]);
-            int y = Integer.valueOf(variableLRSplit[1]);
-            int z = Integer.valueOf(variableLRSplit[2]);
+            int x = Integer.parseInt(variableLRSplit[0]);
+            int y = Integer.parseInt(variableLRSplit[1]);
+            int z = Integer.parseInt(variableLRSplit[2]);
             String worldName = "";
-            for(int i=3;i<variableLRSplit.length;i++) {
+            for(int i = 3; i< variableLRSplit.length; i++) {
                 if(i == variableLRSplit.length - 1) {
-                    worldName = worldName+variableLRSplit[i];
+                    worldName = worldName+ variableLRSplit[i];
                 }else {
-                    worldName = worldName+variableLRSplit[i]+"_";
+                    worldName = worldName+ variableLRSplit[i]+"_";
                 }
             }
             World world = Bukkit.getWorld(worldName);
-            return world.getBlockAt(x, y, z).getType().name();
+            return world.getBlockAt(x,y,z);
         }catch(Exception e) {
-            return variable;
+            return null;
         }
     }
 

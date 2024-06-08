@@ -5,21 +5,14 @@ import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.PostEventVariableResult;
 import ce.ajneb97.model.internal.VariablesProperties;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class VariablesUtils {
 
@@ -223,6 +216,9 @@ public class VariablesUtils {
         }else if(variable.startsWith("block_at_")) {
             // %block_at_x_y_z_world%
             return GlobalVariablesUtils.variableBlockAt(variable);
+        }else if(variable.startsWith("block_data_at_")) {
+            // %block_data_at_x_y_z_world%
+            return GlobalVariablesUtils.variableBlockDataAt(variable);
         }else if(variable.startsWith("is_nearby_")) {
             // %is_nearby_x_y_z_world_radius%
             return GlobalVariablesUtils.variableIsNearby(finalPlayer,variable);
