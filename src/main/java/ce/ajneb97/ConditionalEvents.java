@@ -129,11 +129,17 @@ public class ConditionalEvents extends JavaPlugin {
 
 	public void setVersion(){
 		String packageName = Bukkit.getServer().getClass().getPackage().getName();
-		String bukkitVersion = Bukkit.getServer().getBukkitVersion();
-		if(bukkitVersion.contains("1.20.5") || bukkitVersion.contains("1.20.6")){
-			serverVersion = ServerVersion.v1_20_R4;
-		}else{
-			serverVersion = ServerVersion.valueOf(packageName.replace("org.bukkit.craftbukkit.", ""));
+		String bukkitVersion = Bukkit.getServer().getBukkitVersion().split("-")[0];
+		switch(bukkitVersion){
+			case "1.20.5":
+			case "1.20.6":
+				serverVersion = ServerVersion.v1_20_R4;
+				break;
+			case "1.21":
+				serverVersion = ServerVersion.v1_21_R1;
+				break;
+			default:
+				serverVersion = ServerVersion.valueOf(packageName.replace("org.bukkit.craftbukkit.", ""));
 		}
 	}
 
