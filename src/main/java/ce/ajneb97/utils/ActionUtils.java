@@ -445,6 +445,18 @@ public class ActionUtils {
         }
     }
 
+    public static void lightningStrike(String actionLine) {
+        // lightning_strike: <world>;<x>;<y>;<z>
+        String[] sep = actionLine.split(";");
+        World world = Bukkit.getWorld(sep[0]);
+        double x = Double.parseDouble(sep[1]);
+        double y = Double.parseDouble(sep[2]);
+        double z = Double.parseDouble(sep[3]);
+        Location l = new Location(world,x,y,z);
+
+        l.getWorld().strikeLightningEffect(l);
+    }
+
     public static void summon(String actionLine) {
         // summon: location:<x>,<y>,<z>,<world>;entity:<id>,<property>:<value>
         // custom_name:<value>
@@ -566,7 +578,6 @@ public class ActionUtils {
         Vector newDirection = new Vector(direction.getX()*front,height,direction.getZ()*front);
         player.setVelocity(player.getVelocity().add(newDirection));
     }*/
-
     public static void firework(Player player,String actionLine,ConditionalEvents plugin){
         // firework: colors:<color1>,<color2> type:<type> fade:<color1>,<color2> power:<power> location(optional):<x>;<y>;<z>;<world>
         ArrayList<Color> colors = new ArrayList<Color>();
@@ -724,6 +735,10 @@ public class ActionUtils {
         }else{
             player.setHealth(newHealth);
         }
+    }
+
+    public static void setFoodLevel(Player player,String actionLine){
+        player.setFoodLevel(Integer.parseInt(actionLine));
     }
 
     public static void wait(String actionLine, ExecutedEvent executedEvent){

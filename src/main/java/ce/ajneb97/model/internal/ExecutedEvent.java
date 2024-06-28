@@ -275,6 +275,9 @@ public class ExecutedEvent {
             case SUMMON:
                 ActionUtils.summon(actionLine);
                 return;
+            case LIGHTNING_STRIKE:
+                ActionUtils.lightningStrike(actionLine);
+                return;
             // Could or could not be a player event
             case FIREWORK:
                 ActionUtils.firework(player, actionLine, plugin);
@@ -372,6 +375,9 @@ public class ExecutedEvent {
                 return;
             case HEAL:
                 ActionUtils.heal(player, actionLine);
+                return;
+            case SET_FOOD_LEVEL:
+                ActionUtils.setFoodLevel(player, actionLine);
                 return;
             case GIVE_ITEM:
                 ActionUtils.giveItem(player, actionLine);
