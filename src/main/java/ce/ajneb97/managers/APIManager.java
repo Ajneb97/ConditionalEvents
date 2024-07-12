@@ -24,12 +24,14 @@ public class APIManager {
                     MessagesManager.getColoredMessage(" &7Custom API Action &a"+a.getName()+" &7registered from plugin &e"+a.getPlugin().getName()));
             apiActions.add(a);
         }
+        this.plugin.getConfigsManager().endRepetitiveEvents();
         this.plugin.getConfigsManager().configureEvents();
         this.plugin.getVerifyManager().verifyEvents();
     }
 
     public void unregisterApiActions(JavaPlugin plugin){
         apiActions.removeIf(a -> a.getPlugin() == plugin);
+        this.plugin.getConfigsManager().endRepetitiveEvents();
         this.plugin.getConfigsManager().configureEvents();
         this.plugin.getVerifyManager().verifyEvents();
     }

@@ -19,6 +19,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
@@ -459,6 +460,44 @@ public class PlayerEventsListener implements Listener {
                         new StoredVariable("%inventory_type%",event.getInventory().getType().name()),
                         new StoredVariable("%inventory_title%",ChatColor.stripColor(event.getView().getTitle()))
                 ).checkEvent();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onClickInventory(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_CLICK_INVENTORY, null);
+        if(!conditionEvent.containsValidEvents()) return;
+
+        String clickType = event.getClick().name();
+        String action = event.getAction().name();
+        String slotType = "";
+        if(event.getSlotType() != null){
+            slotType = event.getSlotType().name();
+        }
+        String title = "";
+        String titleColorFormat = "";
+        if(event.getView() != null){
+            title = event.getView().getTitle();
+            titleColorFormat = title.replace("§", "&");
+            title = ChatColor.stripColor(title);
+        }
+        String inventoryType = "";
+        int slot = event.getSlot();
+        if(event.getClickedInventory() != null){
+            inventoryType = event.getClickedInventory().getType().name();
+        }
+
+        conditionEvent.addVariables(
+                        new StoredVariable("%inventory_type%",inventoryType),
+                        new StoredVariable("%inventory_title%",title),
+                        new StoredVariable("%inventory_title_color_format%",titleColorFormat),
+                        new StoredVariable("%click_type%",clickType),
+                        new StoredVariable("%action_type%",action),
+                        new StoredVariable("%slot_type%",slotType),
+                        new StoredVariable("%slot%",slot+"")
+        ).setCommonItemVariables(event.getCurrentItem(),null)
+                .checkEvent();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

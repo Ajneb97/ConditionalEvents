@@ -6,6 +6,7 @@ import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.CustomEventProperties;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.actions.*;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.ArrayList;
@@ -240,12 +241,16 @@ public class ConfigsManager {
         return configs;
     }
 
-    public boolean reload(){
+    public void endRepetitiveEvents(){
         for(CEEvent event : plugin.getEventsManager().getEvents()){
             if(event.getRepetitiveManager() != null){
                 event.getRepetitiveManager().end();
             }
         }
+    }
+
+    public boolean reload(){
+        endRepetitiveEvents();
 
         playerConfigsManager.savePlayerData();
         if(!mainConfigManager.reloadConfig()){
