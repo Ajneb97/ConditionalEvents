@@ -1,7 +1,9 @@
 package ce.ajneb97.utils;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.api.ConditionalEventsAPI;
 import ce.ajneb97.managers.MessagesManager;
+import ce.ajneb97.managers.SavedItemsManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
@@ -108,9 +110,9 @@ public class ItemUtils {
         int amount = 1;
         short durability = 0;
         String name = null;
-        List<String> lore = new ArrayList<String>();
-        List<String> flags = new ArrayList<String>();
-        List<String> enchants = new ArrayList<String>();
+        List<String> lore = new ArrayList<>();
+        List<String> flags = new ArrayList<>();
+        List<String> enchants = new ArrayList<>();
         int customModelData = 0;
         String skullTexture = null;
         String skullId = null;
@@ -149,6 +151,8 @@ public class ItemUtils {
                 skullOwner = property.replace("skull_owner:", "");
             }else if(property.startsWith("skull_id")) {
                 skullId = property.replace("skull_id:", "");
+            }else if(property.startsWith("saved_item")){
+                return ConditionalEventsAPI.getPlugin().getSavedItemsManager().getItem(property.replace("saved_item:", ""));
             }
         }
 

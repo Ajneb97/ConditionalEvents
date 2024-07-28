@@ -42,6 +42,7 @@ public class ConditionalEvents extends JavaPlugin {
 	private VerifyManager verifyManager;
 	private UpdateCheckerManager updateCheckerManager;
 	private CommandRegisterManager commandRegisterManager;
+	private SavedItemsManager savedItemsManager;
 	private APIManager apiManager;
 
 	private PlayerDataSaveTask playerDataSaveTask;
@@ -56,6 +57,7 @@ public class ConditionalEvents extends JavaPlugin {
 		this.bungeeMessagingManager = new BungeeMessagingManager(this);
 		this.debugManager = new DebugManager(this);
 		this.playerManager =  new PlayerManager(this);
+		this.savedItemsManager = new SavedItemsManager(this);
 		this.apiManager = new APIManager(this);
 		this.configsManager = new ConfigsManager(this);
 		this.configsManager.configure();
@@ -206,6 +208,10 @@ public class ConditionalEvents extends JavaPlugin {
 
 	public APIManager getApiManager() {
 		return apiManager;
+	}
+
+	public SavedItemsManager getSavedItemsManager() {
+		return savedItemsManager;
 	}
 
 	public void updateMessage(UpdateCheckerResult result){

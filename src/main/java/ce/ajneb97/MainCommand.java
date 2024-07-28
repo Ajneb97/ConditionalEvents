@@ -6,21 +6,26 @@ package ce.ajneb97;
 import ce.ajneb97.configs.MainConfigManager;
 import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.managers.PlayerManager;
+import ce.ajneb97.managers.SavedItemsManager;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.player.PlayerData;
 import ce.ajneb97.utils.ActionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 
 public class MainCommand implements CommandExecutor, TabCompleter {
@@ -62,6 +67,12 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 				   }
 			   }else if(args[0].equalsIgnoreCase("call")) {
 				   call(args,sender,config,msgManager);
+			   }else if(args[0].equalsIgnoreCase("item")) {
+				   if(sender instanceof Player){
+					   item(args,(Player)sender,config,msgManager);
+				   }else{
+					   msgManager.sendMessage(sender,config.getString("Messages.onlyPlayerCommand"),true);
+				   }
 			   }
 			   else {
 				   help(sender);
@@ -269,6 +280,46 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		}
 
 	}
+
+	public void item(String[] args,Player player,FileConfiguration config,MessagesManager msgManager){
+		// /ce item <save/remove> <name>
+		if(args.length <= 2){
+			msgManager.sendMessage(player,config.getString("Messages.commandItemError"),true);
+			return;
+		}
+
+		SavedItemsManager savedItemsManager = plugin.getSavedItemsManager();
+		String type = args[1];
+		String name = args[2];
+
+		if(type.equals("save")){
+			if(savedItemsManager.getItem(name) != null){
+				msgManager.sendMessage(player,config.getString("Messages.savedItemAlreadyExists"),true);
+				return;
+			}
+
+			ItemStack item = player.getItemInHand();
+			if(item == null || item.getType().equals(Material.AIR)) {
+				msgManager.sendMessage(player, config.getString("Messages.mustHaveItemInHand"), true);
+				return;
+			}
+
+			savedItemsManager.addItem(name,item.clone());
+			msgManager.sendMessage(player,config.getString("Messages.savedItemAdded")
+					.replace("%name%",name),true);
+		}else if(type.equals("remove")){
+			if(savedItemsManager.getItem(name) == null){
+				msgManager.sendMessage(player,config.getString("Messages.savedItemDoesNotExists"),true);
+				return;
+			}
+
+			savedItemsManager.removeItem(name);
+			msgManager.sendMessage(player,config.getString("Messages.savedItemRemoved")
+					.replace("%name%",name),true);
+		}else{
+			msgManager.sendMessage(player,config.getString("Messages.commandItemError"),true);
+		}
+	}
 	
 	public static void help(CommandSender sender) {
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&7[ [ &8[&bConditionalEvents&8] &7] ]"));
@@ -280,6 +331,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce reset <player>/* <event>/all &8Resets an event data for a player."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce enable/disable <event> &8Enable or disables an event."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce call <event> (optional)%variable1%=<value1>;%variableN%=<valueN> (optional)player:<player> (optional)silent:true &8Executes a 'call' event."));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce item <save/remove> <name> &8Save and remove items for some actions."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',""));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&7[ [ &8[&bConditionalEvents&8] &7] ]"));
 	}
@@ -292,7 +344,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 				List<String> commands = new ArrayList<String>();
 				commands.add("help");commands.add("reload");commands.add("verify");
 				commands.add("reset");commands.add("debug");commands.add("enable");
-				commands.add("disable");commands.add("call");
+				commands.add("disable");commands.add("call");commands.add("item");
 				for(String c : commands) {
 					if(args[0].isEmpty() || c.startsWith(args[0].toLowerCase())) {
 						completions.add(c);
@@ -302,25 +354,28 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			}else {
 				if((args[0].equalsIgnoreCase("debug") || args[0].equalsIgnoreCase("enable")
 						|| args[0].equalsIgnoreCase("disable")) && args.length == 2) {
-					List<String> completions = getEventsCompletions(args,1,false,null);
-					return completions;
+                    return getEventsCompletions(args,1,false,null);
 				}else if(args[0].equalsIgnoreCase("call") && args.length == 2) {
-					List<String> completions = getEventsCompletions(args,1,false,EventType.CALL);
-					return completions;
+                    return getEventsCompletions(args,1,false,EventType.CALL);
 				}else if(args[0].equalsIgnoreCase("reset") && args.length == 3) {
-					List<String> completions = getEventsCompletions(args,2,true,null);
-					return completions;
+					return getEventsCompletions(args,2,true,null);
 				}else if(args[0].equalsIgnoreCase("reset") && args.length == 2) {
-					List<String> completions = new ArrayList<String>();
+					List<String> completions = new ArrayList<>();
 					for(Player p : Bukkit.getOnlinePlayers()) {
-						if(args[1].toLowerCase().isEmpty() || p.getName().startsWith(args[1].toLowerCase())){
+						if(args[1].isEmpty() || p.getName().startsWith(args[1].toLowerCase())){
 							completions.add(p.getName());
 						}
 					}
-					if(args[1].toLowerCase().isEmpty() || "*".startsWith(args[1].toLowerCase())) {
+					if(args[1].isEmpty() || "*".startsWith(args[1].toLowerCase())) {
 						completions.add("*");
 					}
 					return completions;
+				}else if(args[0].equalsIgnoreCase("item") && args.length == 2) {
+					List<String> completions = new ArrayList<>();
+					completions.add("remove");completions.add("save");
+					return completions;
+				}else if(args.length == 3 && args[0].equalsIgnoreCase("item") && args[1].equalsIgnoreCase("remove")) {
+                    return getSavedItemsCompletions(args,2);
 				}
 			}
 		}
@@ -350,6 +405,22 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 				}else{
 					completions.add(event.getName());
 				}
+			}
+		}
+
+		if(completions.isEmpty()){
+			return null;
+		}
+		return completions;
+	}
+
+	public List<String> getSavedItemsCompletions(String[] args,int argItemPos){
+		List<String> completions = new ArrayList<>();
+
+		String argItem = args[argItemPos];
+		for(Map.Entry<String, ItemStack> entry : plugin.getSavedItemsManager().getSavedItems().entrySet()){
+			if(argItem.isEmpty() || entry.getKey().toLowerCase().startsWith(argItem.toLowerCase())) {
+				completions.add(entry.getKey());
 			}
 		}
 

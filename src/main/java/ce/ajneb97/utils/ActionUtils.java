@@ -8,11 +8,9 @@ import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.managers.dependencies.DiscordSRVManager;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ExecutedEvent;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.*;
@@ -31,7 +29,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -325,6 +322,8 @@ public class ActionUtils {
         // lore:<lore_line1>|<lore_lineN>;enchants:<name1>-<level1>|<nameN>-<levelN>;
         // flags:<flag1>|<flag2>
         // slot:<slot>
+
+        // give_item: saved_item:<name>
 
         String[] sep = actionLine.replace("give_item: ","").split(";");
         ItemStack item = ItemUtils.getItemFromProperties(sep);

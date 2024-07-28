@@ -6,7 +6,6 @@ import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.CustomEventProperties;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.actions.*;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.ArrayList;
@@ -17,11 +16,14 @@ public class ConfigsManager {
     private MainConfigManager mainConfigManager;
     private PlayerConfigsManager playerConfigsManager;
     private DataFolderConfigManager dataFolderConfigManager;
+    private SavedItemsConfigManager savedItemsConfigManager;
     private ConditionalEvents plugin;
     public ConfigsManager(ConditionalEvents plugin){
         mainConfigManager = new MainConfigManager(plugin);
         playerConfigsManager = new PlayerConfigsManager(plugin);
         dataFolderConfigManager = new DataFolderConfigManager(plugin,"events");
+        savedItemsConfigManager = new SavedItemsConfigManager(plugin);
+
         this.plugin = plugin;
     }
 
@@ -29,6 +31,7 @@ public class ConfigsManager {
         mainConfigManager.configure();
         playerConfigsManager.configure();
         dataFolderConfigManager.configure();
+        savedItemsConfigManager.configure();
         configureEvents();
     }
 
@@ -38,6 +41,10 @@ public class ConfigsManager {
 
     public PlayerConfigsManager getPlayerConfigsManager() {
         return playerConfigsManager;
+    }
+
+    public SavedItemsConfigManager getSavedItemsConfigManager() {
+        return savedItemsConfigManager;
     }
 
     public void configureEvents(){

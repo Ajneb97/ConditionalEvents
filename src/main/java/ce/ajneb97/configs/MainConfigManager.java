@@ -84,6 +84,15 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("commandItemError:")){
+                getConfig().set("Messages.commandItemError", "&cUse &7/ce item <save/remove> <name>");
+                getConfig().set("Messages.savedItemDoesNotExists", "&cThat saved item doesn't exists.");
+                getConfig().set("Messages.savedItemRemoved", "&aItem &7%name% &aremoved.");
+                getConfig().set("Messages.mustHaveItemInHand", "&cYou must have an item on your hand.");
+                getConfig().set("Messages.savedItemAlreadyExists", "&cA saved item with that name already exists.");
+                getConfig().set("Messages.savedItemAdded", "&aItem &7%name% &asaved.");
+                saveConfig();
+            }
             if(!text.contains("commandCallCorrectPlayer:")){
                 getConfig().set("Messages.commandCallCorrectPlayer", "&aEvent &7%event% &asuccessfully executed for player &7%player%&a.");
                 saveConfig();

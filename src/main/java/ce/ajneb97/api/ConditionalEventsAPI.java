@@ -55,4 +55,8 @@ public class ConditionalEventsAPI {
     public static void unregisterApiActions(JavaPlugin p){
         plugin.getApiManager().unregisterApiActions(p);
     }
+
+    public static ConditionalEvents getPlugin() {
+        return plugin;
+    }
 }

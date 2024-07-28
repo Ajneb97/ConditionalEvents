@@ -40,6 +40,12 @@ Messages:
   commandCallCorrectPlayer: '&aEvent &7%event% &asuccessfully executed for player &7%player%&a.'
   commandCallFailed: '&cEvent &7%event% &ccould not be executed. Maybe a format error?'
   playerNotOnline: '&cThat player is not online.'
+  commandItemError: "&cUse &7/ce item <save/remove> <name>"
+  savedItemDoesNotExists: "&cThat saved item doesn't exists."
+  savedItemRemoved: "&aItem &7%name% &aremoved."
+  mustHaveItemInHand: "&cYou must have an item on your hand."
+  savedItemAlreadyExists: "&cA saved item with that name already exists."
+  savedItemAdded: "&aItem &7%name% &asaved."
 Events:
   event1:
     type: player_join
