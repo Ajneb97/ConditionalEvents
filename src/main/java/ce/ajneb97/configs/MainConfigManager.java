@@ -25,6 +25,7 @@ public class MainConfigManager {
 
     private boolean updateNotifications;
     private boolean debugActions;
+    private boolean experimentalVariableReplacement;
     private ArrayList<ToConditionGroup> toConditionGroups;
     public MainConfigManager(ConditionalEvents plugin){
         this.plugin = plugin;
@@ -38,6 +39,7 @@ public class MainConfigManager {
 
         updateNotifications = config.getBoolean("Config.update_notification");
         debugActions = config.getBoolean("Config.debug_actions");
+        experimentalVariableReplacement = config.getBoolean("Config.experimental.variable_replacement");
         toConditionGroups = new ArrayList<ToConditionGroup>();
         String path = "Config.to_condition_groups";
         if(config.contains(path)){
@@ -84,6 +86,10 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("variable_replacement:")){
+                getConfig().set("Config.experimental.variable_replacement", false);
+                saveConfig();
+            }
             if(!text.contains("commandItemError:")){
                 getConfig().set("Messages.commandItemError", "&cUse &7/ce item <save/remove> <name>");
                 getConfig().set("Messages.savedItemDoesNotExists", "&cThat saved item doesn't exists.");
@@ -169,5 +175,9 @@ public class MainConfigManager {
             }
         }
         return null;
+    }
+
+    public boolean isExperimentalVariableReplacement() {
+        return experimentalVariableReplacement;
     }
 }

@@ -1,11 +1,11 @@
 package ce.ajneb97.utils;
 
-import ce.ajneb97.api.ConditionalEventsAPI;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.PostEventVariableResult;
 import ce.ajneb97.model.internal.VariablesProperties;
 import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -14,82 +14,67 @@ import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class VariablesUtils {
+public class VariablesUtilsExperimental {
 
-    public static String replaceAllVariablesInLine(String textLine,VariablesProperties variablesProperties,boolean smallVariables){
-        boolean experimentalVariableReplacement = ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isExperimentalVariableReplacement();
-        if(experimentalVariableReplacement){
-            return VariablesUtilsExperimental.replaceAllVariablesInLine(textLine,variablesProperties);
-        }
+    private static final Pattern subVariablesPattern = Pattern.compile("\\{([^{}]+)}");
 
-        String auxTextLine = textLine;
 
-        char startChar = '%';
-        char endChar = '%';
-        if(smallVariables){
-            startChar = '{';
-            endChar = '}';
-        }
+    public static String replaceAllVariablesInLine(String textLine,VariablesProperties variablesProperties){
+        StringBuilder newText = new StringBuilder();
 
-        //For special variables like ParseOther
-        int currentSmallVariableCount = 0;
-        boolean isParseOther = false;
-        if(textLine.startsWith("%parseother_")){
-            isParseOther = true;
-        }
-
-        for(int c=0;c<textLine.length();c++) {
-            if(textLine.charAt(c) == startChar) {
-                if(c+1 < textLine.length()) {
-                    int lastPos = textLine.indexOf(endChar, c+1);
-                    if(lastPos == -1) {
-                        continue;
+        int pos = 0;
+        while(pos < textLine.length()){
+            char posChar = textLine.charAt(pos);
+            if(posChar == '%'){
+                int indexLast = textLine.indexOf('%',pos+1);
+                if(indexLast != -1){
+                    String variable = textLine.substring(pos,indexLast+1);
+                    String replacedSubVariables = replaceSubVariables(variable,variablesProperties);
+                    String finalReplaced = manageVariableReplacement(replacedSubVariables.substring(1,replacedSubVariables.length()-1),variablesProperties,false);
+                    pos = indexLast;
+                    if(variable.equals(finalReplaced)){
+                        pos--;
+                        finalReplaced = finalReplaced.substring(0,finalReplaced.length()-1);
                     }
 
-                    //Must not be an empty space at start and end.
-                    if(textLine.charAt(c+1) == ' ' || textLine.charAt(lastPos-1) == ' ') {
-                        continue;
-                    }
-
-                    String bigVariable = textLine.substring(c,lastPos+1);
-                    String auxBigVariable = null;
-                    if(!smallVariables){
-                        auxBigVariable = replaceAllVariablesInLine(bigVariable,variablesProperties,true);
-                    }else{
-                        auxBigVariable = bigVariable;
-                    }
-
-                    if(smallVariables && isParseOther && currentSmallVariableCount == 1){
-                        continue;
-                    }
-
-                    String auxBigVariableWithoutChars = auxBigVariable.replace(startChar+"","").replace(endChar+"","");
-
-                    String replaceVariableResult = replaceVariable(auxBigVariableWithoutChars,variablesProperties,smallVariables);
-
-                    if(replaceVariableResult.equals(auxBigVariableWithoutChars)){
-                        auxTextLine = auxTextLine.replace(bigVariable,startChar+replaceVariableResult+endChar);
-                    }else{
-                        if(isParseOther && smallVariables && currentSmallVariableCount == 0){
-                            if(!replaceVariableResult.startsWith(startChar+"")){
-                                replaceVariableResult = startChar+replaceVariableResult+endChar;
-                            }
-                        }
-
-                        int firstIndex = auxTextLine.indexOf(bigVariable);
-                        if(firstIndex != -1){
-                            auxTextLine = auxTextLine.substring(0,firstIndex)+replaceVariableResult+auxTextLine.substring(firstIndex+bigVariable.length());
-                        }
-                    }
-
-                    c = lastPos;
-                    currentSmallVariableCount++;
+                    pos++;
+                    newText.append(finalReplaced);
+                    continue;
                 }
             }
+            newText.append(posChar);
+            pos++;
         }
 
-        return auxTextLine;
+        return newText.toString();
+    }
+
+    private static String replaceSubVariables(String input,VariablesProperties variablesProperties) {
+        boolean parseOther = input.contains("parseother_");
+        Matcher matcher = subVariablesPattern.matcher(input);
+
+        StringBuffer buffer = new StringBuffer();
+        int finds = 0;
+        while (matcher.find()) {
+            if(parseOther && finds >= 1){
+                break;
+            }
+            String variable = matcher.group(1);
+            String replacement = manageVariableReplacement(variable,variablesProperties,true);
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
+
+            finds++;
+        }
+        matcher.appendTail(buffer);
+
+        String replaced = buffer.toString();
+        if (!parseOther && !replaced.equals(input)) {
+            return replaceSubVariables(replaced,variablesProperties);
+        }
+        return replaced;
     }
 
     //Post-Event variables
@@ -165,7 +150,7 @@ public class VariablesUtils {
     }
 
     //Global ConditionalEvents variables
-    private static String replaceVariable(String variable,VariablesProperties variablesProperties,boolean smallVariable){
+    private static String manageVariableReplacement(String variable,VariablesProperties variablesProperties,boolean smallVariable){
         Player finalPlayer = variablesProperties.getPlayer();
         Player target = variablesProperties.getTarget();
         Player to = variablesProperties.getToTarget();
@@ -252,22 +237,18 @@ public class VariablesUtils {
         if(variablesProperties.isPlaceholderAPI()){
             String variableBefore = variable;
             variable = PlaceholderAPI.setPlaceholders(finalPlayer,"%"+variable+"%");
-            if(("%"+variableBefore+"%").equals(variable)){
-                //Was not replaced
-                if(smallVariable){
-                    variable = "{"+variableBefore+"}";
-                }else{
-                    variable = "%"+variableBefore+"%";
-                }
+            if(!("%"+variableBefore+"%").equals(variable)){
+                //Was replaced
+                return variable;
+            }else{
+                variable = variableBefore;
             }
         }
 
-        return variable;
+        if(smallVariable){
+            return "{"+variable+"}";
+        }else{
+            return "%"+variable+"%";
+        }
     }
-
-
-
-
-
-
 }

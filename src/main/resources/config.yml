@@ -2,6 +2,8 @@ Config:
   update_notification: true
   data_save_time: 5
   debug_actions: true
+  experimental:
+    variable_replacement: false
   register_commands:
     - "hello"
   to_condition_groups:
