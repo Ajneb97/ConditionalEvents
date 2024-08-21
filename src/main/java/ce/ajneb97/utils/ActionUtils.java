@@ -514,26 +514,16 @@ public class ActionUtils {
                         String[] equipmentSplit = equipmentString.split(",");
 
                         //Helmet
-                        if(!equipmentSplit[0].equals("none")){
-                            ItemStack item = null;
-                            if(equipmentSplit[0].startsWith("e")){
-                                item = ItemUtils.createHead();
-                                ItemUtils.setSkullData(item,equipmentSplit[0],null,null);
-                            }else{
-                                item = ItemUtils.createItemFromID(equipmentSplit[0]);
-                            }
-                            equipment.setHelmet(item);
-                            equipment.setHelmetDropChance(0);
-                        }
-
+                        equipment.setHelmet(!equipmentSplit[0].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[0]) : null);
+                        equipment.setHelmetDropChance(0);
                         //Chestplate
-                        equipment.setChestplate(!equipmentSplit[1].equals("none") ? ItemUtils.createItemFromID(equipmentSplit[1]) : null);
+                        equipment.setChestplate(!equipmentSplit[1].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[1]) : null);
                         equipment.setChestplateDropChance(0);
                         //Leggings
-                        equipment.setLeggings(!equipmentSplit[2].equals("none") ? ItemUtils.createItemFromID(equipmentSplit[2]) : null);
+                        equipment.setLeggings(!equipmentSplit[2].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[2]) : null);
                         equipment.setLeggingsDropChance(0);
                         //Boots
-                        equipment.setBoots(!equipmentSplit[3].equals("none") ? ItemUtils.createItemFromID(equipmentSplit[3]) : null);
+                        equipment.setBoots(!equipmentSplit[3].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[3]) : null);
                         equipment.setBootsDropChance(0);
                     }
                 }
