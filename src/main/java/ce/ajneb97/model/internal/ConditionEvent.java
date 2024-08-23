@@ -146,6 +146,7 @@ public class ConditionEvent {
         String victimType = entity.getType().name();
         String victimName = "";
         String victimNameColorFormat = "";
+        String victimUuid = entity.getUniqueId().toString();
         if(entity.getCustomName() != null) {
             victimName = ChatColor.stripColor(entity.getCustomName());
             victimNameColorFormat = entity.getCustomName().replace("§", "&");
@@ -159,6 +160,7 @@ public class ConditionEvent {
         eventVariables.add(new StoredVariable("%victim_block_y%",location.getBlockY()+""));
         eventVariables.add(new StoredVariable("%victim_block_z%",location.getBlockZ()+""));
         eventVariables.add(new StoredVariable("%victim_block_world%",location.getWorld().getName()));
+        eventVariables.add(new StoredVariable("%victim_uuid%",victimUuid));
         return this;
     }
 

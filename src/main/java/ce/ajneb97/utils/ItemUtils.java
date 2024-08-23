@@ -42,6 +42,22 @@ public class ItemUtils {
         return item;
     }
 
+    public static ItemStack createItemFromString(String string){
+        ItemStack item = null;
+        if(string.startsWith("e")){
+            item = ItemUtils.createHead();
+            ItemUtils.setSkullData(item,string,null,null);
+            return item;
+        }
+
+        if(string.startsWith("saved_item:")){
+            return ConditionalEventsAPI.getPlugin().getSavedItemsManager().getItem(string.replace("saved_item:",""));
+        }
+
+        item = ItemUtils.createItemFromID(string);
+        return item;
+    }
+
     public static ItemStack createHead(){
         if(OtherUtils.isLegacy()){
             return new ItemStack(Material.valueOf("SKULL_ITEM"),1,(short)3);
@@ -118,6 +134,8 @@ public class ItemUtils {
         String skullId = null;
         String skullOwner = null;
 
+        ItemStack savedItem = null;
+
         for(String property : properties) {
             if(property.startsWith("id:")) {
                 id = property.replace("id:", "");
@@ -152,8 +170,13 @@ public class ItemUtils {
             }else if(property.startsWith("skull_id")) {
                 skullId = property.replace("skull_id:", "");
             }else if(property.startsWith("saved_item")){
-                return ConditionalEventsAPI.getPlugin().getSavedItemsManager().getItem(property.replace("saved_item:", ""));
+                savedItem = ConditionalEventsAPI.getPlugin().getSavedItemsManager().getItem(property.replace("saved_item:", ""));
             }
+        }
+
+        if(savedItem != null){
+            savedItem.setAmount(amount);
+            return savedItem;
         }
 
         ItemStack item = ItemUtils.createItemFromID(id);
