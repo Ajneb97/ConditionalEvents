@@ -206,7 +206,7 @@ public class ActionUtils {
         PotionEffectType potionEffectType = PotionEffectType.getByName(sep[0]);
         int duration = Integer.valueOf(sep[1]);
         int level = Integer.valueOf(sep[2])-1;
-        Boolean isForce = false;
+        boolean isForce = false;
         boolean showParticles = true;
         if(sep.length >= 4) {
             showParticles = Boolean.valueOf(sep[3]);
