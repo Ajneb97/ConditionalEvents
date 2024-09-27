@@ -58,6 +58,13 @@ public class ItemUtils {
         return item;
     }
 
+    public static boolean isAir(Material material){
+        if(material.name().contains("_AIR") || material.name().equals("AIR")){
+            return true;
+        }
+        return false;
+    }
+
     public static ItemStack createHead(){
         if(OtherUtils.isLegacy()){
             return new ItemStack(Material.valueOf("SKULL_ITEM"),1,(short)3);

@@ -225,7 +225,7 @@ public class GlobalVariablesUtils {
         Location locationClone = location.clone();
         for(int i=y+1;i<location.getWorld().getMaxHeight();i++){
             Block nextBlock = locationClone.add(0,1,0).getBlock();
-            if(!nextBlock.getType().isAir()){
+            if(!ItemUtils.isAir(nextBlock.getType())){
                 return nextBlock;
             }
         }

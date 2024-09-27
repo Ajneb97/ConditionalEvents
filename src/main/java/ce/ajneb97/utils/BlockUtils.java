@@ -1,6 +1,8 @@
 package ce.ajneb97.utils;
 
 import ce.ajneb97.ConditionalEvents;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
@@ -30,31 +32,50 @@ public class BlockUtils {
         Material material = block.getType();
         if(material.name().equals("PLAYER_HEAD") || material.name().equals("SKULL") || material.name().equals("PLAYER_WALL_HEAD")) {
             Skull skullBlock = (Skull) block.getState();
-            Field profileField;
-            try {
-                profileField = skullBlock.getClass().getDeclaredField("profile");
-                profileField.setAccessible(true);
-                GameProfile gameProfile = (GameProfile) profileField.get(skullBlock);
-                if(gameProfile != null && gameProfile.getProperties() != null &&
-                        gameProfile.getProperties().containsKey("textures")) {
-                    Collection<Property> properties = gameProfile.getProperties().get("textures");
-                    ServerVersion serverVersion = ConditionalEvents.serverVersion;
-                    for(Property p : properties) {
-                        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R2)){
-                            String pName = (String)p.getClass().getMethod("name").invoke(p);
-                            if(pName.equals("textures")){
-                                return (String)p.getClass().getMethod("value").invoke(p);
-                            }
-                        }else{
-                            if(p.getName().equals("textures")) {
-                                return p.getValue();
+
+            ServerVersion serverVersion = ConditionalEvents.serverVersion;
+            if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R1)){
+                if(skullBlock.getOwnerProfile() == null){
+                    return "";
+                }
+                PlayerTextures textures = skullBlock.getOwnerProfile().getTextures();
+                if(textures.getSkin() == null){
+                    return "";
+                }
+
+                JsonObject skinJsonObject = new JsonObject();
+                skinJsonObject.addProperty("url", textures.getSkin().toString());
+                JsonObject texturesJsonObject = new JsonObject();
+                texturesJsonObject.add("SKIN", skinJsonObject);
+                JsonObject minecraftTexturesJsonObject = new JsonObject();
+                minecraftTexturesJsonObject.add("textures", texturesJsonObject);
+                return new String(Base64.getEncoder().encode(minecraftTexturesJsonObject.toString().getBytes()));
+            }else{
+                Field profileField;
+                try {
+                    profileField = skullBlock.getClass().getDeclaredField("profile");
+                    profileField.setAccessible(true);
+                    GameProfile gameProfile = (GameProfile) profileField.get(skullBlock);
+                    if(gameProfile != null && gameProfile.getProperties() != null &&
+                            gameProfile.getProperties().containsKey("textures")) {
+                        Collection<Property> properties = gameProfile.getProperties().get("textures");
+                        for(Property p : properties) {
+                            if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R2)){
+                                String pName = (String)p.getClass().getMethod("name").invoke(p);
+                                if(pName.equals("textures")){
+                                    return (String)p.getClass().getMethod("value").invoke(p);
+                                }
+                            }else{
+                                if(p.getName().equals("textures")) {
+                                    return p.getValue();
+                                }
                             }
                         }
                     }
+                } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException
+                         | InvocationTargetException | NoSuchMethodException e) {
+                    e.printStackTrace();
                 }
-            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException
-                     | InvocationTargetException | NoSuchMethodException e) {
-                e.printStackTrace();
             }
         }
 
@@ -82,10 +103,12 @@ public class BlockUtils {
             try {
                 String decoded = new String(Base64.getDecoder().decode(texture));
                 String decodedFormatted = decoded.replaceAll("\\s", "");
-                int firstIndex = decodedFormatted.indexOf("\"SKIN\":{\"url\":")+15;
-                int lastIndex = decodedFormatted.indexOf("}",firstIndex+1);
-                url = new URL(decodedFormatted.substring(firstIndex,lastIndex-1));
-            } catch (MalformedURLException error) {
+                JsonObject jsonObject = new Gson().fromJson(decodedFormatted, JsonObject.class);
+                String urlText = jsonObject.get("textures").getAsJsonObject().get("SKIN")
+                        .getAsJsonObject().get("url").getAsString();
+
+                url = new URL(urlText);
+            } catch (Exception error) {
                 error.printStackTrace();
                 return;
             }
