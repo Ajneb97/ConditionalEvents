@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 // Represent an event that is being executed and conditions need
 // to be checked.
@@ -134,6 +135,13 @@ public class ConditionEvent {
     public ConditionEvent setCommonItemVariables(@Nullable final ItemStack item,
                                                  @Nullable String otherItemTag) {
 
+        //Example: %offhand:<variable>%
+        if (otherItemTag == null) {
+            otherItemTag = "%";
+        } else {
+            otherItemTag = "%" + otherItemTag + ":";
+        }
+
         String material = null;
         short durability = 0;
         int amount = 0;
@@ -189,17 +197,19 @@ public class ConditionEvent {
                     }
                 }
 
+                if (meta.hasEnchants()) {
+                    //noinspection deprecation
+                    val enchants = meta.getEnchants().entrySet()
+                            .stream()
+                            .map(entry -> String.format("%s:%d", entry.getKey().getName(), entry.getValue()))
+                            .collect(Collectors.joining(","));
+                    addStoredVariable(String.format("%sitem_enchants", otherItemTag), enchants);
+                }
+
                 if (OtherUtils.isNew() && meta.hasCustomModelData()) {
                     customModelData = meta.getCustomModelData();
                 }
             }
-        }
-
-        //Example: %offhand:<variable>%
-        if (otherItemTag == null) {
-            otherItemTag = "%";
-        } else {
-            otherItemTag = "%" + otherItemTag + ":";
         }
 
         addStoredVariable(String.format("%sitem", otherItemTag), nullToEmptyString(material));
