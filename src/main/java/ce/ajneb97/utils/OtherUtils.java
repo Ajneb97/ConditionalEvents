@@ -8,28 +8,15 @@ import org.bukkit.Color;
 public class OtherUtils {
 
     public static boolean isChatNew() {
-        ServerVersion serverVersion = ConditionalEvents.serverVersion;
-        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_19_R1)){
-            return true;
-        }
-        return false;
+        return ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_19_R1);
     }
 
     public static boolean isNew() {
-        ServerVersion serverVersion = ConditionalEvents.serverVersion;
-        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_16_R1)){
-            return true;
-        }
-        return false;
+        return ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_16_R1);
     }
 
     public static boolean isLegacy() {
-        ServerVersion serverVersion = ConditionalEvents.serverVersion;
-        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_13_R1)){
-            return false;
-        }else {
-            return true;
-        }
+        return !ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_13_R1);
     }
 
     public static Color getFireworkColorFromName(String colorName) {

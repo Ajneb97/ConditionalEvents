@@ -89,11 +89,10 @@ public class ArmorListener implements Listener{
 					}
 				}
 			}else{
-				ServerVersion serverVersion = ConditionalEvents.serverVersion;
 				if(isAirOrNull(e.getCursor()) && !isAirOrNull(e.getCurrentItem())){// unequip with no new item going into the slot.
 					newArmorType = ArmorType.matchType(e.getCurrentItem());
 				}
-				if(ConditionalEvents.serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_9_R1)){
+				if (ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_9_R1)) {
 					ItemStack offhandItem = e.getWhoClicked().getInventory().getItemInOffHand();
 					if(e.getSlotType() == SlotType.ARMOR && !isAirOrNull(offhandItem)){
 						ArmorType offhandArmorType = ArmorType.matchType(offhandItem);
@@ -135,12 +134,11 @@ public class ArmorListener implements Listener{
 
 			ArmorType newArmorType = ArmorType.matchType(e.getItem());
 			if(newArmorType != null && !isHead(e.getItem())){
-				ServerVersion serverVersion = ConditionalEvents.serverVersion;
 
 				ItemStack newArmorPiece = e.getItem();
 				ItemStack oldArmorPiece = null;
 
-				if(ConditionalEvents.serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R1)){
+				if (ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_20_R1)) {
 					switch(newArmorType){
 						case HELMET:
 							oldArmorPiece = player.getInventory().getHelmet();
@@ -234,8 +232,7 @@ public class ArmorListener implements Listener{
 
 	public static boolean isHead(ItemStack item) {
 		String materialName = item.getType().name();
-		ServerVersion serverVersion = ConditionalEvents.serverVersion;
-		if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_13_R1)){
+		if (ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_13_R1)) {
 			if(materialName.equals("CARVED_PUMPKIN")){
 				return true;
 			}

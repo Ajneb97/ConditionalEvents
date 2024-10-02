@@ -85,8 +85,7 @@ public class ItemUtils {
         }
 
         if(texture != null){
-            ServerVersion serverVersion = ConditionalEvents.serverVersion;
-            if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R2)){
+            if (ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_20_R2)) {
                 UUID uuid = id != null ? UUID.fromString(id) : UUID.randomUUID();
                 PlayerProfile profile = Bukkit.createPlayerProfile(uuid);
                 PlayerTextures textures = profile.getTextures();

@@ -54,9 +54,8 @@ public class ActionUtils {
         player.spigot().sendMessage(base);
     }
 
-    public static void miniMessage(Player player,String actionLine,ConditionalEvents plugin){
-        ServerVersion serverVersion = ConditionalEvents.serverVersion;
-        if(plugin.getDependencyManager().isPaper() && serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_19_R3)) {
+    public static void miniMessage(Player player, String actionLine, ConditionalEvents plugin) {
+        if (plugin.getDependencyManager().isPaper() && ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_19_R3)) {
             player.sendRichMessage(actionLine);
         }
     }
@@ -295,11 +294,10 @@ public class ActionUtils {
 
     public static void stopSound(Player player,String actionLine){
         // stopsound: sound/all
-        ServerVersion serverVersion = ConditionalEvents.serverVersion;
-        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_10_R1)) {
+        if (ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_10_R1)) {
             Sound sound = null;
             if(actionLine.equals("all")){
-                if(!serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_17_R1)){
+                if (!ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_17_R1)) {
                     return;
                 }
                 player.stopAllSounds();
@@ -607,11 +605,10 @@ public class ActionUtils {
             location = player.getLocation();
         }
 
-        ServerVersion serverVersion = ConditionalEvents.serverVersion;
-        EntityType entityType = null;
-        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R4)){
+        EntityType entityType;
+        if (ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_20_R4)) {
             entityType = EntityType.FIREWORK_ROCKET;
-        }else{
+        } else {
             entityType = EntityType.valueOf("FIREWORK");
         }
         Firework firework = (Firework) location.getWorld().spawnEntity(location, entityType);
@@ -705,10 +702,9 @@ public class ActionUtils {
         
     }
 
-    public static void freeze(Player player,String actionLine){
+    public static void freeze(Player player, String actionLine) {
         // freeze: <duration_on_ticks>
-        ServerVersion serverVersion = ConditionalEvents.serverVersion;
-        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_17_R1)) {
+        if (ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_17_R1)) {
             player.setFreezeTicks(Integer.parseInt(actionLine));
         }
     }

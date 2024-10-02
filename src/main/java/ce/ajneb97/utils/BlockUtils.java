@@ -33,8 +33,7 @@ public class BlockUtils {
         if(material.name().equals("PLAYER_HEAD") || material.name().equals("SKULL") || material.name().equals("PLAYER_WALL_HEAD")) {
             Skull skullBlock = (Skull) block.getState();
 
-            ServerVersion serverVersion = ConditionalEvents.serverVersion;
-            if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R1)){
+            if (ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_21_R1)) {
                 if(skullBlock.getOwnerProfile() == null){
                     return "";
                 }
@@ -60,7 +59,7 @@ public class BlockUtils {
                             gameProfile.getProperties().containsKey("textures")) {
                         Collection<Property> properties = gameProfile.getProperties().get("textures");
                         for(Property p : properties) {
-                            if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R2)){
+                            if (ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_20_R2)) {
                                 String pName = (String)p.getClass().getMethod("name").invoke(p);
                                 if(pName.equals("textures")){
                                     return (String)p.getClass().getMethod("value").invoke(p);
@@ -95,8 +94,7 @@ public class BlockUtils {
             return;
         }
 
-        ServerVersion serverVersion = ConditionalEvents.serverVersion;
-        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R2)){
+        if (ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_20_R2)) {
             PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
             PlayerTextures textures = profile.getTextures();
             URL url;
