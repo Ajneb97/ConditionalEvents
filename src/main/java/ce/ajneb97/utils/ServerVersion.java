@@ -1,5 +1,7 @@
 package ce.ajneb97.utils;
 
+import javax.annotation.Nonnull;
+
 public enum ServerVersion {
     v1_8_R1,
     v1_8_R2,
@@ -28,7 +30,8 @@ public enum ServerVersion {
     v1_20_R4,
     v1_21_R1;
 
-    public boolean serverVersionGreaterEqualThan(ServerVersion version1,ServerVersion version2){
+    public static boolean serverVersionGreaterEqualThan(@Nonnull final ServerVersion version1,
+                                                        @Nonnull final ServerVersion version2) {
         return version1.ordinal() >= version2.ordinal();
     }
 }

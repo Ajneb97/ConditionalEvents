@@ -1,5 +1,8 @@
 package ce.ajneb97.model;
 
+import lombok.Getter;
+
+@Getter
 public enum ConditionalType {
     EQUALS("=="),
     NOT_EQUALS("!="),
@@ -20,12 +23,12 @@ public enum ConditionalType {
     LOWER("<"),
     LOWER_EQUALS("<=");
 
-    private String text;
+    private final String text;
+
     ConditionalType(String text) {
         this.text = text;
     }
 
-    public String getText() {
-        return text;
-    }
+    public static final ConditionalType[] VALUES = values();
+
 }

@@ -25,7 +25,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 
 public class MainCommand implements CommandExecutor, TabCompleter {
@@ -196,7 +195,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			playerName = args[2];
 		}
 
-		boolean result = plugin.getDebugManager().setDebugSender(sender,eventName,playerName);
+		boolean result = plugin.getDebugManager().addDebugger(sender,eventName,playerName);
 		if(result){
 			if(playerName != null){
 				msgManager.sendMessage(sender,config.getString("Messages.debugEnabledPlayer")

@@ -75,8 +75,8 @@ public class GlobalVariablesUtils {
     public static String variableRandomMinMax(String variable){
         String variableLR = variable.replace("random_", "");
         String[] variableLRSplit = variableLR.split("_");
-        int num1 = Integer.valueOf(variableLRSplit[0]);
-        int num2 = Integer.valueOf(variableLRSplit[1]);
+        int num1 = Integer.parseInt(variableLRSplit[0]);
+        int num2 = Integer.parseInt(variableLRSplit[1]);
         int numFinal = MathUtils.getRandomNumber(num1, num2);
         return numFinal+"";
     }
@@ -161,9 +161,9 @@ public class GlobalVariablesUtils {
         String variableLR = variable.replace("is_nearby_", "");
         String[] variableLRSplit = variableLR.split("_");
         try {
-            int x = Integer.valueOf(variableLRSplit[0]);
-            int y = Integer.valueOf(variableLRSplit[1]);
-            int z = Integer.valueOf(variableLRSplit[2]);
+            int x = Integer.parseInt(variableLRSplit[0]);
+            int y = Integer.parseInt(variableLRSplit[1]);
+            int z = Integer.parseInt(variableLRSplit[2]);
             String worldName = "";
             for(int i=3;i<variableLRSplit.length-1;i++) {
                 if(i == variableLRSplit.length - 2) {
@@ -173,7 +173,7 @@ public class GlobalVariablesUtils {
                 }
             }
             World world = Bukkit.getWorld(worldName);
-            double radius = Double.valueOf(variableLRSplit[variableLRSplit.length-1]);
+            double radius = Double.parseDouble(variableLRSplit[variableLRSplit.length - 1]);
 
             Location l1 = new Location(world,x,y,z);
             Location l2 = finalPlayer.getLocation();

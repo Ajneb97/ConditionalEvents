@@ -2,7 +2,6 @@ package ce.ajneb97.libs.armorequipevent;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.utils.ServerVersion;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -28,8 +27,7 @@ public enum ArmorType{
 		if(ArmorListener.isAirOrNull(itemStack)) return null;
 		String type = itemStack.getType().name();
 
-		ServerVersion serverVersion = ConditionalEvents.serverVersion;
-		if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_13_R1)){
+		if (ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_13_R1)) {
 			if(type.equals("CARVED_PUMPKIN")){
 				return HELMET;
 			}

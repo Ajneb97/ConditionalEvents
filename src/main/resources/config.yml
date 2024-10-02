@@ -3,6 +3,7 @@ Config:
   data_save_time: 5
   debug_actions: true
   experimental:
+    serialize_item_meta: true
     variable_replacement: false
   register_commands:
     - "hello"

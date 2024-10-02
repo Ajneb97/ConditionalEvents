@@ -323,10 +323,10 @@ public class PlayerEventsListener implements Listener {
     public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
 
-        new ConditionEvent(plugin, player, event, EventType.PLAYER_CHAT, null)
+        new ConditionEvent(plugin, player, event, EventType.PLAYER_CHAT, null, true)
                 .addVariables(
                         new StoredVariable("%message%",event.getMessage())
-                ).setAsync(true).checkEvent();
+                ).checkEvent();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

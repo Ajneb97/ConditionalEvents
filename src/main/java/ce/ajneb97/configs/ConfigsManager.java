@@ -156,19 +156,19 @@ public class ConfigsManager {
                         }
                     }
                     if(config.contains(path+".cooldown")) {
-                        cooldown = Long.valueOf(config.getString(path+".cooldown"));
+                        cooldown = Long.parseLong(config.getString(path + ".cooldown"));
                     }
                     if(config.contains(path+".ignore_with_permission")) {
                         ignoreWithPermission = config.getString(path+".ignore_with_permission");
                     }
                     if(config.contains(path+".one_time")) {
-                        oneTime = Boolean.valueOf(config.getString(path+".one_time"));
+                        oneTime = Boolean.parseBoolean(config.getString(path + ".one_time"));
                     }
                     if(config.contains(path+".enabled")) {
-                        enabled = Boolean.valueOf(config.getString(path+".enabled"));
+                        enabled = Boolean.parseBoolean(config.getString(path + ".enabled"));
                     }
                     if(config.contains(path+".ignore_if_cancelled")) {
-                        ignoreIfCancelled = Boolean.valueOf(config.getString(path+".ignore_if_cancelled"));
+                        ignoreIfCancelled = Boolean.parseBoolean(config.getString(path + ".ignore_if_cancelled"));
                     }
                     if(config.contains(path+".prevent_cooldown_activation")){
                         preventCooldownActivationActionGroups = config.getStringList(path+".prevent_cooldown_activation");
@@ -177,7 +177,7 @@ public class ConfigsManager {
                         preventOneTimeActivationActionGroups = config.getStringList(path+".prevent_one_time_activation");
                     }
                     if(config.contains(path+".allow_math_formulas_in_conditions")) {
-                        allowMathFormulasInConditions = Boolean.valueOf(config.getString(path+".allow_math_formulas_in_conditions"));
+                        allowMathFormulasInConditions = Boolean.parseBoolean(config.getString(path + ".allow_math_formulas_in_conditions"));
                     }
 
                     event.setEventType(eventType);

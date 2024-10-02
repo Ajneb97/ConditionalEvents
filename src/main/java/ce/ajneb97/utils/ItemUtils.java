@@ -85,8 +85,7 @@ public class ItemUtils {
         }
 
         if(texture != null){
-            ServerVersion serverVersion = ConditionalEvents.serverVersion;
-            if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R2)){
+            if (ServerVersion.serverVersionGreaterEqualThan(ConditionalEvents.serverVersion, ServerVersion.v1_20_R2)) {
                 UUID uuid = id != null ? UUID.fromString(id) : UUID.randomUUID();
                 PlayerProfile profile = Bukkit.createPlayerProfile(uuid);
                 PlayerTextures textures = profile.getTextures();
@@ -213,7 +212,7 @@ public class ItemUtils {
             for(int i=0;i<enchants.size();i++) {
                 String[] sep2 = enchants.get(i).split(";");
                 String enchantName = sep2[0];
-                int enchantLevel = Integer.valueOf(sep2[1]);
+                int enchantLevel = Integer.parseInt(sep2[1]);
                 meta.addEnchant(Enchantment.getByName(enchantName), enchantLevel, true);
             }
         }
