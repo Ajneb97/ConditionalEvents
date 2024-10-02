@@ -5,9 +5,12 @@ import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.utils.BlockUtils;
+import ce.ajneb97.utils.ColorUtils;
 import ce.ajneb97.utils.OtherUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import com.google.common.collect.ImmutableList;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -15,253 +18,263 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 // Represent an event that is being executed and conditions need
 // to be checked.
+@Getter
 public class ConditionEvent {
 
-    private ConditionalEvents plugin;
-    private Player player;
-    private Player target;
-    private ArrayList<StoredVariable> eventVariables;
-    private Event minecraftEvent;
-    private EventType eventType;
+    private final ConditionalEvents plugin;
+
+    private final Player player;
+    private final Player target;
+    private final ArrayList<StoredVariable> eventVariables;
+    private final Event minecraftEvent;
+    private final EventType eventType;
+    private final boolean async;
+
+    @Setter
     private CEEvent currentEvent; //The current event that is being checked
 
-    private boolean async;
+    public ConditionEvent(@Nonnull final ConditionalEvents plugin,
+                          @Nullable final Player player,
+                          @Nullable final Event minecraftEvent,
+                          @Nonnull final EventType eventType,
+                          @Nullable final Player target) {
+        this(plugin, player, minecraftEvent, eventType, target, false);
+    }
 
-    public ConditionEvent(ConditionalEvents plugin,Player player, Event minecraftEvent, EventType eventType
-        , Player target) {
-        this.plugin = plugin;
+    public ConditionEvent(@Nonnull final ConditionalEvents plugin,
+                          @Nullable final Player player,
+                          @Nullable final Event minecraftEvent,
+                          @Nonnull final EventType eventType,
+                          @Nullable final Player target,
+                          final boolean async) {
+        this.plugin = Objects.requireNonNull(plugin);
         this.player = player;
-        this.eventVariables = new ArrayList<StoredVariable>();
+        this.eventVariables = new ArrayList<>();
         this.minecraftEvent = minecraftEvent;
-        this.eventType = eventType;
+        this.eventType = Objects.requireNonNull(eventType);
         this.target = target;
-        this.async = false;
+        this.async = async;
     }
 
-    public Player getPlayer() {
-        return player;
-    }
-
-    public Player getTarget() {
-        return target;
-    }
-
-    public ArrayList<StoredVariable> getEventVariables() {
-        return eventVariables;
-    }
-
-    public Event getMinecraftEvent() {
-        return minecraftEvent;
-    }
-
-    public EventType getEventType() {
-        return eventType;
-    }
-
-    public CEEvent getCurrentEvent() {
-        return currentEvent;
-    }
-
-    public void setCurrentEvent(CEEvent currentEvent) {
-        this.currentEvent = currentEvent;
-    }
-
-    public void checkEvent(){
+    public void checkEvent() {
         plugin.getEventsManager().checkEvent(this);
     }
 
-    public boolean containsValidEvents(){
+    public boolean containsValidEvents() {
         ArrayList<CEEvent> validEvents = plugin.getEventsManager().getValidEvents(eventType);
-        if(validEvents.size() == 0){
-            return false;
-        }
-        return true;
+        return !validEvents.isEmpty();
     }
 
-    public ConditionEvent addVariables(StoredVariable... storedVariables){
-        for(StoredVariable v : storedVariables){
-            eventVariables.add(v);
+    public ConditionEvent addVariables(@Nonnull final StoredVariable... variables) {
+        eventVariables.addAll(ImmutableList.copyOf(Objects.requireNonNull(variables)));
+        return this;
+    }
+
+    public ConditionEvent addVariables(@Nonnull final List<StoredVariable> variables) {
+        eventVariables.addAll(Objects.requireNonNull(variables));
+        return this;
+    }
+
+    public ConditionEvent setCommonBlockVariables(@Nonnull final Block block) {
+        final Location location = block.getLocation();
+        addStoredVariable("block_x", String.valueOf(location.getBlockX()));
+        addStoredVariable("block_y", String.valueOf(location.getBlockY()));
+        addStoredVariable("block_z", String.valueOf(location.getBlockZ()));
+        addStoredVariable("block_world", location.getWorld().getName());
+        addStoredVariable("block", block.getType().name());
+        addStoredVariable("block_head_texture", BlockUtils.getHeadTextureData(block));
+        if (OtherUtils.isLegacy()) {
+            //noinspection deprecation
+            addStoredVariable("block_data", String.valueOf(block.getData()));
+        } else {
+            addStoredVariable("block_data", BlockUtils.getBlockDataStringFromObject(block.getBlockData()));
         }
         return this;
     }
 
-    public ConditionEvent addVariables(ArrayList<StoredVariable> storedVariables){
-        eventVariables.addAll(storedVariables);
+    private static final String SHIFT_RIGHT_CLICK = "SHIFT_RIGHT_CLICK";
+    private static final String RIGHT_CLICK = "RIGHT_CLICK";
+    private static final String SHIFT_LEFT_CLICK = "SHIFT_LEFT_CLICK";
+    private static final String LEFT_CLICK = "LEFT_CLICK";
+    private static final String PHYSICAL = "PHYSICAL";
+
+    public ConditionEvent setCommonActionVariables(@Nonnull final Action action,
+                                                   @Nonnull final Player player) {
+        final String actionVariable;
+
+        switch (action) {
+            case RIGHT_CLICK_AIR:
+            case RIGHT_CLICK_BLOCK:
+                actionVariable = player.isSneaking() ? SHIFT_RIGHT_CLICK : RIGHT_CLICK;
+                break;
+            case LEFT_CLICK_AIR:
+            case LEFT_CLICK_BLOCK:
+                actionVariable = player.isSneaking() ? SHIFT_LEFT_CLICK : LEFT_CLICK;
+                break;
+            case PHYSICAL:
+                actionVariable = PHYSICAL;
+                break;
+            default:
+                return this;
+        }
+
+        addStoredVariable("action_type", actionVariable);
         return this;
     }
 
-    public ConditionEvent setCommonBlockVariables(Block block){
-        Location l = block.getLocation();
-        eventVariables.add(new StoredVariable("%block_x%",l.getBlockX()+""));
-        eventVariables.add(new StoredVariable("%block_y%",l.getBlockY()+""));
-        eventVariables.add(new StoredVariable("%block_z%",l.getBlockZ()+""));
-        eventVariables.add(new StoredVariable("%block_world%",l.getWorld().getName()));
-        eventVariables.add(new StoredVariable("%block%",block.getType().name()));
-        eventVariables.add(new StoredVariable("%block_head_texture%", BlockUtils.getHeadTextureData(block)));
-        if(OtherUtils.isLegacy()){
-            eventVariables.add(new StoredVariable("%block_data%",block.getData()+""));
-        }else{
-            eventVariables.add(new StoredVariable("%block_data%",
-                    BlockUtils.getBlockDataStringFromObject(block.getBlockData())));
-        }
+    public ConditionEvent setCommonItemVariables(@Nullable final ItemStack item,
+                                                 @Nullable String otherItemTag) {
 
-        return this;
-    }
-
-    public ConditionEvent setCommonActionVariables(Action action,Player player){
-        String actionVariable = null;
-        String actionName = action.name();
-        if(player.isSneaking()) {
-            if(actionName.contains("RIGHT_CLICK")) {
-                actionVariable = "SHIFT_RIGHT_CLICK";
-            }else if(actionName.contains("LEFT_CLICK")) {
-                actionVariable = "SHIFT_LEFT_CLICK";
-            }else if(action.equals(Action.PHYSICAL)) {
-                actionVariable = "PHYSICAL";
-            }
-        }else {
-            if(actionName.contains("RIGHT_CLICK")) {
-                actionVariable = "RIGHT_CLICK";
-            }else if(actionName.contains("LEFT_CLICK")) {
-                actionVariable = "LEFT_CLICK";
-            }else if(action.equals(Action.PHYSICAL)) {
-                actionVariable = "PHYSICAL";
-            }
-        }
-
-        if(actionVariable != null){
-            eventVariables.add(new StoredVariable("%action_type%",actionVariable));
-        }
-        return this;
-    }
-
-    public ConditionEvent setCommonVictimVariables(Entity entity){
-        String victimType = entity.getType().name();
-        String victimName = "";
-        String victimNameColorFormat = "";
-        String victimUuid = entity.getUniqueId().toString();
-        if(entity.getCustomName() != null) {
-            victimName = ChatColor.stripColor(entity.getCustomName());
-            victimNameColorFormat = entity.getCustomName().replace("§", "&");
-        }
-        Location location = entity.getLocation();
-
-        eventVariables.add(new StoredVariable("%victim%",victimType));
-        eventVariables.add(new StoredVariable("%victim_name%",victimName));
-        eventVariables.add(new StoredVariable("%victim_color_format_name%",victimNameColorFormat));
-        eventVariables.add(new StoredVariable("%victim_block_x%",location.getBlockX()+""));
-        eventVariables.add(new StoredVariable("%victim_block_y%",location.getBlockY()+""));
-        eventVariables.add(new StoredVariable("%victim_block_z%",location.getBlockZ()+""));
-        eventVariables.add(new StoredVariable("%victim_block_world%",location.getWorld().getName()));
-        eventVariables.add(new StoredVariable("%victim_uuid%",victimUuid));
-        return this;
-    }
-
-    public ConditionEvent setCommonItemVariables(ItemStack item,String otherItemTag){
-        String name = "";
-        String colorFormatName = "";
-        String material = "";
-        String loreString = "";
-        String colorFormatLoreString = "";
+        String material = null;
         short durability = 0;
         int amount = 0;
-        List<String> loreList = new ArrayList<String>();
-        List<String> colorFormatLoreList = new ArrayList<String>();
-        int customModelData = 0;
-        String metaString = "";
 
-        if(item != null) {
-            durability = item.getDurability();
+        String name = null;
+        String colorFormatName = null;
+
+        String metaString = null;
+        String loreWithoutColorsFullString = null;
+        String loreWithColorsFullString = null;
+        List<String> loreWithoutColors = null;
+        List<String> loreWithColors = null;
+
+        int customModelData = 0;
+
+        if (item != null) {
             material = item.getType().name();
+            //noinspection deprecation
+            durability = item.getDurability();
             amount = item.getAmount();
-            if(item.hasItemMeta()) {
-                ItemMeta meta = item.getItemMeta();
+            if (item.hasItemMeta()) {
+
+                val meta = item.getItemMeta();
                 metaString = meta.toString();
-                if(meta.hasDisplayName()) {
-                    name = ChatColor.stripColor(meta.getDisplayName());
-                    colorFormatName = meta.getDisplayName().replace("§", "&");
+
+                if (meta.hasDisplayName()) {
+                    //noinspection deprecation
+                    final String displayName = meta.getDisplayName();
+                    name = ColorUtils.stripColor(displayName);
+                    colorFormatName = displayName.replace("§", "&");
                 }
-                if(meta.hasLore()) {
-                    List<String> lore = meta.getLore();
-                    for(int i=0;i<lore.size();i++) {
-                        loreList.add(ChatColor.stripColor(lore.get(i)));
-                        colorFormatLoreList.add(lore.get(i).replace("§", "&"));
-                        if(i == lore.size()-1) {
-                            loreString = loreString+ChatColor.stripColor(lore.get(i));
-                            colorFormatLoreString = colorFormatLoreString+lore.get(i).replace("§", "&");
-                        }else {
-                            loreString = loreString+ChatColor.stripColor(lore.get(i))+" ";
-                            colorFormatLoreString = colorFormatLoreString+lore.get(i).replace("§", "&")+" ";
+
+                if (meta.hasLore()) {
+                    //noinspection deprecation
+                    final List<String> lore = meta.getLore();
+                    if (lore != null && !lore.isEmpty()) {
+                        final ImmutableList.Builder<String> loreWithoutColorsBuilder = ImmutableList.builder();
+                        final ImmutableList.Builder<String> loreWithColorsBuilder = ImmutableList.builder();
+
+                        for (final String line : lore) {
+                            loreWithoutColorsBuilder.add(ColorUtils.stripColor(line));
+                            loreWithColorsBuilder.add(line.replace("§", "&"));
                         }
+
+                        loreWithoutColors = loreWithoutColorsBuilder.build();
+                        loreWithColors = loreWithColorsBuilder.build();
+
+                        loreWithoutColorsFullString = String.join(" ", loreWithoutColors);
+                        loreWithColorsFullString = String.join(" ", loreWithColors);
                     }
                 }
-                if(OtherUtils.isNew() && meta.hasCustomModelData()){
+
+                if (OtherUtils.isNew() && meta.hasCustomModelData()) {
                     customModelData = meta.getCustomModelData();
                 }
             }
         }
 
         //Example: %offhand:<variable>%
-        if(otherItemTag == null){
+        if (otherItemTag == null) {
             otherItemTag = "%";
-        }else{
-            otherItemTag = "%"+otherItemTag+":";
+        } else {
+            otherItemTag = "%" + otherItemTag + ":";
         }
 
-        eventVariables.add(new StoredVariable(otherItemTag+"item%",material));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_name%",name));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_color_format_name%",colorFormatName));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_durability%",durability+""));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_amount%",amount+""));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_lore%",loreString));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_color_format_lore%",colorFormatLoreString));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_custom_model_data%",customModelData+""));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_meta%",metaString));
-        for(int i=0;i<loreList.size();i++) {
-            eventVariables.add(new StoredVariable(otherItemTag+"item_lore_line_"+(i+1)+"%", loreList.get(i)));
+        addStoredVariable(String.format("%sitem", otherItemTag), nullToEmptyString(material));
+        addStoredVariable(String.format("%sitem_name", otherItemTag), nullToEmptyString(name));
+        addStoredVariable(String.format("%sitem_color_format_name", otherItemTag), nullToEmptyString(colorFormatName));
+        addStoredVariable(String.format("%sitem_durability", otherItemTag), String.valueOf(durability));
+        addStoredVariable(String.format("%sitem_amount", otherItemTag), String.valueOf(amount));
+        addStoredVariable(String.format("%sitem_lore", otherItemTag), nullToEmptyString(loreWithoutColorsFullString));
+        addStoredVariable(String.format("%sitem_color_format_lore", otherItemTag), nullToEmptyString(loreWithColorsFullString));
+        addStoredVariable(String.format("%sitem_custom_model_data", otherItemTag), String.valueOf(customModelData));
+        addStoredVariable(String.format("%sitem_meta", otherItemTag), nullToEmptyString(metaString));
+
+        if (loreWithoutColors != null) {
+            for (int i = 0; i < loreWithoutColors.size(); i++) {
+                addStoredVariable(String.format("%sitem_lore_line_%d", otherItemTag, (i + 1)), loreWithoutColors.get(i));
+            }
         }
-        for(int i=0;i<colorFormatLoreList.size();i++) {
-            eventVariables.add(new StoredVariable(otherItemTag+"item_color_format_lore_line_"+(i+1)+"%", colorFormatLoreList.get(i)));
+
+        if (loreWithColors != null) {
+            for (int i = 0; i < loreWithColors.size(); i++) {
+                addStoredVariable(String.format("%sitem_color_format_lore_line_%d", otherItemTag, (i + 1)), loreWithColors.get(i));
+            }
         }
 
         return this;
     }
 
-    public ConditionEvent setCommonEntityVariables(Entity entity){
-        String entityType = entity.getType().name();
-        String entityName = "";
-        String entityNameColorFormat = "";
-        String entityUuid = entity.getUniqueId().toString();
-        if(entity.getCustomName() != null) {
-            entityName = ChatColor.stripColor(entity.getCustomName());
-            entityNameColorFormat = entity.getCustomName().replace("§", "&");
+    public ConditionEvent setCommonEntityVariables(@Nonnull final Entity entity) {
+        return fillEntityVariables(entity, "entity");
+    }
+
+    public ConditionEvent setCommonVictimVariables(@Nonnull final Entity entity) {
+        return fillEntityVariables(entity, "victim");
+    }
+
+    private ConditionEvent fillEntityVariables(@Nonnull final Entity entity,
+                                               @Nonnull final String variablePrefix) {
+
+        final String entityType = entity.getType().name();
+        final String entityUUID = entity.getUniqueId().toString();
+        final Location location = entity.getLocation();
+
+        final String entityNameWithoutColors;
+        final String entityNameWithColors;
+
+        //noinspection deprecation
+        final String customName = entity.getCustomName();
+        if (customName != null) {
+            entityNameWithoutColors = ColorUtils.stripColor(customName);
+            entityNameWithColors = customName.replace("§", "&");
+        } else {
+            entityNameWithoutColors = "";
+            entityNameWithColors = "";
         }
-        Location location = entity.getLocation();
 
-        eventVariables.add(new StoredVariable("%entity%",entityType));
-        eventVariables.add(new StoredVariable("%entity_name%",entityName));
-        eventVariables.add(new StoredVariable("%entity_color_format_name%",entityNameColorFormat));
-        eventVariables.add(new StoredVariable("%entity_x%",location.getBlockX()+""));
-        eventVariables.add(new StoredVariable("%entity_y%",location.getBlockY()+""));
-        eventVariables.add(new StoredVariable("%entity_z%",location.getBlockZ()+""));
-        eventVariables.add(new StoredVariable("%entity_world%",location.getWorld().getName()));
-        eventVariables.add(new StoredVariable("%entity_uuid%",entityUuid));
+        addStoredVariable(variablePrefix, entityType);
+        addStoredVariable(String.format("%s_name", variablePrefix), entityNameWithoutColors);
+        addStoredVariable(String.format("%s_color_format_name", variablePrefix), entityNameWithColors);
+        addStoredVariable(String.format("%s_block_x", variablePrefix), String.valueOf(location.getBlockX()));
+        addStoredVariable(String.format("%s_block_y", variablePrefix), String.valueOf(location.getBlockY()));
+        addStoredVariable(String.format("%s_block_z", variablePrefix), String.valueOf(location.getBlockZ()));
+        addStoredVariable(String.format("%s_block_world", variablePrefix), location.getWorld().getName());
+        addStoredVariable(String.format("%s_uuid", variablePrefix), entityUUID);
         return this;
     }
 
-    public boolean isAsync() {
-        return async;
+    public void addStoredVariable(@Nonnull final String name, @Nonnull final String value) {
+        // result -> %name%
+        this.eventVariables.add(new StoredVariable(String.format("%%%s%%",
+                Objects.requireNonNull(name)),
+                Objects.requireNonNull(value)
+        ));
     }
 
-    public ConditionEvent setAsync(boolean async) {
-        this.async = async;
-        return this;
+    @Nonnull
+    private String nullToEmptyString(@Nullable final Object object) {
+        if (object == null) return "";
+        return object.toString();
     }
+
 }
