@@ -159,8 +159,8 @@ public class ExecutedEvent {
                 }
             }else if(targeterType.equals(ActionTargeterType.TO_RANGE)){
                 String[] sep = parametersLine.split(";");
-                double range = Double.valueOf(sep[0]);
-                boolean includePlayer = Boolean.valueOf(sep[1]);
+                double range = Double.parseDouble(sep[0]);
+                boolean includePlayer = Boolean.parseBoolean(sep[1]);
                 ArrayList<Player> globalPlayers = new ArrayList<Player>();
                 if(includePlayer){
                     globalPlayers.add(player);
