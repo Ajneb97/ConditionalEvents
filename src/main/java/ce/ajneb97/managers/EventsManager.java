@@ -202,7 +202,7 @@ public class EventsManager {
             for(int c=0;c<separatedConditions.length;c++){
                 String miniCondition = separatedConditions[c];
 
-                for(ConditionalType conditionalType : ConditionalType.values()){
+                for(ConditionalType conditionalType : ConditionalType.VALUES){
                     String textToFind = " "+conditionalType.getText()+" ";
                     if(miniCondition.contains(textToFind)){
                         int textToFindIndex = miniCondition.indexOf(textToFind);
@@ -346,7 +346,7 @@ public class EventsManager {
             for(int c=0;c<separatedConditions.length;c++){
                 String miniCondition = separatedConditions[c];
 
-                for(ConditionalType conditionalType : ConditionalType.values()){
+                for(ConditionalType conditionalType : ConditionalType.VALUES){
                     String textToFind = " "+conditionalType.getText()+" ";
                     if(miniCondition.contains(textToFind)){
                         int textToFindIndex = miniCondition.indexOf(textToFind);
