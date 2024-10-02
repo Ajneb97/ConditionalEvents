@@ -215,12 +215,14 @@ public class EventsManager {
                         arg1 = VariablesUtils.replaceAllVariablesInLine(arg1,variablesProperties,false);
                         arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,variablesProperties,false);
 
-                        conditionLineWithReplacements = conditionLineWithReplacements+"'"+arg1+"'"+textToFind+"'"+arg2+"'";
-                        if(c != separatedConditions.length-1){
-                            if(separatorType.equals(SeparatorType.OR)){
-                                conditionLineWithReplacements = conditionLineWithReplacements+" or ";
-                            }else if(separatorType.equals(SeparatorType.AND)){
-                                conditionLineWithReplacements = conditionLineWithReplacements+" and ";
+                        if (debugManager.hasDebuggers()) {
+                            conditionLineWithReplacements = conditionLineWithReplacements+"'"+arg1+"'"+textToFind+"'"+arg2+"'";
+                            if(c != separatedConditions.length-1){
+                                if(separatorType.equals(SeparatorType.OR)){
+                                    conditionLineWithReplacements = conditionLineWithReplacements+" or ";
+                                }else if(separatorType.equals(SeparatorType.AND)){
+                                    conditionLineWithReplacements = conditionLineWithReplacements+" and ";
+                                }
                             }
                         }
 
