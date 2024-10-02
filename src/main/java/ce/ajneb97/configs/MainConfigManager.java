@@ -2,13 +2,8 @@ package ce.ajneb97.configs;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.managers.MessagesManager;
-import ce.ajneb97.managers.RepetitiveManager;
-import ce.ajneb97.model.CEEvent;
-import ce.ajneb97.model.CustomEventProperties;
-import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.ToConditionGroup;
-import ce.ajneb97.model.actions.*;
-import org.bukkit.Bukkit;
+import lombok.Getter;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.IOException;
@@ -26,7 +21,10 @@ public class MainConfigManager {
     private boolean updateNotifications;
     private boolean debugActions;
     private boolean experimentalVariableReplacement;
+    @Getter
+    private boolean experimentalSerializeItemMeta;
     private ArrayList<ToConditionGroup> toConditionGroups;
+
     public MainConfigManager(ConditionalEvents plugin){
         this.plugin = plugin;
         this.configFile = new CEConfig("config.yml",plugin,null);
@@ -40,6 +38,7 @@ public class MainConfigManager {
         updateNotifications = config.getBoolean("Config.update_notification");
         debugActions = config.getBoolean("Config.debug_actions");
         experimentalVariableReplacement = config.getBoolean("Config.experimental.variable_replacement");
+        experimentalSerializeItemMeta = config.getBoolean("Config.experimental.serialize_item_meta", true);
         toConditionGroups = new ArrayList<ToConditionGroup>();
         String path = "Config.to_condition_groups";
         if(config.contains(path)){

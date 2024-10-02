@@ -157,7 +157,10 @@ public class ConditionEvent {
             if (item.hasItemMeta()) {
 
                 val meta = item.getItemMeta();
-                metaString = meta.toString();
+
+                if (plugin.getConfigsManager().getMainConfigManager().isExperimentalSerializeItemMeta()) {
+                    metaString = meta.toString();
+                }
 
                 if (meta.hasDisplayName()) {
                     //noinspection deprecation
@@ -207,7 +210,10 @@ public class ConditionEvent {
         addStoredVariable(String.format("%sitem_lore", otherItemTag), nullToEmptyString(loreWithoutColorsFullString));
         addStoredVariable(String.format("%sitem_color_format_lore", otherItemTag), nullToEmptyString(loreWithColorsFullString));
         addStoredVariable(String.format("%sitem_custom_model_data", otherItemTag), String.valueOf(customModelData));
-        addStoredVariable(String.format("%sitem_meta", otherItemTag), nullToEmptyString(metaString));
+
+        if (plugin.getConfigsManager().getMainConfigManager().isExperimentalSerializeItemMeta()) {
+            addStoredVariable(String.format("%sitem_meta", otherItemTag), nullToEmptyString(metaString));
+        }
 
         if (loreWithoutColors != null) {
             for (int i = 0; i < loreWithoutColors.size(); i++) {
