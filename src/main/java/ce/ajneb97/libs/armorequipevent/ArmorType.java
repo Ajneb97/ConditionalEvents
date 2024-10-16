@@ -39,7 +39,7 @@ public enum ArmorType{
 			}
 		}
 
-		if(type.endsWith("_HELMET") || type.startsWith("SKULL_") || type.endsWith("_HEAD")) return HELMET;
+		if(type.endsWith("_HELMET") || type.startsWith("SKULL_") || type.endsWith("_HEAD") || type.endsWith("_SKULL")) return HELMET;
 		else if(type.endsWith("_CHESTPLATE") || type.equals("ELYTRA")) return CHESTPLATE;
 		else if(type.endsWith("_LEGGINGS")) return LEGGINGS;
 		else if(type.endsWith("_BOOTS")) return BOOTS;

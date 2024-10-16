@@ -9,6 +9,7 @@ import ce.ajneb97.model.internal.*;
 import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.TimeUtils;
 import ce.ajneb97.utils.VariablesUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -215,7 +216,10 @@ public class EventsManager {
                         arg1 = VariablesUtils.replaceAllVariablesInLine(arg1,variablesProperties,false);
                         arg2 = VariablesUtils.replaceAllVariablesInLine(arg2,variablesProperties,false);
 
-                        conditionLineWithReplacements = conditionLineWithReplacements+"'"+arg1+"'"+textToFind+"'"+arg2+"'";
+                        String firstArg = !mathFormulas ? arg1 : MathUtils.calculate(arg1);
+                        String secondArg = !mathFormulas ? arg2 : MathUtils.calculate(arg2);
+
+                        conditionLineWithReplacements = conditionLineWithReplacements+"'"+firstArg+"'"+textToFind+"'"+secondArg+"'";
                         if(c != separatedConditions.length-1){
                             if(separatorType.equals(SeparatorType.OR)){
                                 conditionLineWithReplacements = conditionLineWithReplacements+" or ";
@@ -223,9 +227,6 @@ public class EventsManager {
                                 conditionLineWithReplacements = conditionLineWithReplacements+" and ";
                             }
                         }
-
-                        String firstArg = !mathFormulas ? arg1 : MathUtils.calculate(arg1);
-                        String secondArg = !mathFormulas ? arg2 : MathUtils.calculate(arg2);
 
                         String firstArgLower = firstArg.toLowerCase();String secondArgLower = secondArg.toLowerCase();
                         double firstArgNum = 0;

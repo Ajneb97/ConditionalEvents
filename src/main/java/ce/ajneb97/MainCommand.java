@@ -362,7 +362,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 				}else if(args[0].equalsIgnoreCase("reset") && args.length == 2) {
 					List<String> completions = new ArrayList<>();
 					for(Player p : Bukkit.getOnlinePlayers()) {
-						if(args[1].isEmpty() || p.getName().startsWith(args[1].toLowerCase())){
+						if(args[1].isEmpty() || p.getName().toLowerCase().startsWith(args[1].toLowerCase())){
 							completions.add(p.getName());
 						}
 					}

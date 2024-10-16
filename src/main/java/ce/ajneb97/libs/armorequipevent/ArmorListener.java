@@ -244,6 +244,6 @@ public class ArmorListener implements Listener{
 				return true;
 			}
 		}
-		return materialName.endsWith("_HEAD") || materialName.startsWith("SKULL_");
+		return materialName.endsWith("_HEAD") || materialName.startsWith("SKULL_") || materialName.endsWith("_SKULL");
 	}
 }

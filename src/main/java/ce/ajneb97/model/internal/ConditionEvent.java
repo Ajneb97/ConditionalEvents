@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
@@ -152,9 +153,14 @@ public class ConditionEvent {
             victimNameColorFormat = entity.getCustomName().replace("§", "&");
         }
         Location location = entity.getLocation();
+        double health = 0;
+        if(entity instanceof LivingEntity){
+            health = ((LivingEntity)entity).getHealth();
+        }
 
         eventVariables.add(new StoredVariable("%victim%",victimType));
         eventVariables.add(new StoredVariable("%victim_name%",victimName));
+        eventVariables.add(new StoredVariable("%victim_health%",health+""));
         eventVariables.add(new StoredVariable("%victim_color_format_name%",victimNameColorFormat));
         eventVariables.add(new StoredVariable("%victim_block_x%",location.getBlockX()+""));
         eventVariables.add(new StoredVariable("%victim_block_y%",location.getBlockY()+""));

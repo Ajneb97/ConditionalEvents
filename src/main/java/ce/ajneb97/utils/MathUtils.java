@@ -3,6 +3,7 @@ package ce.ajneb97.utils;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Random;
 
 public class MathUtils {
@@ -13,7 +14,12 @@ public class MathUtils {
             if(!expression.validate().isValid()){
                 return str;
             }
-            return expression.evaluate()+"";
+
+            double result = expression.evaluate();
+            DecimalFormat df = new DecimalFormat("0.#");
+            df.setMaximumFractionDigits(10);
+
+            return df.format(result).replace(",", ".");
         }catch(Exception e){
             return str;
         }

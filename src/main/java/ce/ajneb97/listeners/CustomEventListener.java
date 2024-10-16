@@ -131,26 +131,30 @@ public class CustomEventListener implements Listener {
     private Method obtainMethod(Class<?> classObject,String methodName) {
         try {
             return classObject.getMethod(methodName);
-        } catch (NoSuchMethodException | SecurityException e) {
+        } catch (NoSuchMethodException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+
         }
         return null;
     }
 
     private Object obtainObjectFromEvent(Method m,Event event) {
         try {
+            m.setAccessible(true);
             return m.invoke(event);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            e.printStackTrace();
+
         }
         return null;
     }
 
     private Object obtainObjectFromObject(Method m,Object object) {
         try {
+            m.setAccessible(true);
             return m.invoke(object);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            e.printStackTrace();
+
         }
         return null;
     }
