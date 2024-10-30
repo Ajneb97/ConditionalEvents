@@ -562,7 +562,6 @@ public class PlayerEventsListener implements Listener {
         ).checkEvent();
     }
 
-    /*
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTabComplete(TabCompleteEvent event){
         if(!(event.getSender() instanceof Player)){
@@ -572,11 +571,19 @@ public class PlayerEventsListener implements Listener {
         Player player = (Player) event.getSender();
         String command = event.getBuffer();
 
-        new ConditionEvent(plugin, player, event, EventType.PLAYER_TAB_COMPLETE_EVENT, null)
-                .addVariables(
-                        new StoredVariable("%command%",command)
-                ).checkEvent();
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_TAB_COMPLETE_EVENT, null);
+        if(!conditionEvent.containsValidEvents()) return;
+        conditionEvent.addVariables(
+                new StoredVariable("%command%",command)
+        ).checkEvent();
     }
 
-     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCommandSend(PlayerCommandSendEvent event){
+        Player player = event.getPlayer();
+
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_SEND_COMMAND_EVENT, null);
+        if(!conditionEvent.containsValidEvents()) return;
+        conditionEvent.checkEvent();
+    }
 }
