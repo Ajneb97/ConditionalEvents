@@ -21,6 +21,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -400,6 +401,49 @@ public class ActionUtils {
                 Item item = (Item) caught;
                 item.setItemStack(ItemUtils.getItemFromProperties(sep));
             }
+        }
+    }
+
+    public static void addTabCompleteOption(String actionLine,Event minecraftEvent){
+        String mode;
+        List<String> completions;
+        if (actionLine.contains(";")) {
+            String[] sep = actionLine.replace("tab_complete: ","").split(";");
+            mode = sep[0];
+            completions = Arrays.asList(sep[1].split(","));
+        } else {
+            mode = "";
+            completions = Arrays.asList(actionLine.replace("tab_complete: ","").split(","));
+        }
+        if(minecraftEvent instanceof TabCompleteEvent) {
+            TabCompleteEvent event = (TabCompleteEvent) minecraftEvent;
+            if (mode.equalsIgnoreCase("remove")) {
+                event.getCompletions().removeAll(completions);
+            } else if (mode.equalsIgnoreCase("clear")) {
+                event.getCompletions().clear();
+            } else if (mode.equalsIgnoreCase("set")) {
+                event.setCompletions(completions);
+            } else {
+                String[] buffer_words = event.getBuffer().split(" ", -1); // Don't trim empties
+                String partial_word = buffer_words[buffer_word.length - 1];
+                event.getCompletions().addAll(completions.stream().filter(w -> word.startsWith(partial_word)));
+                event.getCompletions().sort();
+            }
+        }
+    }
+    public static void hideCommand(String actionLine,Event minecraftEvent){
+        String[] sep = actionLine.replace("hide_command: ","").split(";");
+        if(minecraftEvent instanceof PlayerCommandSendEvent) {
+            PlayerCommandSendEvent event = (PlayerCommandSendEvent) minecraftEvent;
+            event.getCommands().remove(sep[1]);
+        }
+    }
+    public static void showCommand(String actionLine,Event minecraftEvent){
+        String[] sep = actionLine.replace("show_command: ","").split(";");
+        if(minecraftEvent instanceof PlayerCommandSendEvent) {
+            PlayerCommandSendEvent event = (PlayerCommandSendEvent) minecraftEvent;
+            event.getCommands().add(sep[1]);
+            event.getCommands().sort();
         }
     }
 
