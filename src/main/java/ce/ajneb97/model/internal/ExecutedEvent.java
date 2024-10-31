@@ -300,9 +300,6 @@ public class ExecutedEvent {
             case API:
                 plugin.getApiManager().executeAction(apiType,player,actionLine);
                 return;
-            case TAB_COMPLETION_OPTION:
-                ActionUtils.addTabCompleteOption(actionLine,minecraftEvent);
-                return;
         }
 
         //Player actions
@@ -391,11 +388,8 @@ public class ExecutedEvent {
             //case VECTOR:
             //    ActionUtils.vector(player, actionLine);
             //    return;
-            case HIDE_COMMAND:
-                ActionUtils.hideCommand(actionLine,minecraftEvent);
-                return;
-            case SHOW_COMMAND:
-                ActionUtils.showCommand(actionLine,minecraftEvent);
+            case TAB_COMPLETE:
+                ActionUtils.tabComplete(actionLine,minecraftEvent);
         }
     }
 

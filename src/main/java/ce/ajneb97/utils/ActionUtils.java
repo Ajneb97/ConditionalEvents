@@ -31,9 +31,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ActionUtils {
 
@@ -404,17 +403,16 @@ public class ActionUtils {
         }
     }
 
-    public static void addTabCompleteOption(String actionLine,Event minecraftEvent){
-        String mode;
-        List<String> completions;
-        if (actionLine.contains(";")) {
-            String[] sep = actionLine.replace("tab_complete: ","").split(";");
-            mode = sep[0];
+    public static void tabComplete(String actionLine,Event minecraftEvent){
+        // tab_complete: <mode>;<element1>,<element2>,<elementN>
+        String[] sep = actionLine.replace("tab_complete: ","").split(";");
+
+        String mode = sep[0];
+        List<String> completions = new ArrayList<>();
+        if(sep.length > 1){
             completions = Arrays.asList(sep[1].split(","));
-        } else {
-            mode = "";
-            completions = Arrays.asList(actionLine.replace("tab_complete: ","").split(","));
         }
+
         if(minecraftEvent instanceof TabCompleteEvent) {
             TabCompleteEvent event = (TabCompleteEvent) minecraftEvent;
             if (mode.equalsIgnoreCase("remove")) {
@@ -425,25 +423,10 @@ public class ActionUtils {
                 event.setCompletions(completions);
             } else {
                 String[] buffer_words = event.getBuffer().split(" ", -1); // Don't trim empties
-                String partial_word = buffer_words[buffer_word.length - 1];
-                event.getCompletions().addAll(completions.stream().filter(w -> word.startsWith(partial_word)));
-                event.getCompletions().sort();
+                String partial_word = buffer_words[buffer_words.length - 1];
+                event.getCompletions().addAll(completions.stream().filter(w -> w.startsWith(partial_word)).collect(Collectors.toList()));
+                event.getCompletions().sort(Comparator.naturalOrder());
             }
-        }
-    }
-    public static void hideCommand(String actionLine,Event minecraftEvent){
-        String[] sep = actionLine.replace("hide_command: ","").split(";");
-        if(minecraftEvent instanceof PlayerCommandSendEvent) {
-            PlayerCommandSendEvent event = (PlayerCommandSendEvent) minecraftEvent;
-            event.getCommands().remove(sep[1]);
-        }
-    }
-    public static void showCommand(String actionLine,Event minecraftEvent){
-        String[] sep = actionLine.replace("show_command: ","").split(";");
-        if(minecraftEvent instanceof PlayerCommandSendEvent) {
-            PlayerCommandSendEvent event = (PlayerCommandSendEvent) minecraftEvent;
-            event.getCommands().add(sep[1]);
-            event.getCommands().sort();
         }
     }
 
