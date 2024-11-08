@@ -120,7 +120,7 @@ public class ActionUtils {
             }else{
                 item.setAmount(newAmount);
             }
-            player.updateInventory();
+            PlayerUtils.updatePlayerInventory(player);
         }
     }
     public static void removeItem(Player player,String actionLine){
@@ -354,7 +354,7 @@ public class ActionUtils {
                     }
                 }
             }
-            player.updateInventory();
+            PlayerUtils.updatePlayerInventory(player);
         }else{
             player.getInventory().addItem(item);
         }

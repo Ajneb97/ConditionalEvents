@@ -1,5 +1,6 @@
 package ce.ajneb97.utils;
 
+import ce.ajneb97.ConditionalEvents;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -50,6 +51,14 @@ public class PlayerUtils {
             default:
                 inventory.setItem(Integer.parseInt(slot),item);
                 break;
+        }
+    }
+
+    public static void updatePlayerInventory(Player player){
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(!serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_13_R1)) {
+            //1.12-
+            player.updateInventory();
         }
     }
 }
