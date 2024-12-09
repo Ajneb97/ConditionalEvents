@@ -30,6 +30,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -238,7 +240,7 @@ public class ActionUtils {
         float volume = 0;
         float pitch = 0;
         try {
-            sound = Sound.valueOf(sep[0]);
+            sound = getSoundByName(sep[0]);
             volume = Float.parseFloat(sep[1]);
             pitch = Float.parseFloat(sep[2]);
         }catch(Exception e ) {
@@ -305,7 +307,7 @@ public class ActionUtils {
                 player.stopAllSounds();
             }else{
                 try {
-                    sound = Sound.valueOf(actionLine);
+                    sound = getSoundByName(actionLine);
                 }catch(Exception e ) {
                     Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix+
                             MessagesManager.getColoredMessage(" &7Sound Name: &c"+actionLine+" &7is not valid. Change it in the config!"));
@@ -314,6 +316,16 @@ public class ActionUtils {
                 player.stopSound(sound);
             }
 
+        }
+    }
+
+    private static Sound getSoundByName(String name){
+        try {
+            Class<?> soundTypeClass = Class.forName("org.bukkit.Sound");
+            Method valueOf = soundTypeClass.getMethod("valueOf", String.class);
+            return (Sound) valueOf.invoke(null,name);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 

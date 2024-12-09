@@ -7,6 +7,7 @@ import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.model.player.PlayerData;
+import ce.ajneb97.utils.InventoryUtils;
 import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.OtherUtils;
 import org.bukkit.*;
@@ -448,7 +449,7 @@ public class PlayerEventsListener implements Listener {
         new ConditionEvent(plugin, player, event, EventType.PLAYER_OPEN_INVENTORY, null)
                 .addVariables(
                         new StoredVariable("%inventory_type%",event.getInventory().getType().name()),
-                        new StoredVariable("%inventory_title%",ChatColor.stripColor(event.getView().getTitle()))
+                        new StoredVariable("%inventory_title%",ChatColor.stripColor(InventoryUtils.getViewTitle(event)))
                 ).checkEvent();
     }
 
@@ -458,7 +459,7 @@ public class PlayerEventsListener implements Listener {
         new ConditionEvent(plugin, player, event, EventType.PLAYER_CLOSE_INVENTORY, null)
                 .addVariables(
                         new StoredVariable("%inventory_type%",event.getInventory().getType().name()),
-                        new StoredVariable("%inventory_title%",ChatColor.stripColor(event.getView().getTitle()))
+                        new StoredVariable("%inventory_title%",ChatColor.stripColor(InventoryUtils.getViewTitle(event)))
                 ).checkEvent();
     }
 
@@ -478,7 +479,7 @@ public class PlayerEventsListener implements Listener {
         String title = "";
         String titleColorFormat = "";
         if(event.getView() != null){
-            title = event.getView().getTitle();
+            title = InventoryUtils.getViewTitle(event);
             titleColorFormat = title.replace("§", "&");
             title = ChatColor.stripColor(title);
         }
