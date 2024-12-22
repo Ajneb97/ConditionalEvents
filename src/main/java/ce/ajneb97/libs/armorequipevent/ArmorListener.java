@@ -3,6 +3,7 @@ package ce.ajneb97.libs.armorequipevent;
 import java.util.List;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.utils.PlayerUtils;
 import ce.ajneb97.utils.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -165,7 +166,7 @@ public class ArmorListener implements Listener{
 				Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
 				if(armorEquipEvent.isCancelled()){
 					e.setCancelled(true);
-					player.updateInventory();
+					PlayerUtils.updatePlayerInventory(player);
 				}
 			}
 		}

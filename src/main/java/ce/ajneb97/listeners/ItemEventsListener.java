@@ -6,7 +6,9 @@ import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
+import ce.ajneb97.utils.InventoryUtils;
 import ce.ajneb97.utils.OtherUtils;
+import ce.ajneb97.utils.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -31,6 +33,7 @@ import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.view.AnvilView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,16 +102,29 @@ public class ItemEventsListener implements Listener {
         AnvilInventory inv = (AnvilInventory) event.getInventory();
 
         Player player = (Player) event.getWhoClicked();
-        if(!inv.equals(player.getOpenInventory().getTopInventory())){
+
+        if(!inv.equals(InventoryUtils.getTopInventory(player))){
             return;
         }
         if(event.getRawSlot() != 2){
             return;
         }
-        if(player.getLevel() < inv.getRepairCost()){
-            return;
+
+        String renameText = "";
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R3)){
+            AnvilView view = (AnvilView) event.getView();
+            if(player.getLevel() < view.getRepairCost()){
+                return;
+            }
+            renameText = view.getRenameText();
+        }else{
+            if(player.getLevel() < inv.getRepairCost()){
+                return;
+            }
+            renameText = inv.getRenameText();
         }
-        String renameText = inv.getRenameText();
+
 
         ItemStack resultItem = inv.getItem(2);
         if(resultItem == null || resultItem.getType().equals(Material.AIR)){
@@ -143,8 +159,8 @@ public class ItemEventsListener implements Listener {
         String inventoryTitle = "";
         InventoryView view = player.getOpenInventory();
         if(view != null) {
-            inventoryType = view.getType().name();
-            inventoryTitle = ChatColor.stripColor(view.getTitle());
+            inventoryType = InventoryUtils.getOpenInventoryViewType(player).name();
+            inventoryTitle = ChatColor.stripColor(InventoryUtils.getOpenInventoryViewTitle(player));
         }
         int slot = event.getSlot();
 

@@ -9,22 +9,22 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
 
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ItemUtils {
 
@@ -137,9 +137,15 @@ public class ItemUtils {
         List<String> flags = new ArrayList<>();
         List<String> enchants = new ArrayList<>();
         int customModelData = 0;
+
         String skullTexture = null;
         String skullId = null;
         String skullOwner = null;
+
+        List<String> customModelComponentDataStrings = new ArrayList<>();
+        List<String> customModelComponentDataFlags = new ArrayList<>();
+        List<String> customModelComponentDataFloats = new ArrayList<>();
+        List<String> customModelComponentDataColors = new ArrayList<>();
 
         ItemStack savedItem = null;
 
@@ -150,6 +156,18 @@ public class ItemUtils {
                 amount = Integer.parseInt(property.replace("amount:", ""));
             }else if(property.startsWith("custom_model_data:")) {
                 customModelData = Integer.parseInt(property.replace("custom_model_data:", ""));
+            }else if(property.startsWith("custom_model_component_data_strings:")){
+                String[] splitC = property.replace("custom_model_component_data_strings:", "").split("\\|");
+                customModelComponentDataStrings.addAll(Arrays.asList(splitC));
+            }else if(property.startsWith("custom_model_component_data_floats:")){
+                String[] splitC = property.replace("custom_model_component_data_floats:", "").split("\\|");
+                customModelComponentDataFloats.addAll(Arrays.asList(splitC));
+            }else if(property.startsWith("custom_model_component_data_flags:")){
+                String[] splitC = property.replace("custom_model_component_data_flags:", "").split("\\|");
+                customModelComponentDataFlags.addAll(Arrays.asList(splitC));
+            }else if(property.startsWith("custom_model_component_data_colors:")){
+                String[] splitC = property.replace("custom_model_component_data_colors:", "").split("\\|");
+                customModelComponentDataColors.addAll(Arrays.asList(splitC));
             }else if(property.startsWith("durability:")) {
                 durability = Short.parseShort(property.replace("durability:", ""));
             }else if(property.startsWith("name:")) {
@@ -207,6 +225,23 @@ public class ItemUtils {
 
         if(customModelData != 0) {
             meta.setCustomModelData(customModelData);
+        }
+
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R3)){
+            CustomModelDataComponent customModelDataComponent = meta.getCustomModelDataComponent();
+
+            customModelDataComponent.setFlags(customModelComponentDataFlags.stream()
+                    .map(Boolean::parseBoolean)
+                    .collect(Collectors.toList()));
+            customModelDataComponent.setFloats(customModelComponentDataFloats.stream()
+                    .map(Float::parseFloat)
+                    .collect(Collectors.toList()));
+            customModelDataComponent.setColors(customModelComponentDataColors.stream()
+                    .map(rgb -> Color.fromRGB(Integer.parseInt(rgb)))
+                    .collect(Collectors.toList()));
+            customModelDataComponent.setStrings(new ArrayList<>(customModelComponentDataStrings));
+            meta.setCustomModelDataComponent(customModelDataComponent);
         }
 
         if(!enchants.isEmpty()) {
