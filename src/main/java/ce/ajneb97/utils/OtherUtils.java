@@ -33,6 +33,10 @@ public class OtherUtils {
     }
 
     public static Color getFireworkColorFromName(String colorName) {
+        if(colorName.startsWith("#")){
+            int rgbValue = Integer.parseInt(colorName.substring(1), 16);
+            return Color.fromRGB(rgbValue);
+        }
         try {
             return (Color) Color.class.getDeclaredField(colorName).get(Color.class);
         } catch (IllegalAccessException e) {

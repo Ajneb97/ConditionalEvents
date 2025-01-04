@@ -178,8 +178,8 @@ public class ConditionEvent {
         String colorFormatLoreString = "";
         short durability = 0;
         int amount = 0;
-        List<String> loreList = new ArrayList<String>();
-        List<String> colorFormatLoreList = new ArrayList<String>();
+        List<String> loreList = new ArrayList<>();
+        List<String> colorFormatLoreList = new ArrayList<>();
         int customModelData = 0;
         String metaString = "";
 

@@ -40,7 +40,7 @@ public class MainConfigManager {
         updateNotifications = config.getBoolean("Config.update_notification");
         debugActions = config.getBoolean("Config.debug_actions");
         experimentalVariableReplacement = config.getBoolean("Config.experimental.variable_replacement");
-        toConditionGroups = new ArrayList<ToConditionGroup>();
+        toConditionGroups = new ArrayList<>();
         String path = "Config.to_condition_groups";
         if(config.contains(path)){
             for(String key : config.getConfigurationSection(path).getKeys(false)){

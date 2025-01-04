@@ -474,6 +474,7 @@ public class ActionUtils {
         // health:<value>
         // equipment:<helmet>,<chestplate>,<leggings>,<boots> (material or 'none')
         // amount:<amount>
+        // hand_equipment:<mainhand>,<offhand>
 
         String[] sep = actionLine.replace("summon: ","").split(";");
         Location location = null;
@@ -482,6 +483,7 @@ public class ActionUtils {
         String customName = null;
         double health = 0;
         String equipmentString = null;
+        String handEquipmentString = null;
         int amount = 1;
 
         for(String property : sep){
@@ -501,6 +503,8 @@ public class ActionUtils {
                 health = Double.parseDouble(property.replace("health:",""));
             }else if(property.startsWith("equipment:")){
                 equipmentString = property.replace("equipment:","");
+            }else if(property.startsWith("hand_equipment:")){
+                handEquipmentString = property.replace("hand_equipment:","");
             }else if(property.startsWith("amount:")){
                 amount = Integer.parseInt(property.replace("amount:",""));
             }
@@ -537,6 +541,17 @@ public class ActionUtils {
                         //Boots
                         equipment.setBoots(!equipmentSplit[3].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[3]) : null);
                         equipment.setBootsDropChance(0);
+                    }
+
+                    if(handEquipmentString != null){
+                        String[] handEquipmentSplit = handEquipmentString.split(",");
+
+                        // Hand
+                        equipment.setItemInMainHand(!handEquipmentSplit[0].equals("none") ? ItemUtils.createItemFromString(handEquipmentSplit[0]) : null);
+                        equipment.setItemInMainHandDropChance(0);
+                        // Offhand
+                        equipment.setItemInOffHand(!handEquipmentSplit[1].equals("none") ? ItemUtils.createItemFromString(handEquipmentSplit[1]) : null);
+                        equipment.setItemInOffHandDropChance(0);
                     }
                 }
 
@@ -641,11 +656,13 @@ public class ActionUtils {
 
     public static void particle(Player player,String actionLine){
         // particle: effect:<effect_name> offset:<x>;<y>;<z> speed:<speed> amount:<amount> location(optional):<x>;<y>;<z>;<world>
+        //              force:<true/false>
         String effectName = null;
         double offsetX = 0;double offsetY = 0;double offsetZ = 0;
         double speed = 0;
         int amount = 1;
         Location location = null;
+        boolean force = false;
 
         String[] sep = actionLine.split(" ");
         for(String s : sep) {
@@ -665,6 +682,8 @@ public class ActionUtils {
                 location = new Location(
                         Bukkit.getWorld(sep2[3]), Double.parseDouble(sep2[0]), Double.parseDouble(sep2[1]), Double.parseDouble(sep2[2])
                 );
+            }else if(s.startsWith("force:")) {
+                force = Boolean.parseBoolean(s.replace("force:",""));
             }
         }
 
@@ -684,10 +703,10 @@ public class ActionUtils {
                 Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(red,green,blue), 1);
 
                 location.getWorld().spawnParticle(
-                        Particle.valueOf(effectSeparated[0]),location,amount,offsetX,offsetY,offsetZ,speed,dustOptions,false);
+                        Particle.valueOf(effectSeparated[0]),location,amount,offsetX,offsetY,offsetZ,speed,dustOptions,force);
             }else {
                 location.getWorld().spawnParticle(
-                        Particle.valueOf(effectName),location,amount,offsetX,offsetY,offsetZ,speed,null,false);
+                        Particle.valueOf(effectName),location,amount,offsetX,offsetY,offsetZ,speed,null,force);
             }
         }catch(Exception e) {
             Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix+
