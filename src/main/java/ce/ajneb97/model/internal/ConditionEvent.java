@@ -6,6 +6,7 @@ import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.utils.BlockUtils;
 import ce.ajneb97.utils.OtherUtils;
+import ce.ajneb97.utils.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -209,7 +210,10 @@ public class ConditionEvent {
                     }
                 }
                 if(OtherUtils.isNew() && meta.hasCustomModelData()){
-                    customModelData = meta.getCustomModelData();
+                    ServerVersion serverVersion = ConditionalEvents.serverVersion;
+                    if(!serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R3)){
+                        customModelData = meta.getCustomModelData();
+                    }
                 }
             }
         }

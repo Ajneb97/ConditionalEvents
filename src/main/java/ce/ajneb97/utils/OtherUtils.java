@@ -1,9 +1,11 @@
 package ce.ajneb97.utils;
 import ce.ajneb97.ConditionalEvents;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.entity.Player;
 
 public class OtherUtils {
 
@@ -63,5 +65,17 @@ public class OtherUtils {
         } else {
             return "invalid";
         }
+    }
+
+    public static String replaceGlobalVariables(String text, Player player, ConditionalEvents plugin) {
+        if(player == null){
+            return text;
+        }
+        text = text.replace("%player%",player.getName());
+        if(plugin.getDependencyManager().isPlaceholderAPI()) {
+            text = PlaceholderAPI.setPlaceholders(player, text);
+        }
+
+        return text;
     }
 }

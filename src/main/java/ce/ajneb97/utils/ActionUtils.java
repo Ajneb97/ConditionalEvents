@@ -291,8 +291,6 @@ public class ActionUtils {
         }else{
             player.playSound(player.getLocation(), sound, volume, pitch);
         }
-
-        player.playSound(player.getLocation(), sound, volume, pitch);
     }
 
     public static void stopSound(Player player,String actionLine){
@@ -338,7 +336,7 @@ public class ActionUtils {
         // give_item: saved_item:<name>
 
         String[] sep = actionLine.replace("give_item: ","").split(";");
-        ItemStack item = ItemUtils.getItemFromProperties(sep);
+        ItemStack item = ItemUtils.getItemFromProperties(sep,player);
 
         String slot = null;
         boolean replace = true;
@@ -372,15 +370,11 @@ public class ActionUtils {
         }
     }
 
-    private void setItemSlot(ItemStack itemCheck,ItemStack itemOriginal){
-
-    }
-
     public static void dropItem(String actionLine) {
         // drop_item: location:<x>,<y>,<z>,<world>;id:<id>;amount:<amount>;...
 
         String[] sep = actionLine.replace("drop_item: ","").split(";");
-        ItemStack item = ItemUtils.getItemFromProperties(sep);
+        ItemStack item = ItemUtils.getItemFromProperties(sep,null);
         Location location = null;
 
         // Find location
@@ -410,7 +404,7 @@ public class ActionUtils {
             Entity caught = event.getCaught();
             if(caught != null && caught instanceof Item){
                 Item item = (Item) caught;
-                item.setItemStack(ItemUtils.getItemFromProperties(sep));
+                item.setItemStack(ItemUtils.getItemFromProperties(sep,null));
             }
         }
     }
@@ -530,16 +524,16 @@ public class ActionUtils {
                         String[] equipmentSplit = equipmentString.split(",");
 
                         //Helmet
-                        equipment.setHelmet(!equipmentSplit[0].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[0]) : null);
+                        equipment.setHelmet(!equipmentSplit[0].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[0],null) : null);
                         equipment.setHelmetDropChance(0);
                         //Chestplate
-                        equipment.setChestplate(!equipmentSplit[1].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[1]) : null);
+                        equipment.setChestplate(!equipmentSplit[1].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[1],null) : null);
                         equipment.setChestplateDropChance(0);
                         //Leggings
-                        equipment.setLeggings(!equipmentSplit[2].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[2]) : null);
+                        equipment.setLeggings(!equipmentSplit[2].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[2],null) : null);
                         equipment.setLeggingsDropChance(0);
                         //Boots
-                        equipment.setBoots(!equipmentSplit[3].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[3]) : null);
+                        equipment.setBoots(!equipmentSplit[3].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[3],null) : null);
                         equipment.setBootsDropChance(0);
                     }
 
@@ -547,10 +541,10 @@ public class ActionUtils {
                         String[] handEquipmentSplit = handEquipmentString.split(",");
 
                         // Hand
-                        equipment.setItemInMainHand(!handEquipmentSplit[0].equals("none") ? ItemUtils.createItemFromString(handEquipmentSplit[0]) : null);
+                        equipment.setItemInMainHand(!handEquipmentSplit[0].equals("none") ? ItemUtils.createItemFromString(handEquipmentSplit[0],null) : null);
                         equipment.setItemInMainHandDropChance(0);
                         // Offhand
-                        equipment.setItemInOffHand(!handEquipmentSplit[1].equals("none") ? ItemUtils.createItemFromString(handEquipmentSplit[1]) : null);
+                        equipment.setItemInOffHand(!handEquipmentSplit[1].equals("none") ? ItemUtils.createItemFromString(handEquipmentSplit[1],null) : null);
                         equipment.setItemInOffHandDropChance(0);
                     }
                 }

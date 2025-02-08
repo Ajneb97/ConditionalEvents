@@ -293,7 +293,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		String name = args[2];
 
 		if(type.equals("save")){
-			if(savedItemsManager.getItem(name) != null){
+			if(savedItemsManager.getItem(name,player) != null){
 				msgManager.sendMessage(player,config.getString("Messages.savedItemAlreadyExists"),true);
 				return;
 			}
@@ -308,7 +308,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			msgManager.sendMessage(player,config.getString("Messages.savedItemAdded")
 					.replace("%name%",name),true);
 		}else if(type.equals("remove")){
-			if(savedItemsManager.getItem(name) == null){
+			if(savedItemsManager.getItem(name,player) == null){
 				msgManager.sendMessage(player,config.getString("Messages.savedItemDoesNotExists"),true);
 				return;
 			}

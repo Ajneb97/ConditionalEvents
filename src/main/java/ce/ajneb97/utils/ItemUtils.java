@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -42,7 +43,7 @@ public class ItemUtils {
         return item;
     }
 
-    public static ItemStack createItemFromString(String string){
+    public static ItemStack createItemFromString(String string, Player player){
         ItemStack item = null;
         if(string.startsWith("e")){
             item = ItemUtils.createHead();
@@ -51,7 +52,7 @@ public class ItemUtils {
         }
 
         if(string.startsWith("saved_item:")){
-            return ConditionalEventsAPI.getPlugin().getSavedItemsManager().getItem(string.replace("saved_item:",""));
+            return ConditionalEventsAPI.getPlugin().getSavedItemsManager().getItem(string.replace("saved_item:",""),player);
         }
 
         item = ItemUtils.createItemFromID(string);
@@ -128,7 +129,7 @@ public class ItemUtils {
         item.setItemMeta(skullMeta);
     }
 
-    public static ItemStack getItemFromProperties(String[] properties){
+    public static ItemStack getItemFromProperties(String[] properties,Player player){
         String id = null;
         int amount = 1;
         short durability = 0;
@@ -195,7 +196,7 @@ public class ItemUtils {
             }else if(property.startsWith("skull_id")) {
                 skullId = property.replace("skull_id:", "");
             }else if(property.startsWith("saved_item")){
-                savedItem = ConditionalEventsAPI.getPlugin().getSavedItemsManager().getItem(property.replace("saved_item:", ""));
+                savedItem = ConditionalEventsAPI.getPlugin().getSavedItemsManager().getItem(property.replace("saved_item:", ""),player);
             }
         }
 
