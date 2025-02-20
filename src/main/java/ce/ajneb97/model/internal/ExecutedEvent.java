@@ -388,6 +388,8 @@ public class ExecutedEvent {
             //case VECTOR:
             //    ActionUtils.vector(player, actionLine);
             //    return;
+            case TAB_COMPLETE:
+                ActionUtils.tabComplete(actionLine,minecraftEvent);
         }
     }
 
