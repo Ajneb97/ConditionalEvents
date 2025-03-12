@@ -3,11 +3,13 @@ package ce.ajneb97.managers;
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.configs.CEConfig;
 import ce.ajneb97.model.CEEvent;
+import ce.ajneb97.model.ConditionalType;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.actions.ActionGroup;
 import ce.ajneb97.model.actions.ActionTargeter;
 import ce.ajneb97.model.actions.ActionType;
 import ce.ajneb97.model.actions.CEAction;
+import ce.ajneb97.model.internal.SeparatorType;
 import ce.ajneb97.model.verify.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -170,21 +172,33 @@ public class VerifyManager {
     }
 
     public boolean verifyCondition(String line) {
-        String[] sepExecute = line.split(" execute ");
-        String[] sepOr = sepExecute[0].split(" or ");
-        for(int i=0;i<sepOr.length;i++) {
-            String[] sep = sepOr[i].split(" ");
-            if(sep.length < 3) {
-                return false;
-            }
-            if(!sep[1].equals("!=") && !sep[1].equals("==") && !sep[1].equals(">=") &&
-                    !sep[1].equals("<=") && !sep[1].equals(">") && !sep[1].equals("<")
-                    && !sep[1].equals("equals") && !sep[1].equals("!equals") && !sep[1].equals("contains")
-                    && !sep[1].equals("!contains") && !sep[1].equals("startsWith") && !sep[1].equals("!startsWith")
-                    && !sep[1].equals("equalsIgnoreCase") && !sep[1].equals("!equalsIgnoreCase")) {
+        String conditionLine = line.split(" execute ")[0];
+        String[] separatedConditions = null;
+        if(conditionLine.contains(" or ")){
+            separatedConditions = conditionLine.split(" or ");
+        }else if(conditionLine.contains(" and ")){
+            separatedConditions = conditionLine.split(" and ");
+        }else{
+            separatedConditions = new String[]{conditionLine};
+        }
+
+        for (String miniCondition : separatedConditions) {
+            boolean textContainsConditional = textContainsConditional(miniCondition);
+            if (!textContainsConditional) {
                 return false;
             }
         }
+
         return true;
+    }
+
+    private boolean textContainsConditional(String text){
+        for (ConditionalType conditionalType : ConditionalType.values()) {
+            String textToFind = " " + conditionalType.getText() + " ";
+            if(text.contains(textToFind)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

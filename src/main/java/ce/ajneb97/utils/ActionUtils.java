@@ -29,6 +29,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -217,8 +218,14 @@ public class ActionUtils {
     }
 
     public static void removePotionEffect(Player player,String actionLine){
-        PotionEffectType potionEffectType = PotionEffectType.getByName(actionLine);
-        player.removePotionEffect(potionEffectType);
+        if(actionLine.equals("all")){
+            for(PotionEffect effect : player.getActivePotionEffects()){
+                player.removePotionEffect(effect.getType());
+            }
+        }else{
+            PotionEffectType potionEffectType = PotionEffectType.getByName(actionLine);
+            player.removePotionEffect(potionEffectType);
+        }
     }
 
     public static void cancelEvent(String actionLine,Event minecraftEvent){
@@ -590,11 +597,16 @@ public class ActionUtils {
     }*/
     public static void firework(Player player,String actionLine,ConditionalEvents plugin){
         // firework: colors:<color1>,<color2> type:<type> fade:<color1>,<color2> power:<power> location(optional):<x>;<y>;<z>;<world>
-        ArrayList<Color> colors = new ArrayList<Color>();
+        // flicker:<boolean> trail:<boolean>
+        // shot_direction:<off_x_min>,<off_x_max>;<off_y_min>,<off_y_max>;<off_z_min>,<off_z_max>;<velocity_min>-<velocity_max>
+        ArrayList<Color> colors = new ArrayList<>();
         FireworkEffect.Type type = null;
-        ArrayList<Color> fadeColors = new ArrayList<Color>();
+        ArrayList<Color> fadeColors = new ArrayList<>();
         Location location = null;
         int power = 0;
+        boolean hasTrail = false;
+        boolean hasFlicker = false;
+        String shotDirection = null;
 
         String[] sep = actionLine.split(" ");
         for(String s : sep) {
@@ -615,7 +627,16 @@ public class ActionUtils {
                 }
             }else if(s.startsWith("power:")) {
                 s = s.replace("power:", "");
-                power = Integer.valueOf(s);
+                power = Integer.parseInt(s);
+            }else if(s.startsWith("trail:")){
+                s = s.replace("trail:", "");
+                hasTrail = Boolean.parseBoolean(s);
+            }else if(s.startsWith("flicker:")){
+                s = s.replace("flicker:", "");
+                hasFlicker = Boolean.parseBoolean(s);
+            }else if(s.startsWith("shot_direction:")){
+                s = s.replace("shot_direction:", "");
+                shotDirection = s;
             }else if(s.startsWith("location:")) {
                 String[] sep2 = s.replace("location:", "").split(";");
                 location = new Location(
@@ -641,10 +662,32 @@ public class ActionUtils {
                 .withColor(colors)
                 .with(type)
                 .withFade(fadeColors)
+                .trail(hasTrail)
+                .flicker(hasFlicker)
                 .build();
+
         fireworkMeta.addEffect(effect);
         fireworkMeta.setPower(power);
         firework.setFireworkMeta(fireworkMeta);
+
+        // 1.15+
+        if(shotDirection != null && serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_15_R1)){
+            firework.setShotAtAngle(true);
+            String[] sepDirection = shotDirection.split(";");
+            String[] offsetX = sepDirection[0].split(",");
+            String[] offsetY = sepDirection[1].split(",");
+            String[] offsetZ = sepDirection[2].split(",");
+            String[] offsetVelocity = sepDirection[3].split("-");
+
+            Vector direction = new Vector(
+                    MathUtils.getRandomNumberFloat(Float.parseFloat(offsetX[0]),Float.parseFloat(offsetX[1])),
+                    MathUtils.getRandomNumberFloat(Float.parseFloat(offsetY[0]),Float.parseFloat(offsetY[1])),
+                    MathUtils.getRandomNumberFloat(Float.parseFloat(offsetZ[0]),Float.parseFloat(offsetZ[1]))
+            );
+
+            firework.setVelocity(direction.multiply(MathUtils.getRandomNumberFloat(Float.parseFloat(offsetVelocity[0]),Float.parseFloat(offsetVelocity[1]))));
+        }
+
         firework.setMetadata("conditionalevents", new FixedMetadataValue(plugin, "no_damage"));
     }
 

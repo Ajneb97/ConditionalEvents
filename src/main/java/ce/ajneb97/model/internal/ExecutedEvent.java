@@ -56,11 +56,16 @@ public class ExecutedEvent {
         //Check if parameters are present
         int pos = actionGroupName.indexOf("{");
         if(pos != -1){
+            VariablesProperties variablesProperties = new VariablesProperties(
+                    eventVariables,player,target,isPlaceholderAPI,event,minecraftEvent
+            );
+
             String parameters = actionGroupName.substring(pos+1, actionGroupName.length()-1);
             String[] sep = parameters.split(";");
-            for(int i=0;i<sep.length;i++){
-                String[] variableLineSep = sep[i].split("=");
-                eventVariables.add(new StoredVariable(variableLineSep[0],variableLineSep[1]));
+            for(String s : sep) {
+                String[] variableLineSep = s.split("=");
+                String variableValue = VariablesUtils.replaceAllVariablesInLine(variableLineSep[1], variablesProperties, false);
+                eventVariables.add(new StoredVariable(variableLineSep[0], variableValue));
             }
             this.actionGroupName = actionGroupName.substring(0, pos);
         }

@@ -31,6 +31,10 @@ public class MathUtils {
         return num;
     }
 
+    public static float getRandomNumberFloat(float min, float max) {
+        return (float) (Math.random() * (max - min) + min);
+    }
+
     public static double truncate(double value){
         try{
             if (value > 0) {
