@@ -53,5 +53,7 @@ public enum ActionType {
     DISCORDSRV_EMBED,
     CALL_EVENT,
     EXECUTE_ACTION_GROUP,
+    TAB_COMPLETE,
     API
+
 }
