@@ -48,6 +48,9 @@ Messages:
   mustHaveItemInHand: "&cYou must have an item on your hand."
   savedItemAlreadyExists: "&cA saved item with that name already exists."
   savedItemAdded: "&aItem &7%name% &asaved."
+  commandInterruptError: '&cUse &7/ce interrupt <event> (optional)<player>'
+  commandInterruptCorrect: '&aActions of event &7%event% &ainterrupted.'
+  commandInterruptCorrectPlayer: '&aActions of event &7%event% &ainterrupted for player &7%player%&a.'
 Events:
   event1:
     type: player_join

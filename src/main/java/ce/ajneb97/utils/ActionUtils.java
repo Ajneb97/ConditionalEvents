@@ -1,9 +1,11 @@
 package ce.ajneb97.utils;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.api.ConditionalEventsAPI;
 import ce.ajneb97.api.ConditionalEventsCallEvent;
 import ce.ajneb97.libs.actionbar.ActionBarAPI;
 import ce.ajneb97.libs.titles.TitleAPI;
+import ce.ajneb97.managers.InterruptEventManager;
 import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.managers.dependencies.DiscordSRVManager;
 import ce.ajneb97.model.StoredVariable;
@@ -29,6 +31,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.InvocationTargetException;
@@ -800,26 +803,42 @@ public class ActionUtils {
 
     public static void wait(String actionLine, ExecutedEvent executedEvent){
         executedEvent.setOnWait(true);
-        int timeSeconds = Integer.valueOf(actionLine);
+        int timeSeconds = Integer.parseInt(actionLine);
 
-        new BukkitRunnable(){
+        InterruptEventManager interruptEventManager = ConditionalEventsAPI.getPlugin().getInterruptEventManager();
+        BukkitTask task = new BukkitRunnable(){
             @Override
             public void run() {
+                interruptEventManager.removeTaskById(this.getTaskId());
                 executedEvent.continueWithActions();
             }
-        }.runTaskLater(executedEvent.getPlugin(), timeSeconds*20);
+        }.runTaskLater(executedEvent.getPlugin(), timeSeconds* 20L);
+
+        interruptEventManager.addTask(
+                executedEvent.getPlayer() != null ? executedEvent.getPlayer().getName() : null,
+                executedEvent.getEvent().getName(),
+                task
+        );
     }
 
     public static void waitTicks(String actionLine, ExecutedEvent executedEvent){
         executedEvent.setOnWait(true);
-        long timeTicks = Long.valueOf(actionLine);
+        long timeTicks = Long.parseLong(actionLine);
 
-        new BukkitRunnable(){
+        InterruptEventManager interruptEventManager = ConditionalEventsAPI.getPlugin().getInterruptEventManager();
+        BukkitTask task = new BukkitRunnable(){
             @Override
             public void run() {
+                interruptEventManager.removeTaskById(this.getTaskId());
                 executedEvent.continueWithActions();
             }
         }.runTaskLater(executedEvent.getPlugin(), timeTicks);
+
+        interruptEventManager.addTask(
+                executedEvent.getPlayer() != null ? executedEvent.getPlayer().getName() : null,
+                executedEvent.getEvent().getName(),
+                task
+        );
     }
 
     public static void keepItems(String actionLine,Event minecraftEvent){
