@@ -11,6 +11,7 @@ import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -148,6 +149,8 @@ public class ItemUtils {
         List<String> customModelComponentDataFloats = new ArrayList<>();
         List<String> customModelComponentDataColors = new ArrayList<>();
 
+        String itemModel = null;
+
         ItemStack savedItem = null;
 
         for(String property : properties) {
@@ -169,6 +172,8 @@ public class ItemUtils {
             }else if(property.startsWith("custom_model_component_data_colors:")){
                 String[] splitC = property.replace("custom_model_component_data_colors:", "").split("\\|");
                 customModelComponentDataColors.addAll(Arrays.asList(splitC));
+            }else if(property.startsWith("item_model:")){
+                itemModel = property.replace("item_model:","");
             }else if(property.startsWith("durability:")) {
                 durability = Short.parseShort(property.replace("durability:", ""));
             }else if(property.startsWith("name:")) {
@@ -243,6 +248,13 @@ public class ItemUtils {
                     .collect(Collectors.toList()));
             customModelDataComponent.setStrings(new ArrayList<>(customModelComponentDataStrings));
             meta.setCustomModelDataComponent(customModelDataComponent);
+        }
+
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R3)){
+            if(itemModel != null){
+                String[] sep = itemModel.split("\\|");
+                meta.setItemModel(new NamespacedKey(sep[0],sep[1]));
+            }
         }
 
         if(!enchants.isEmpty()) {

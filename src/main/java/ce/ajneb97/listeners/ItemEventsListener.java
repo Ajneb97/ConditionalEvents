@@ -99,6 +99,9 @@ public class ItemEventsListener implements Listener {
         if(OtherUtils.isLegacy()){
             return;
         }
+        if(!(event.getInventory() instanceof AnvilInventory)){
+            return;
+        }
         AnvilInventory inv = (AnvilInventory) event.getInventory();
 
         Player player = (Player) event.getWhoClicked();

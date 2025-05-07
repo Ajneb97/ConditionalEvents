@@ -115,9 +115,9 @@ public class ConfigsManager {
                                     targeter.setType(targeterType);
 
                                     action = action.replace(targeterType.name().toLowerCase()+": ","");
-                                    String parameter = action.substring(0, action.indexOf(":"));
-                                    String replace = action.substring(0, action.indexOf(":")+2);
-                                    action = action.replace(replace, "");
+                                    String[] sep = action.split(" ");
+                                    String parameter = sep[0].substring(0,sep[0].length()-1);
+                                    action = action.replace(sep[0]+" ", "");
 
                                     targeter.setParameter(parameter);
                                 }

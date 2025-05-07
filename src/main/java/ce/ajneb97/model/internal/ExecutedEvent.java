@@ -110,7 +110,12 @@ public class ExecutedEvent {
                 ActionUtils.cancelEvent(ceAction.getActionLine(),minecraftEvent);
                 return;
             }else if(ceAction.getType().equals(ActionType.PREVENT_JOIN)){
-                ActionUtils.preventJoin(ceAction.getActionLine(),minecraftEvent);
+                String actionLine = ceAction.getActionLine();
+                VariablesProperties variablesProperties = new VariablesProperties(
+                        eventVariables,player,target,isPlaceholderAPI,event,minecraftEvent
+                );
+                actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties,false);
+                ActionUtils.preventJoin(actionLine,minecraftEvent);
                 return;
             }
         }
@@ -303,7 +308,7 @@ public class ExecutedEvent {
                 ActionUtils.executeActionGroup(actionLine,this,plugin);
                 return;
             case API:
-                plugin.getApiManager().executeAction(apiType,player,actionLine);
+                plugin.getApiManager().executeAction(apiType,player,actionLine,minecraftEvent);
                 return;
         }
 
