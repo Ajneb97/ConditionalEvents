@@ -1,9 +1,11 @@
 package ce.ajneb97.utils;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.api.ConditionalEventsAPI;
 import ce.ajneb97.api.ConditionalEventsCallEvent;
 import ce.ajneb97.libs.actionbar.ActionBarAPI;
 import ce.ajneb97.libs.titles.TitleAPI;
+import ce.ajneb97.managers.InterruptEventManager;
 import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.managers.dependencies.DiscordSRVManager;
 import ce.ajneb97.model.StoredVariable;
@@ -30,6 +32,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -219,8 +223,14 @@ public class ActionUtils {
     }
 
     public static void removePotionEffect(Player player,String actionLine){
-        PotionEffectType potionEffectType = PotionEffectType.getByName(actionLine);
-        player.removePotionEffect(potionEffectType);
+        if(actionLine.equals("all")){
+            for(PotionEffect effect : player.getActivePotionEffects()){
+                player.removePotionEffect(effect.getType());
+            }
+        }else{
+            PotionEffectType potionEffectType = PotionEffectType.getByName(actionLine);
+            player.removePotionEffect(potionEffectType);
+        }
     }
 
     public static void cancelEvent(String actionLine,Event minecraftEvent){
@@ -293,8 +303,6 @@ public class ActionUtils {
         }else{
             player.playSound(player.getLocation(), sound, volume, pitch);
         }
-
-        player.playSound(player.getLocation(), sound, volume, pitch);
     }
 
     public static void stopSound(Player player,String actionLine){
@@ -340,7 +348,7 @@ public class ActionUtils {
         // give_item: saved_item:<name>
 
         String[] sep = actionLine.replace("give_item: ","").split(";");
-        ItemStack item = ItemUtils.getItemFromProperties(sep);
+        ItemStack item = ItemUtils.getItemFromProperties(sep,player);
 
         String slot = null;
         boolean replace = true;
@@ -374,15 +382,11 @@ public class ActionUtils {
         }
     }
 
-    private void setItemSlot(ItemStack itemCheck,ItemStack itemOriginal){
-
-    }
-
     public static void dropItem(String actionLine) {
         // drop_item: location:<x>,<y>,<z>,<world>;id:<id>;amount:<amount>;...
 
         String[] sep = actionLine.replace("drop_item: ","").split(";");
-        ItemStack item = ItemUtils.getItemFromProperties(sep);
+        ItemStack item = ItemUtils.getItemFromProperties(sep,null);
         Location location = null;
 
         // Find location
@@ -412,7 +416,7 @@ public class ActionUtils {
             Entity caught = event.getCaught();
             if(caught != null && caught instanceof Item){
                 Item item = (Item) caught;
-                item.setItemStack(ItemUtils.getItemFromProperties(sep));
+                item.setItemStack(ItemUtils.getItemFromProperties(sep,null));
             }
         }
     }
@@ -503,6 +507,7 @@ public class ActionUtils {
         // health:<value>
         // equipment:<helmet>,<chestplate>,<leggings>,<boots> (material or 'none')
         // amount:<amount>
+        // hand_equipment:<mainhand>,<offhand>
 
         String[] sep = actionLine.replace("summon: ","").split(";");
         Location location = null;
@@ -511,6 +516,7 @@ public class ActionUtils {
         String customName = null;
         double health = 0;
         String equipmentString = null;
+        String handEquipmentString = null;
         int amount = 1;
 
         for(String property : sep){
@@ -530,6 +536,8 @@ public class ActionUtils {
                 health = Double.parseDouble(property.replace("health:",""));
             }else if(property.startsWith("equipment:")){
                 equipmentString = property.replace("equipment:","");
+            }else if(property.startsWith("hand_equipment:")){
+                handEquipmentString = property.replace("hand_equipment:","");
             }else if(property.startsWith("amount:")){
                 amount = Integer.parseInt(property.replace("amount:",""));
             }
@@ -555,17 +563,28 @@ public class ActionUtils {
                         String[] equipmentSplit = equipmentString.split(",");
 
                         //Helmet
-                        equipment.setHelmet(!equipmentSplit[0].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[0]) : null);
+                        equipment.setHelmet(!equipmentSplit[0].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[0],null) : null);
                         equipment.setHelmetDropChance(0);
                         //Chestplate
-                        equipment.setChestplate(!equipmentSplit[1].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[1]) : null);
+                        equipment.setChestplate(!equipmentSplit[1].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[1],null) : null);
                         equipment.setChestplateDropChance(0);
                         //Leggings
-                        equipment.setLeggings(!equipmentSplit[2].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[2]) : null);
+                        equipment.setLeggings(!equipmentSplit[2].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[2],null) : null);
                         equipment.setLeggingsDropChance(0);
                         //Boots
-                        equipment.setBoots(!equipmentSplit[3].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[3]) : null);
+                        equipment.setBoots(!equipmentSplit[3].equals("none") ? ItemUtils.createItemFromString(equipmentSplit[3],null) : null);
                         equipment.setBootsDropChance(0);
+                    }
+
+                    if(handEquipmentString != null){
+                        String[] handEquipmentSplit = handEquipmentString.split(",");
+
+                        // Hand
+                        equipment.setItemInMainHand(!handEquipmentSplit[0].equals("none") ? ItemUtils.createItemFromString(handEquipmentSplit[0],null) : null);
+                        equipment.setItemInMainHandDropChance(0);
+                        // Offhand
+                        equipment.setItemInOffHand(!handEquipmentSplit[1].equals("none") ? ItemUtils.createItemFromString(handEquipmentSplit[1],null) : null);
+                        equipment.setItemInOffHandDropChance(0);
                     }
                 }
 
@@ -610,11 +629,16 @@ public class ActionUtils {
     }*/
     public static void firework(Player player,String actionLine,ConditionalEvents plugin){
         // firework: colors:<color1>,<color2> type:<type> fade:<color1>,<color2> power:<power> location(optional):<x>;<y>;<z>;<world>
-        ArrayList<Color> colors = new ArrayList<Color>();
+        // flicker:<boolean> trail:<boolean>
+        // shot_direction:<off_x_min>,<off_x_max>;<off_y_min>,<off_y_max>;<off_z_min>,<off_z_max>;<velocity_min>-<velocity_max>
+        ArrayList<Color> colors = new ArrayList<>();
         FireworkEffect.Type type = null;
-        ArrayList<Color> fadeColors = new ArrayList<Color>();
+        ArrayList<Color> fadeColors = new ArrayList<>();
         Location location = null;
         int power = 0;
+        boolean hasTrail = false;
+        boolean hasFlicker = false;
+        String shotDirection = null;
 
         String[] sep = actionLine.split(" ");
         for(String s : sep) {
@@ -635,7 +659,16 @@ public class ActionUtils {
                 }
             }else if(s.startsWith("power:")) {
                 s = s.replace("power:", "");
-                power = Integer.valueOf(s);
+                power = Integer.parseInt(s);
+            }else if(s.startsWith("trail:")){
+                s = s.replace("trail:", "");
+                hasTrail = Boolean.parseBoolean(s);
+            }else if(s.startsWith("flicker:")){
+                s = s.replace("flicker:", "");
+                hasFlicker = Boolean.parseBoolean(s);
+            }else if(s.startsWith("shot_direction:")){
+                s = s.replace("shot_direction:", "");
+                shotDirection = s;
             }else if(s.startsWith("location:")) {
                 String[] sep2 = s.replace("location:", "").split(";");
                 location = new Location(
@@ -661,20 +694,44 @@ public class ActionUtils {
                 .withColor(colors)
                 .with(type)
                 .withFade(fadeColors)
+                .trail(hasTrail)
+                .flicker(hasFlicker)
                 .build();
+
         fireworkMeta.addEffect(effect);
         fireworkMeta.setPower(power);
         firework.setFireworkMeta(fireworkMeta);
+
+        // 1.15+
+        if(shotDirection != null && serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_15_R1)){
+            firework.setShotAtAngle(true);
+            String[] sepDirection = shotDirection.split(";");
+            String[] offsetX = sepDirection[0].split(",");
+            String[] offsetY = sepDirection[1].split(",");
+            String[] offsetZ = sepDirection[2].split(",");
+            String[] offsetVelocity = sepDirection[3].split("-");
+
+            Vector direction = new Vector(
+                    MathUtils.getRandomNumberFloat(Float.parseFloat(offsetX[0]),Float.parseFloat(offsetX[1])),
+                    MathUtils.getRandomNumberFloat(Float.parseFloat(offsetY[0]),Float.parseFloat(offsetY[1])),
+                    MathUtils.getRandomNumberFloat(Float.parseFloat(offsetZ[0]),Float.parseFloat(offsetZ[1]))
+            );
+
+            firework.setVelocity(direction.multiply(MathUtils.getRandomNumberFloat(Float.parseFloat(offsetVelocity[0]),Float.parseFloat(offsetVelocity[1]))));
+        }
+
         firework.setMetadata("conditionalevents", new FixedMetadataValue(plugin, "no_damage"));
     }
 
     public static void particle(Player player,String actionLine){
         // particle: effect:<effect_name> offset:<x>;<y>;<z> speed:<speed> amount:<amount> location(optional):<x>;<y>;<z>;<world>
+        //              force:<true/false>
         String effectName = null;
         double offsetX = 0;double offsetY = 0;double offsetZ = 0;
         double speed = 0;
         int amount = 1;
         Location location = null;
+        boolean force = false;
 
         String[] sep = actionLine.split(" ");
         for(String s : sep) {
@@ -694,6 +751,8 @@ public class ActionUtils {
                 location = new Location(
                         Bukkit.getWorld(sep2[3]), Double.parseDouble(sep2[0]), Double.parseDouble(sep2[1]), Double.parseDouble(sep2[2])
                 );
+            }else if(s.startsWith("force:")) {
+                force = Boolean.parseBoolean(s.replace("force:",""));
             }
         }
 
@@ -713,10 +772,10 @@ public class ActionUtils {
                 Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(red,green,blue), 1);
 
                 location.getWorld().spawnParticle(
-                        Particle.valueOf(effectSeparated[0]),location,amount,offsetX,offsetY,offsetZ,speed,dustOptions,false);
+                        Particle.valueOf(effectSeparated[0]),location,amount,offsetX,offsetY,offsetZ,speed,dustOptions,force);
             }else {
                 location.getWorld().spawnParticle(
-                        Particle.valueOf(effectName),location,amount,offsetX,offsetY,offsetZ,speed,null,false);
+                        Particle.valueOf(effectName),location,amount,offsetX,offsetY,offsetZ,speed,null,force);
             }
         }catch(Exception e) {
             Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix+
@@ -773,26 +832,42 @@ public class ActionUtils {
 
     public static void wait(String actionLine, ExecutedEvent executedEvent){
         executedEvent.setOnWait(true);
-        int timeSeconds = Integer.valueOf(actionLine);
+        int timeSeconds = Integer.parseInt(actionLine);
 
-        new BukkitRunnable(){
+        InterruptEventManager interruptEventManager = ConditionalEventsAPI.getPlugin().getInterruptEventManager();
+        BukkitTask task = new BukkitRunnable(){
             @Override
             public void run() {
+                interruptEventManager.removeTaskById(this.getTaskId());
                 executedEvent.continueWithActions();
             }
-        }.runTaskLater(executedEvent.getPlugin(), timeSeconds*20);
+        }.runTaskLater(executedEvent.getPlugin(), timeSeconds* 20L);
+
+        interruptEventManager.addTask(
+                executedEvent.getPlayer() != null ? executedEvent.getPlayer().getName() : null,
+                executedEvent.getEvent().getName(),
+                task
+        );
     }
 
     public static void waitTicks(String actionLine, ExecutedEvent executedEvent){
         executedEvent.setOnWait(true);
-        long timeTicks = Long.valueOf(actionLine);
+        long timeTicks = Long.parseLong(actionLine);
 
-        new BukkitRunnable(){
+        InterruptEventManager interruptEventManager = ConditionalEventsAPI.getPlugin().getInterruptEventManager();
+        BukkitTask task = new BukkitRunnable(){
             @Override
             public void run() {
+                interruptEventManager.removeTaskById(this.getTaskId());
                 executedEvent.continueWithActions();
             }
         }.runTaskLater(executedEvent.getPlugin(), timeTicks);
+
+        interruptEventManager.addTask(
+                executedEvent.getPlayer() != null ? executedEvent.getPlayer().getName() : null,
+                executedEvent.getEvent().getName(),
+                task
+        );
     }
 
     public static void keepItems(String actionLine,Event minecraftEvent){

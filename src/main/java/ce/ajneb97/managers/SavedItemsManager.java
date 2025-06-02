@@ -1,9 +1,13 @@
 package ce.ajneb97.managers;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.utils.OtherUtils;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SavedItemsManager {
@@ -22,11 +26,30 @@ public class SavedItemsManager {
         this.savedItems = savedItems;
     }
 
-    public ItemStack getItem(String name){
+    public ItemStack getItem(String name, Player player){
         if(!savedItems.containsKey(name)){
             return null;
         }
-        return savedItems.get(name).clone();
+
+        ItemStack item = savedItems.get(name).clone();
+        if(player == null){
+            return item;
+        }
+
+        // Placeholders
+        ItemMeta meta = item.getItemMeta();
+        if(meta.hasDisplayName()){
+            String displayName = OtherUtils.replaceGlobalVariables(meta.getDisplayName(),player,plugin);
+            meta.setDisplayName(displayName);
+        }
+        if(meta.hasLore()){
+            List<String> lore = meta.getLore();
+            lore.replaceAll(text -> OtherUtils.replaceGlobalVariables(text, player, plugin));
+            meta.setLore(lore);
+        }
+        item.setItemMeta(meta);
+
+        return item;
     }
 
     public void addItem(String name,ItemStack item){

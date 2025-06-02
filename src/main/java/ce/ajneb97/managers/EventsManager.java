@@ -113,16 +113,23 @@ public class EventsManager {
         }
 
         if(player != null){
+            // Ignore parameters
+            String actionGroupWithoutParameters = executeActionGroup;
+            int pos = actionGroupWithoutParameters.indexOf("{");
+            if(pos != -1){
+                actionGroupWithoutParameters = actionGroupWithoutParameters.substring(0, pos);
+            }
+
             //Set One Time
             if(event.isOneTime()){
-                if(!event.getPreventOneTimeActivationActionGroups().contains(executeActionGroup)){
+                if(!event.getPreventOneTimeActivationActionGroups().contains(actionGroupWithoutParameters)){
                     playerManager.setEventOneTime(event.getName(),player);
                 }
             }
 
             //Set Cooldown
             if(event.getCooldown() != 0 && !bypassCooldown){
-                if(!event.getPreventCooldownActivationActionGroups().contains(executeActionGroup)){
+                if(!event.getPreventCooldownActivationActionGroups().contains(actionGroupWithoutParameters)){
                     playerManager.setEventCooldown(event.getName(),player);
                 }
             }

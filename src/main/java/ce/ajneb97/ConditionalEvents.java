@@ -44,6 +44,7 @@ public class ConditionalEvents extends JavaPlugin {
 	private CommandRegisterManager commandRegisterManager;
 	private SavedItemsManager savedItemsManager;
 	private APIManager apiManager;
+	private InterruptEventManager interruptEventManager;
 
 	private PlayerDataSaveTask playerDataSaveTask;
 
@@ -59,6 +60,7 @@ public class ConditionalEvents extends JavaPlugin {
 		this.playerManager =  new PlayerManager(this);
 		this.savedItemsManager = new SavedItemsManager(this);
 		this.apiManager = new APIManager(this);
+		this.interruptEventManager = new InterruptEventManager(this);
 		this.configsManager = new ConfigsManager(this);
 		this.configsManager.configure();
 
@@ -148,6 +150,9 @@ public class ConditionalEvents extends JavaPlugin {
 			case "1.21.4":
 				serverVersion = ServerVersion.v1_21_R3;
 				break;
+			case "1.21.5":
+				serverVersion = ServerVersion.v1_21_R4;
+				break;
 			default:
 				serverVersion = ServerVersion.valueOf(packageName.replace("org.bukkit.craftbukkit.", ""));
 		}
@@ -220,6 +225,10 @@ public class ConditionalEvents extends JavaPlugin {
 
 	public SavedItemsManager getSavedItemsManager() {
 		return savedItemsManager;
+	}
+
+	public InterruptEventManager getInterruptEventManager() {
+		return interruptEventManager;
 	}
 
 	public void updateMessage(UpdateCheckerResult result){

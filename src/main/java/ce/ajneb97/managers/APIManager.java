@@ -4,6 +4,7 @@ import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.api.ConditionalEventsAction;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -45,10 +46,10 @@ public class APIManager {
         return null;
     }
 
-    public void executeAction(String actionName, Player player, String actionLine){
+    public void executeAction(String actionName, Player player, String actionLine, Event minecraftEvent){
         ConditionalEventsAction action = getApiAction(actionName);
         if(action != null){
-            action.execute(player,actionLine);
+            action.execute(player,actionLine,minecraftEvent);
         }
     }
 }

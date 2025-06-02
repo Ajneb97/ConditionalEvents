@@ -40,7 +40,7 @@ public class MainConfigManager {
         updateNotifications = config.getBoolean("Config.update_notification");
         debugActions = config.getBoolean("Config.debug_actions");
         experimentalVariableReplacement = config.getBoolean("Config.experimental.variable_replacement");
-        toConditionGroups = new ArrayList<ToConditionGroup>();
+        toConditionGroups = new ArrayList<>();
         String path = "Config.to_condition_groups";
         if(config.contains(path)){
             for(String key : config.getConfigurationSection(path).getKeys(false)){
@@ -86,6 +86,12 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("commandInterruptError:")){
+                getConfig().set("Messages.commandInterruptError", "&cUse &7/ce interrupt <event> (optional)<player>");
+                getConfig().set("Messages.commandInterruptCorrect", "&aActions of event &7%event% &ainterrupted.");
+                getConfig().set("Messages.commandInterruptCorrectPlayer", "&aActions of event &7%event% &ainterrupted for player &7%player%&a.");
+                saveConfig();
+            }
             if(!text.contains("variable_replacement:")){
                 getConfig().set("Config.experimental.variable_replacement", false);
                 saveConfig();

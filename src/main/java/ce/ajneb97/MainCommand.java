@@ -73,6 +73,8 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 				   }else{
 					   msgManager.sendMessage(sender,config.getString("Messages.onlyPlayerCommand"),true);
 				   }
+			   }else if(args[0].equalsIgnoreCase("interrupt")) {
+				   interrupt(args,sender,config,msgManager);
 			   }
 			   else {
 				   help(sender);
@@ -293,7 +295,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		String name = args[2];
 
 		if(type.equals("save")){
-			if(savedItemsManager.getItem(name) != null){
+			if(savedItemsManager.getItem(name,player) != null){
 				msgManager.sendMessage(player,config.getString("Messages.savedItemAlreadyExists"),true);
 				return;
 			}
@@ -308,7 +310,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			msgManager.sendMessage(player,config.getString("Messages.savedItemAdded")
 					.replace("%name%",name),true);
 		}else if(type.equals("remove")){
-			if(savedItemsManager.getItem(name) == null){
+			if(savedItemsManager.getItem(name,player) == null){
 				msgManager.sendMessage(player,config.getString("Messages.savedItemDoesNotExists"),true);
 				return;
 			}
@@ -318,6 +320,35 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 					.replace("%name%",name),true);
 		}else{
 			msgManager.sendMessage(player,config.getString("Messages.commandItemError"),true);
+		}
+	}
+
+	public void interrupt(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager) {
+		// /ce interrupt <event> (optional)<player>
+		if (args.length <= 1) {
+			msgManager.sendMessage(sender, config.getString("Messages.commandInterruptError"), true);
+			return;
+		}
+
+		String eventName = args[1];
+		CEEvent e = plugin.getEventsManager().getEvent(eventName);
+		if (e == null) {
+			msgManager.sendMessage(sender, config.getString("Messages.eventDoesNotExists"), true);
+			return;
+		}
+
+		String playerName = null;
+		if (args.length >= 3) {
+			playerName = args[2];
+		}
+
+		plugin.getInterruptEventManager().interruptEvent(eventName,playerName);
+		if(playerName == null){
+			msgManager.sendMessage(sender, config.getString("Messages.commandInterruptCorrect")
+					.replace("%event%",eventName), true);
+		}else{
+			msgManager.sendMessage(sender, config.getString("Messages.commandInterruptCorrectPlayer")
+					.replace("%event%",eventName).replace("%player%",playerName), true);
 		}
 	}
 	
@@ -332,6 +363,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce enable/disable <event> &8Enable or disables an event."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce call <event> (optional)%variable1%=<value1>;%variableN%=<valueN> (optional)player:<player> (optional)silent:true &8Executes a 'call' event."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce item <save/remove> <name> &8Save and remove items for some actions."));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&6/ce interrupt <event> (optional)<player> &8Stops the execution of actions for an event."));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',""));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&7[ [ &8[&bConditionalEvents&8] &7] ]"));
 	}
@@ -345,6 +377,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 				commands.add("help");commands.add("reload");commands.add("verify");
 				commands.add("reset");commands.add("debug");commands.add("enable");
 				commands.add("disable");commands.add("call");commands.add("item");
+				commands.add("interrupt");
 				for(String c : commands) {
 					if(args[0].isEmpty() || c.startsWith(args[0].toLowerCase())) {
 						completions.add(c);
@@ -353,7 +386,8 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 				return completions;
 			}else {
 				if((args[0].equalsIgnoreCase("debug") || args[0].equalsIgnoreCase("enable")
-						|| args[0].equalsIgnoreCase("disable")) && args.length == 2) {
+						|| args[0].equalsIgnoreCase("disable") || args[0].equalsIgnoreCase("interrupt"))
+						&& args.length == 2) {
                     return getEventsCompletions(args,1,false,null);
 				}else if(args[0].equalsIgnoreCase("call") && args.length == 2) {
                     return getEventsCompletions(args,1,false,EventType.CALL);

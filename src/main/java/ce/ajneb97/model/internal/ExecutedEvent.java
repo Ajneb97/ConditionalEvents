@@ -56,11 +56,16 @@ public class ExecutedEvent {
         //Check if parameters are present
         int pos = actionGroupName.indexOf("{");
         if(pos != -1){
+            VariablesProperties variablesProperties = new VariablesProperties(
+                    eventVariables,player,target,isPlaceholderAPI,event,minecraftEvent
+            );
+
             String parameters = actionGroupName.substring(pos+1, actionGroupName.length()-1);
             String[] sep = parameters.split(";");
-            for(int i=0;i<sep.length;i++){
-                String[] variableLineSep = sep[i].split("=");
-                eventVariables.add(new StoredVariable(variableLineSep[0],variableLineSep[1]));
+            for(String s : sep) {
+                String[] variableLineSep = s.split("=");
+                String variableValue = VariablesUtils.replaceAllVariablesInLine(variableLineSep[1], variablesProperties, false);
+                eventVariables.add(new StoredVariable(variableLineSep[0], variableValue));
             }
             this.actionGroupName = actionGroupName.substring(0, pos);
         }
@@ -105,7 +110,12 @@ public class ExecutedEvent {
                 ActionUtils.cancelEvent(ceAction.getActionLine(),minecraftEvent);
                 return;
             }else if(ceAction.getType().equals(ActionType.PREVENT_JOIN)){
-                ActionUtils.preventJoin(ceAction.getActionLine(),minecraftEvent);
+                String actionLine = ceAction.getActionLine();
+                VariablesProperties variablesProperties = new VariablesProperties(
+                        eventVariables,player,target,isPlaceholderAPI,event,minecraftEvent
+                );
+                actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties,false);
+                ActionUtils.preventJoin(actionLine,minecraftEvent);
                 return;
             }
         }
@@ -298,7 +308,7 @@ public class ExecutedEvent {
                 ActionUtils.executeActionGroup(actionLine,this,plugin);
                 return;
             case API:
-                plugin.getApiManager().executeAction(apiType,player,actionLine);
+                plugin.getApiManager().executeAction(apiType,player,actionLine,minecraftEvent);
                 return;
         }
 
