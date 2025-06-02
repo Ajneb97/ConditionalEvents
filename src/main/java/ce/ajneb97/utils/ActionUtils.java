@@ -37,9 +37,7 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ActionUtils {
@@ -438,8 +436,6 @@ public class ActionUtils {
             } else if (mode.equalsIgnoreCase("clear")) {
                 event.getCompletions().clear();
             } else if (mode.equalsIgnoreCase("set")) {
-                event.setCompletions(completions);
-            } else {
                 String[] buffer_words = event.getBuffer().split(" ", -1); // Don't trim empties
                 String partial_word = buffer_words[buffer_words.length - 1];
                 event.getCompletions().addAll(completions.stream().filter(w -> w.startsWith(partial_word)).collect(Collectors.toList()));

@@ -572,8 +572,8 @@ public class PlayerEventsListener implements Listener {
 
         Player player = (Player) event.getSender();
         String command = event.getBuffer();
-        String[] args = command.split(" ");
-        ArrayList<StoredVariable> eventVariables = new ArrayList<StoredVariable>();
+        String[] args = command.split(" ",-1);
+        ArrayList<StoredVariable> eventVariables = new ArrayList<>();
         for(int i=1;i<args.length;i++) {
             eventVariables.add(new StoredVariable("%arg_"+(i)+"%",args[i]));
         }
