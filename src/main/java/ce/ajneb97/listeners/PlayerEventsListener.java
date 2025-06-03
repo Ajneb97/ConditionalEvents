@@ -24,6 +24,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
@@ -563,7 +564,6 @@ public class PlayerEventsListener implements Listener {
         ).checkEvent();
     }
 
-    /*
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTabComplete(TabCompleteEvent event){
         if(!(event.getSender() instanceof Player)){
@@ -572,12 +572,18 @@ public class PlayerEventsListener implements Listener {
 
         Player player = (Player) event.getSender();
         String command = event.getBuffer();
+        String[] args = command.split(" ",-1);
+        ArrayList<StoredVariable> eventVariables = new ArrayList<>();
+        for(int i=1;i<args.length;i++) {
+            eventVariables.add(new StoredVariable("%arg_"+(i)+"%",args[i]));
+        }
 
-        new ConditionEvent(plugin, player, event, EventType.PLAYER_TAB_COMPLETE_EVENT, null)
-                .addVariables(
-                        new StoredVariable("%command%",command)
-                ).checkEvent();
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_TAB_COMPLETE, null);
+        if(!conditionEvent.containsValidEvents()) return;
+        conditionEvent.addVariables(
+                new StoredVariable("%main_command%",args[0]),
+                new StoredVariable("%args_length%",(args.length-1)+"")
+        ).addVariables(eventVariables)
+                .checkEvent();
     }
-
-     */
 }
