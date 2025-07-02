@@ -302,7 +302,7 @@ public class ExecutedEvent {
                 ActionUtils.playSoundResourcePack(player, actionLine);
                 return;
             case CALL_EVENT:
-                ActionUtils.callEvent(actionLine,player,plugin);
+                ActionUtils.callEvent(actionLine,player,plugin,eventVariables);
                 return;
             case EXECUTE_ACTION_GROUP:
                 ActionUtils.executeActionGroup(actionLine,this,plugin);

@@ -428,18 +428,35 @@ public class PlayerEventsListener implements Listener {
         Entity caught = event.getCaught();
 
         String caughtType = "";
+        double x = 0;
+        double y = 0;
+        double z = 0;
+
         ItemStack caughtItem = null;
+        Player target = null;
         if(caught != null){
             caughtType = caught.getType().name();
+            Location l = caught.getLocation();
+            x = l.getX();
+            y = l.getY();
+            z = l.getZ();
+
             if(caught instanceof Item){
                 caughtItem = ((Item) caught).getItemStack();
             }
+
+            if(caught instanceof Player) {
+                target = (Player) caught;
+            }
         }
 
-        new ConditionEvent(plugin, player, event, EventType.PLAYER_FISH, null)
+        new ConditionEvent(plugin, player, event, EventType.PLAYER_FISH, target)
                 .addVariables(
                         new StoredVariable("%state%",state.name()+""),
-                        new StoredVariable("%caught_type%",caughtType)
+                        new StoredVariable("%caught_type%",caughtType),
+                        new StoredVariable("%caught_x%",x+""),
+                        new StoredVariable("%caught_y%",y+""),
+                        new StoredVariable("%caught_z%",z+"")
                 ).setCommonItemVariables(caughtItem,null).checkEvent();
     }
 

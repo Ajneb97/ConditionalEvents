@@ -962,8 +962,9 @@ public class ActionUtils {
         }
     }
 
-    public static boolean callEvent(String actionLine,Player player,ConditionalEvents plugin){
+    public static boolean callEvent(String actionLine,Player player,ConditionalEvents plugin,ArrayList<StoredVariable> storedVariables){
         // call_event: <event>;%variable1%=<value1>;%variable2%=<value2>
+        // call_event: <event>;%variable1%=<value1>;%variable2%=<value2>;already_stored
         ArrayList<StoredVariable> variables = new ArrayList<>();
         String eventName = null;
         try{
@@ -971,6 +972,13 @@ public class ActionUtils {
             eventName = sep[0];
             if(sep.length > 1){
                 for(int i=1;i<sep.length;i++){
+                    if(sep[i].equals("already_stored")){
+                        if(storedVariables != null){
+                            variables.addAll(storedVariables);
+                        }
+                        continue;
+                    }
+
                     String[] variableLineSep = sep[i].split("=");
                     variables.add(new StoredVariable(variableLineSep[0],variableLineSep[1]));
                 }
@@ -1043,18 +1051,4 @@ public class ActionUtils {
             event.setExpToDrop(xp);
         }
     }
-
-    /*
-    public static void setTabCompletions(String actionLine,Event minecraftEvent){
-        // set_tab_completions: arg1,arg2,arg3
-        if(minecraftEvent instanceof TabCompleteEvent) {
-            TabCompleteEvent tabCompleteEvent = (TabCompleteEvent) minecraftEvent;
-
-
-
-            preJoinEvent.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            preJoinEvent.setKickMessage(MessagesManager.getColoredMessage(actionLine));
-        }
-    }
-     */
 }
