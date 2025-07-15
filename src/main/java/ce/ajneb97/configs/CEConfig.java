@@ -1,7 +1,6 @@
 package ce.ajneb97.configs;
 
 import ce.ajneb97.ConditionalEvents;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -100,8 +99,6 @@ public class CEConfig {
     }
 
     public static YamlConfiguration loadConfiguration(@NotNull File file) {
-        Validate.notNull(file, "File cannot be null");
-
         YamlConfiguration config = new YamlConfiguration();
 
         try {
