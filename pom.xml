@@ -6,7 +6,7 @@
 
     <groupId>ce.ajneb97</groupId>
     <artifactId>ConditionalEvents</artifactId>
-    <version>4.64.3</version>
+    <version>4.65.1</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

@@ -48,6 +48,14 @@ public class ConditionalEventsAPI {
         }
     }
 
+    public static boolean isEventEnabled(String event) {
+        CEEvent ceEvent = plugin.getEventsManager().getEvent(event);
+        if(ceEvent == null){
+            return false;
+        }
+        return ceEvent.isEnabled();
+    }
+
     public static void registerApiActions(JavaPlugin p, ConditionalEventsAction... actions){
         plugin.getApiManager().registerApiActions(p,actions);
     }

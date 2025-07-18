@@ -54,6 +54,10 @@ public class ExpansionCE extends PlaceholderExpansion {
             // %conditionalevents_onetime_ready_<event>%
             String event = identifier.replace("onetime_ready_", "");
             return ConditionalEventsAPI.getOneTimeReady(player,event);
+        }else if(identifier.startsWith("is_enabled_")){
+            // %conditionalevents_is_enabled_<event>%
+            String event = identifier.replace("is_enabled_", "");
+            return ConditionalEventsAPI.isEventEnabled(event)+"";
         }
 
         return null;

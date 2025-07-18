@@ -64,6 +64,9 @@ public class VariablesUtilsExperimental {
             }
             String variable = matcher.group(1);
             String replacement = manageVariableReplacement(variable,variablesProperties,true);
+            if(parseOther && finds == 0){
+                replacement = "{"+replacement+"}";
+            }
             matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
 
             finds++;

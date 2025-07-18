@@ -144,6 +144,7 @@ public class ItemUtils {
         String skullId = null;
         String skullOwner = null;
 
+        boolean hasCustomModelComponentData = false;
         List<String> customModelComponentDataStrings = new ArrayList<>();
         List<String> customModelComponentDataFlags = new ArrayList<>();
         List<String> customModelComponentDataFloats = new ArrayList<>();
@@ -163,15 +164,19 @@ public class ItemUtils {
             }else if(property.startsWith("custom_model_component_data_strings:")){
                 String[] splitC = property.replace("custom_model_component_data_strings:", "").split("\\|");
                 customModelComponentDataStrings.addAll(Arrays.asList(splitC));
+                hasCustomModelComponentData = true;
             }else if(property.startsWith("custom_model_component_data_floats:")){
                 String[] splitC = property.replace("custom_model_component_data_floats:", "").split("\\|");
                 customModelComponentDataFloats.addAll(Arrays.asList(splitC));
+                hasCustomModelComponentData = true;
             }else if(property.startsWith("custom_model_component_data_flags:")){
                 String[] splitC = property.replace("custom_model_component_data_flags:", "").split("\\|");
                 customModelComponentDataFlags.addAll(Arrays.asList(splitC));
+                hasCustomModelComponentData = true;
             }else if(property.startsWith("custom_model_component_data_colors:")){
                 String[] splitC = property.replace("custom_model_component_data_colors:", "").split("\\|");
                 customModelComponentDataColors.addAll(Arrays.asList(splitC));
+                hasCustomModelComponentData = true;
             }else if(property.startsWith("item_model:")){
                 itemModel = property.replace("item_model:","");
             }else if(property.startsWith("durability:")) {
@@ -234,7 +239,7 @@ public class ItemUtils {
         }
 
         ServerVersion serverVersion = ConditionalEvents.serverVersion;
-        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R3)){
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R3) && hasCustomModelComponentData){
             CustomModelDataComponent customModelDataComponent = meta.getCustomModelDataComponent();
 
             customModelDataComponent.setFlags(customModelComponentDataFlags.stream()

@@ -97,7 +97,7 @@ public class BlockUtils {
 
         ServerVersion serverVersion = ConditionalEvents.serverVersion;
         if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R2)){
-            PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID(),"conditionalevents");
+            PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID(),"ce");
             PlayerTextures textures = profile.getTextures();
             URL url;
             try {
