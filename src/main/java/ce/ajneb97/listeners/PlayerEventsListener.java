@@ -10,6 +10,7 @@ import ce.ajneb97.model.player.PlayerData;
 import ce.ajneb97.utils.InventoryUtils;
 import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.OtherUtils;
+import ce.ajneb97.utils.ServerVersion;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
@@ -120,7 +121,9 @@ public class PlayerEventsListener implements Listener {
     public void onBlockInteract(PlayerInteractEvent event){
         Player player = event.getPlayer();
         Block block = event.getClickedBlock();
-        if(!Bukkit.getVersion().contains("1.8") && !Bukkit.getVersion().contains("1.9")) {
+
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_10_R1)) {
             if(!event.getAction().equals(Action.PHYSICAL) && (event.getHand() == null || !event.getHand().equals(EquipmentSlot.HAND))) {
                 return;
             }
@@ -141,7 +144,9 @@ public class PlayerEventsListener implements Listener {
     public void onEntityInteract(PlayerInteractEntityEvent event){
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();
-        if(!Bukkit.getVersion().contains("1.8") && !event.getHand().equals(EquipmentSlot.HAND)) {
+
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_9_R1) && !event.getHand().equals(EquipmentSlot.HAND)) {
             return;
         }
         if(entity == null){

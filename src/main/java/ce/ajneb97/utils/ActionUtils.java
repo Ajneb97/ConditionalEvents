@@ -755,7 +755,10 @@ public class ActionUtils {
         if(location == null){
             location = player.getLocation();
         }
-        if(Bukkit.getVersion().contains("1.8")) {
+
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(!serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_9_R1)) {
+            // 1.8
             return;
         }
 

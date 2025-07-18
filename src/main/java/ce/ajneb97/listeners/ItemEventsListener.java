@@ -51,7 +51,9 @@ public class ItemEventsListener implements Listener {
     public void onItemInteract(PlayerInteractEvent event){
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
-        if(!Bukkit.getVersion().contains("1.8") && !Bukkit.getVersion().contains("1.9")) {
+
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_10_R1)) {
             if(!event.getAction().equals(Action.PHYSICAL) && (event.getHand() == null || (!event.getHand().equals(EquipmentSlot.HAND)
                     && !event.getHand().equals(EquipmentSlot.OFF_HAND)))) {
                 return;
