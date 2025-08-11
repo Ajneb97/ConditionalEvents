@@ -1,28 +1,20 @@
 package ce.ajneb97.configs;
 
 import ce.ajneb97.ConditionalEvents;
-import ce.ajneb97.managers.MessagesManager;
-import ce.ajneb97.model.ToConditionGroup;
+import ce.ajneb97.configs.model.CommonConfig;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SavedItemsConfigManager {
 
-    private CEConfig configFile;
+    private CommonConfig configFile;
     private ConditionalEvents plugin;
 
     public SavedItemsConfigManager(ConditionalEvents plugin){
         this.plugin = plugin;
-        this.configFile = new CEConfig("saved_items.yml",plugin,null);
+        this.configFile = new CommonConfig("saved_items.yml",plugin,null,false);
         configFile.registerConfig();
     }
 
@@ -64,7 +56,7 @@ public class SavedItemsConfigManager {
         return configFile.getConfig();
     }
 
-    public CEConfig getConfigFile(){
+    public CommonConfig getConfigFile(){
         return this.configFile;
     }
 

@@ -1,6 +1,7 @@
 package ce.ajneb97.configs;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.configs.model.CommonConfig;
 import ce.ajneb97.managers.RepetitiveManager;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.CustomEventProperties;
@@ -14,14 +15,14 @@ import java.util.List;
 public class ConfigsManager {
 
     private MainConfigManager mainConfigManager;
-    private PlayerConfigsManager playerConfigsManager;
-    private DataFolderConfigManager dataFolderConfigManager;
+    private PlayersConfigsManager playerConfigsManager;
+    private EventsFolderConfigManager eventsFolderConfigManager;
     private SavedItemsConfigManager savedItemsConfigManager;
     private ConditionalEvents plugin;
     public ConfigsManager(ConditionalEvents plugin){
         mainConfigManager = new MainConfigManager(plugin);
-        playerConfigsManager = new PlayerConfigsManager(plugin);
-        dataFolderConfigManager = new DataFolderConfigManager(plugin,"events");
+        playerConfigsManager = new PlayersConfigsManager(plugin,"players");
+        eventsFolderConfigManager = new EventsFolderConfigManager(plugin,"events");
         savedItemsConfigManager = new SavedItemsConfigManager(plugin);
 
         this.plugin = plugin;
@@ -30,7 +31,7 @@ public class ConfigsManager {
     public void configure(){
         mainConfigManager.configure();
         playerConfigsManager.configure();
-        dataFolderConfigManager.configure();
+        eventsFolderConfigManager.configure();
         savedItemsConfigManager.configure();
         configureEvents();
     }
@@ -39,7 +40,7 @@ public class ConfigsManager {
         return mainConfigManager;
     }
 
-    public PlayerConfigsManager getPlayerConfigsManager() {
+    public PlayersConfigsManager getPlayerConfigsManager() {
         return playerConfigsManager;
     }
 
@@ -48,16 +49,18 @@ public class ConfigsManager {
     }
 
     public void configureEvents(){
-        ArrayList<CEConfig> ceConfigs = getEventConfigs();
+        ArrayList<CommonConfig> ceConfigs = getEventConfigs();
 
-        ArrayList<CEEvent> events = new ArrayList<CEEvent>();
+        ArrayList<CEEvent> events = new ArrayList<>();
 
-        for(CEConfig configFile : ceConfigs){
+        for(CommonConfig configFile : ceConfigs){
             FileConfiguration config = configFile.getConfig();
 
             if(config.contains("Events")){
                 for(String key : config.getConfigurationSection("Events").getKeys(false)){
                     String path = "Events."+key;
+                    String filePath = configFile.getPath();
+
                     List<String> conditions = new ArrayList<String>();
                     List<ActionGroup> actionGroups = new ArrayList<ActionGroup>();
                     boolean oneTime = false;
@@ -180,6 +183,7 @@ public class ConfigsManager {
                         allowMathFormulasInConditions = Boolean.valueOf(config.getString(path+".allow_math_formulas_in_conditions"));
                     }
 
+                    event.setFilePath(filePath);
                     event.setEventType(eventType);
                     event.setConditions(conditions);
                     event.setActionGroups(actionGroups);
@@ -226,24 +230,26 @@ public class ConfigsManager {
     }
 
     public void saveEvent(CEEvent event){
-        ArrayList<CEConfig> ceConfigs = getEventConfigs();
-
         String eventName = event.getName();
+        String path = event.getFilePath();
 
-        for(CEConfig configFile : ceConfigs){
-            FileConfiguration config = configFile.getConfig();
-            if(config.contains("Events."+eventName)){
-                config.set("Events."+eventName+".enabled",event.isEnabled());
-                configFile.saveConfig();
-            }
+        CommonConfig commonConfig;
+        if(path.equals("config.yml")){
+            commonConfig = mainConfigManager.getConfigFile();
+        }else{
+            commonConfig = eventsFolderConfigManager.getConfigFile(path);
         }
+
+        FileConfiguration config = commonConfig.getConfig();
+        config.set("Events."+eventName+".enabled",event.isEnabled());
+        commonConfig.saveConfig();
     }
 
-    public ArrayList<CEConfig> getEventConfigs() {
-        ArrayList<CEConfig> configs = new ArrayList<CEConfig>();
+    public ArrayList<CommonConfig> getEventConfigs() {
+        ArrayList<CommonConfig> configs = new ArrayList<>();
 
         configs.add(mainConfigManager.getConfigFile());
-        configs.addAll(dataFolderConfigManager.getConfigs());
+        configs.addAll(eventsFolderConfigManager.getConfigs());
 
         return configs;
     }
@@ -259,11 +265,11 @@ public class ConfigsManager {
     public boolean reload(){
         endRepetitiveEvents();
 
-        playerConfigsManager.savePlayerData();
+        playerConfigsManager.saveConfigs();
         if(!mainConfigManager.reloadConfig()){
             return false;
         }
-        dataFolderConfigManager.reloadConfigs();
+
         configureEvents();
 
         plugin.reloadEvents();

@@ -1,14 +1,9 @@
 package ce.ajneb97.configs;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.configs.model.CommonConfig;
 import ce.ajneb97.managers.MessagesManager;
-import ce.ajneb97.managers.RepetitiveManager;
-import ce.ajneb97.model.CEEvent;
-import ce.ajneb97.model.CustomEventProperties;
-import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.ToConditionGroup;
-import ce.ajneb97.model.actions.*;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.IOException;
@@ -20,7 +15,7 @@ import java.util.List;
 
 public class MainConfigManager {
 
-    private CEConfig configFile;
+    private CommonConfig configFile;
     private ConditionalEvents plugin;
 
     private boolean updateNotifications;
@@ -29,7 +24,7 @@ public class MainConfigManager {
     private ArrayList<ToConditionGroup> toConditionGroups;
     public MainConfigManager(ConditionalEvents plugin){
         this.plugin = plugin;
-        this.configFile = new CEConfig("config.yml",plugin,null);
+        this.configFile = new CommonConfig("config.yml",plugin,null,false);
         configFile.registerConfig();
         checkMessagesUpdate();
     }
@@ -74,7 +69,7 @@ public class MainConfigManager {
         return configFile.getConfig();
     }
 
-    public CEConfig getConfigFile(){
+    public CommonConfig getConfigFile(){
         return this.configFile;
     }
 

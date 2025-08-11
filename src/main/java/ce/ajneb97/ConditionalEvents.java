@@ -98,7 +98,7 @@ public class ConditionalEvents extends JavaPlugin {
 	public void onDisable(){
 		new ConditionEvent(this, null, null, EventType.SERVER_STOP, null)
 				.checkEvent();
-		this.configsManager.getPlayerConfigsManager().savePlayerData();
+		this.configsManager.getPlayerConfigsManager().saveConfigs();
 		Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &eHas been disabled! &fVersion: "+version));
 	}
 

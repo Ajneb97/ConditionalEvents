@@ -6,7 +6,7 @@
 
     <groupId>ce.ajneb97</groupId>
     <artifactId>ConditionalEvents</artifactId>
-    <version>4.65.1</version>
+    <version>4.66.1</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -120,7 +120,17 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>

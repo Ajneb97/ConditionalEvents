@@ -174,6 +174,8 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		}
 
 		e.disable();
+		plugin.getInterruptEventManager().interruptEvent(eventName,null);
+
 		plugin.getConfigsManager().saveEvent(e);
 
 		msgManager.sendMessage(sender,config.getString("Messages.eventDisabled").replace("%event%", eventName),true);

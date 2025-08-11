@@ -395,6 +395,9 @@ public class ExecutedEvent {
             case STOPSOUND:
                 ActionUtils.stopSound(player, actionLine);
                 return;
+            case STOPSOUND_RESOURCE_PACK:
+                ActionUtils.stopSoundResourcePack(player, actionLine);
+                return;
             //case VECTOR:
             //    ActionUtils.vector(player, actionLine);
             //    return;

@@ -1,34 +1,23 @@
 package ce.ajneb97.configs;
 
-
 import ce.ajneb97.ConditionalEvents;
-import ce.ajneb97.utils.OtherUtils;
-import org.bukkit.configuration.file.FileConfiguration;
+import ce.ajneb97.configs.model.CommonConfig;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
-public class DataFolderConfigManager {
-
-    protected ArrayList<CEConfig> configs;
+public abstract class DataFolderConfigManager {
+    protected String folderName;
     protected ConditionalEvents plugin;
-    private String folderName;
 
-    public DataFolderConfigManager(ConditionalEvents plugin, String folderName) {
+    public DataFolderConfigManager(ConditionalEvents plugin, String folderName){
         this.plugin = plugin;
         this.folderName = folderName;
-        this.configs = new ArrayList<CEConfig>();
     }
 
     public void configure() {
         createFolder();
-        reloadConfigs();
-    }
-
-    public void reloadConfigs(){
-        this.configs = new ArrayList<CEConfig>();
-        registerConfigs();
+        loadConfigs();
     }
 
     public void createFolder(){
@@ -37,74 +26,40 @@ public class DataFolderConfigManager {
             folder = new File(plugin.getDataFolder() + File.separator + folderName);
             if(!folder.exists()){
                 folder.mkdirs();
-                createExample();
+                createFiles();
             }
         } catch(SecurityException e) {
             folder = null;
         }
     }
 
-    public void createExample(){
-        String pathName = "more_events.yml";
-        CEConfig config = new CEConfig(pathName,plugin,folderName);
-        config.registerConfig();
+    public CommonConfig getConfigFile(String pathName) {
+        CommonConfig commonConfig = new CommonConfig(pathName, plugin, folderName, true);
+        commonConfig.registerConfig();
+        return commonConfig;
     }
 
-    public void saveConfigs() {
-        for(int i=0;i<configs.size();i++) {
-            configs.get(i).saveConfig();
-        }
-    }
+    public ArrayList<CommonConfig> getConfigs(){
+        ArrayList<CommonConfig> configs = new ArrayList<>();
 
-    public void registerConfigs(){
-        String path = plugin.getDataFolder() + File.separator + folderName;
-        File folder = new File(path);
+        String pathFile = plugin.getDataFolder() + File.separator + folderName;
+        File folder = new File(pathFile);
         File[] listOfFiles = folder.listFiles();
-        for (int i=0;i<listOfFiles.length;i++) {
-            if(listOfFiles[i].isFile()) {
-                String pathName = listOfFiles[i].getName();
-                String ext = OtherUtils.getFileExtension(pathName);
-                if(!ext.equals("yml")) {
-                    continue;
-                }
-                CEConfig config = new CEConfig(pathName, plugin, folderName);
-                config.registerConfig();
-                configs.add(config);
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                String pathName = file.getName();
+                CommonConfig commonConfig = new CommonConfig(pathName, plugin, folderName, true);
+                commonConfig.registerConfig();
+                configs.add(commonConfig);
             }
         }
+
+        return configs;
     }
 
-    public ArrayList<CEConfig> getConfigs(){
-        return this.configs;
-    }
+    public abstract void createFiles();
 
-    public boolean fileAlreadyRegistered(String pathName) {
-        for(int i=0;i<configs.size();i++) {
-            if(configs.get(i).getPath().equals(pathName)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    public abstract void loadConfigs();
 
-    public CEConfig getConfig(String pathName) {
-        for(int i=0;i<configs.size();i++) {
-            if(configs.get(i).getPath().equals(pathName)) {
-                return configs.get(i);
-            }
-        }
-        return null;
-    }
-
-    public boolean registerConfig(String pathName) {
-        if(!fileAlreadyRegistered(pathName)) {
-            CEConfig config = new CEConfig(pathName, plugin, folderName);
-            config.registerConfig();
-            configs.add(config);
-            return true;
-        }else {
-            return false;
-        }
-    }
-
+    public abstract void saveConfigs();
 }

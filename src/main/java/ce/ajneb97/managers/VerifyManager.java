@@ -1,15 +1,13 @@
 package ce.ajneb97.managers;
 
 import ce.ajneb97.ConditionalEvents;
-import ce.ajneb97.configs.CEConfig;
+import ce.ajneb97.configs.model.CommonConfig;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.ConditionalType;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.actions.ActionGroup;
-import ce.ajneb97.model.actions.ActionTargeter;
 import ce.ajneb97.model.actions.ActionType;
 import ce.ajneb97.model.actions.CEAction;
-import ce.ajneb97.model.internal.SeparatorType;
 import ce.ajneb97.model.verify.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -50,8 +48,8 @@ public class VerifyManager {
         }
 
         //Unloaded events
-        ArrayList<CEConfig> ceConfigs = plugin.getConfigsManager().getEventConfigs();
-        for(CEConfig ceConfig : ceConfigs){
+        ArrayList<CommonConfig> ceConfigs = plugin.getConfigsManager().getEventConfigs();
+        for(CommonConfig ceConfig : ceConfigs){
             FileConfiguration config = ceConfig.getConfig();
             if(!config.contains("Events")){
                 return;

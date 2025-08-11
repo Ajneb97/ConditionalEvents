@@ -33,6 +33,6 @@ public class PlayerDataSaveTask {
 	}
 	
 	public void execute() {
-		plugin.getConfigsManager().getPlayerConfigsManager().savePlayerData();
+		plugin.getConfigsManager().getPlayerConfigsManager().saveConfigs();
 	}
 }
