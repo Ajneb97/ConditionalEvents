@@ -212,12 +212,16 @@ public class ActionUtils {
         PotionEffectType potionEffectType = PotionEffectType.getByName(sep[0]);
         int duration = Integer.valueOf(sep[1]);
         int level = Integer.valueOf(sep[2])-1;
+        boolean isForce = false;
         boolean showParticles = true;
         if(sep.length >= 4) {
             showParticles = Boolean.valueOf(sep[3]);
         }
+        if(sep.length >= 5) {
+            isForce = Boolean.valueOf(sep[4]);
+        }
         PotionEffect effect = new PotionEffect(potionEffectType,duration,level,false,showParticles);
-        player.addPotionEffect(effect);
+        player.addPotionEffect(effect,isForce);
     }
 
     public static void removePotionEffect(Player player,String actionLine){
