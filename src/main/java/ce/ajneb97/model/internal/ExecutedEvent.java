@@ -13,6 +13,7 @@ import ce.ajneb97.utils.ActionUtils;
 import ce.ajneb97.utils.VariablesUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -24,7 +25,7 @@ import java.util.List;
 // are being executed.
 public class ExecutedEvent {
     private Player player;
-    private Player target;
+    private LivingEntity target;
     private ArrayList<StoredVariable> eventVariables;
     private CEEvent event;
     private Event minecraftEvent;
@@ -39,7 +40,7 @@ public class ExecutedEvent {
     private int currentActionPos;
 
     public ExecutedEvent(Player player, ArrayList<StoredVariable> eventVariables, CEEvent event, String actionGroupName
-        ,Event minecraftEvent, Player target, ConditionalEvents plugin) {
+        , Event minecraftEvent, LivingEntity target, ConditionalEvents plugin) {
         this.player = player;
         this.eventVariables = eventVariables;
         this.event = event;
@@ -52,13 +53,21 @@ public class ExecutedEvent {
         this.currentActionPos = 0;
     }
 
+    private VariablesProperties generateVariableProperties() {
+        Player playerTarget = null;
+        if(target instanceof Player){
+            playerTarget = (Player)target;
+        }
+        return new VariablesProperties(
+                eventVariables,player,playerTarget,isPlaceholderAPI,event,minecraftEvent
+        );
+    }
+
     public boolean setActionGroup(String actionGroupName){
         //Check if parameters are present
         int pos = actionGroupName.indexOf("{");
         if(pos != -1){
-            VariablesProperties variablesProperties = new VariablesProperties(
-                    eventVariables,player,target,isPlaceholderAPI,event,minecraftEvent
-            );
+            VariablesProperties variablesProperties = generateVariableProperties();
 
             String parameters = actionGroupName.substring(pos+1, actionGroupName.length()-1);
             String[] sep = parameters.split(";");
@@ -111,9 +120,7 @@ public class ExecutedEvent {
                 return;
             }else if(ceAction.getType().equals(ActionType.PREVENT_JOIN)){
                 String actionLine = ceAction.getActionLine();
-                VariablesProperties variablesProperties = new VariablesProperties(
-                        eventVariables,player,target,isPlaceholderAPI,event,minecraftEvent
-                );
+                VariablesProperties variablesProperties = generateVariableProperties();
                 actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties,false);
                 ActionUtils.preventJoin(actionLine,minecraftEvent);
                 return;
@@ -129,6 +136,8 @@ public class ExecutedEvent {
     private void executeActionsFinal(){
         DebugManager debugManager = plugin.getDebugManager();
         boolean isDebugActions = plugin.getConfigsManager().getMainConfigManager().isDebugActions();
+        VariablesProperties variablesProperties = generateVariableProperties();
+
         for(int i=currentActionPos;i<actions.size();i++){
             CEAction action = actions.get(i);
             ActionType actionType = action.getType();
@@ -136,9 +145,6 @@ public class ExecutedEvent {
 
             //Replace variables
             String actionLine = action.getActionLine();
-            VariablesProperties variablesProperties = new VariablesProperties(
-                eventVariables,player,target,isPlaceholderAPI,event,minecraftEvent
-            );
 
             ActionTargeter targeter = action.getTargeter();
             ActionTargeterType targeterType = targeter.getType();
@@ -223,18 +229,21 @@ public class ExecutedEvent {
         }
     }
 
-    private void executeActionsFromToTarget(VariablesProperties variablesProperties,Player player,String actionLine,ActionType actionType,
+    private void executeActionsFromToTarget(VariablesProperties variablesProperties,LivingEntity livingEntity,String actionLine,ActionType actionType,
                                             String apiType,boolean isDebugActions,ActionTargeter targeter,DebugManager debugManager){
         //Replaces %to:<variable>% variables
-        variablesProperties.setToTarget(player);
+        if(livingEntity instanceof Player){
+            variablesProperties.setToTarget((Player)livingEntity);
+        }
+
         String toActionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties,false);
         if(isDebugActions){
-            debugManager.sendActionMessage(event.getName(), toActionLine, player, actionType, targeter);
+            debugManager.sendActionMessage(event.getName(), toActionLine, livingEntity, actionType, targeter);
         }
-        executeAction(player,actionType,apiType,toActionLine);
+        executeAction(livingEntity,actionType,apiType,toActionLine);
     }
 
-    private void executeAction(Player player,ActionType type,String apiType,String actionLine){
+    private void executeAction(LivingEntity livingEntity,ActionType type,String apiType,String actionLine){
         //Non player actions
         switch(type){
             case CONSOLE_MESSAGE:
@@ -288,122 +297,132 @@ public class ExecutedEvent {
             case LIGHTNING_STRIKE:
                 ActionUtils.lightningStrike(actionLine);
                 return;
-            // Could or could not be a player event
+            // Could or could not be a Living Entity event
             case FIREWORK:
-                ActionUtils.firework(player, actionLine, plugin);
+                ActionUtils.firework(livingEntity, actionLine, plugin);
                 return;
             case PARTICLE:
-                ActionUtils.particle(player, actionLine);
+                ActionUtils.particle(livingEntity, actionLine);
                 return;
             case PLAYSOUND:
-                ActionUtils.playSound(player, actionLine);
+                ActionUtils.playSound(livingEntity, actionLine);
                 return;
             case PLAYSOUND_RESOURCE_PACK:
-                ActionUtils.playSoundResourcePack(player, actionLine);
+                ActionUtils.playSoundResourcePack(livingEntity, actionLine);
                 return;
             case CALL_EVENT:
-                ActionUtils.callEvent(actionLine,player,plugin,eventVariables);
+                ActionUtils.callEvent(actionLine,livingEntity,plugin,eventVariables);
                 return;
             case EXECUTE_ACTION_GROUP:
                 ActionUtils.executeActionGroup(actionLine,this,plugin);
                 return;
             case API:
-                plugin.getApiManager().executeAction(apiType,player,actionLine,minecraftEvent);
+                plugin.getApiManager().executeAction(apiType,livingEntity,actionLine,minecraftEvent);
                 return;
         }
 
-        //Player actions
-        if(player == null){
+        //LivingEntity actions
+        if(livingEntity == null){
             return;
         }
+
+        if(livingEntity instanceof Player){
+            // Just player actions
+            Player player = (Player)livingEntity;
+            switch(type) {
+                case MESSAGE:
+                    ActionUtils.message(player, actionLine);
+                    return;
+                case CENTERED_MESSAGE:
+                    ActionUtils.centeredMessage(player, actionLine);
+                    return;
+                case JSON_MESSAGE:
+                    ActionUtils.jsonMessage(player, actionLine);
+                    return;
+                case MINI_MESSAGE:
+                    ActionUtils.miniMessage(player, actionLine, plugin);
+                    return;
+                case PLAYER_COMMAND:
+                    ActionUtils.playerCommand(player, actionLine);
+                    return;
+                case PLAYER_COMMAND_AS_OP:
+                    ActionUtils.playerCommandAsOp(player, actionLine);
+                    return;
+                case PLAYER_SEND_CHAT:
+                    ActionUtils.playerSendChat(player, actionLine);
+                    return;
+                case SEND_TO_SERVER:
+                    ActionUtils.sendToServer(player, actionLine, plugin);
+                    return;
+                case GIVE_ITEM:
+                    ActionUtils.giveItem(player, actionLine);
+                    return;
+                case REMOVE_ITEM:
+                    ActionUtils.removeItem(player, actionLine);
+                    return;
+                case REMOVE_ITEM_SLOT:
+                    ActionUtils.removeItemSlot(player, actionLine);
+                    return;
+                case KICK:
+                    ActionUtils.kick(player, actionLine);
+                    return;
+                case ACTIONBAR:
+                    ActionUtils.actionbar(player, actionLine, plugin);
+                    return;
+                case TITLE:
+                    ActionUtils.title(player, actionLine);
+                    return;
+                case GAMEMODE:
+                    ActionUtils.gamemode(player, actionLine);
+                    return;
+                case CLOSE_INVENTORY:
+                    ActionUtils.closeInventory(player);
+                    return;
+                case CLEAR_INVENTORY:
+                    ActionUtils.clearInventory(player);
+                    return;
+                case SET_FOOD_LEVEL:
+                    ActionUtils.setFoodLevel(player, actionLine);
+                    return;
+                case STOPSOUND:
+                    ActionUtils.stopSound(player, actionLine);
+                    return;
+                case STOPSOUND_RESOURCE_PACK:
+                    ActionUtils.stopSoundResourcePack(player, actionLine);
+                    return;
+                //case VECTOR:
+                //    ActionUtils.vector(player, actionLine);
+                //    return;
+                case TAB_COMPLETE:
+                    ActionUtils.tabComplete(actionLine,minecraftEvent);
+            }
+        }
+
+        // Rest of actions
         switch(type) {
-            case MESSAGE:
-                ActionUtils.message(player, actionLine);
-                return;
-            case CENTERED_MESSAGE:
-                ActionUtils.centeredMessage(player, actionLine);
-                return;
-            case JSON_MESSAGE:
-                ActionUtils.jsonMessage(player, actionLine);
-                return;
-            case MINI_MESSAGE:
-                ActionUtils.miniMessage(player, actionLine, plugin);
-                return;
-            case PLAYER_COMMAND:
-                ActionUtils.playerCommand(player, actionLine);
-                return;
-            case PLAYER_COMMAND_AS_OP:
-                ActionUtils.playerCommandAsOp(player, actionLine);
-                return;
-            case PLAYER_SEND_CHAT:
-                ActionUtils.playerSendChat(player, actionLine);
-                return;
-            case SEND_TO_SERVER:
-                ActionUtils.sendToServer(player, actionLine, plugin);
-                return;
             case TELEPORT:
-                ActionUtils.teleport(player, actionLine, minecraftEvent);
-                return;
-            case REMOVE_ITEM:
-                ActionUtils.removeItem(player, actionLine);
-                return;
-            case REMOVE_ITEM_SLOT:
-                ActionUtils.removeItemSlot(player, actionLine);
+                ActionUtils.teleport(livingEntity, actionLine, minecraftEvent);
                 return;
             case GIVE_POTION_EFFECT:
-                ActionUtils.givePotionEffect(player, actionLine);
+                ActionUtils.givePotionEffect(livingEntity, actionLine);
                 return;
             case REMOVE_POTION_EFFECT:
-                ActionUtils.removePotionEffect(player, actionLine);
-                return;
-            case KICK:
-                ActionUtils.kick(player, actionLine);
-                return;
-            case ACTIONBAR:
-                ActionUtils.actionbar(player, actionLine, plugin);
-                return;
-            case TITLE:
-                ActionUtils.title(player, actionLine);
-                return;
-            case GAMEMODE:
-                ActionUtils.gamemode(player, actionLine);
+                ActionUtils.removePotionEffect(livingEntity, actionLine);
                 return;
             case DAMAGE:
-                ActionUtils.damage(player, actionLine);
-                return;
-            case CLOSE_INVENTORY:
-                ActionUtils.closeInventory(player);
-                return;
-            case CLEAR_INVENTORY:
-                ActionUtils.clearInventory(player);
+                ActionUtils.damage(livingEntity, actionLine);
                 return;
             case SET_ON_FIRE:
-                ActionUtils.setOnFire(player, actionLine);
+                ActionUtils.setOnFire(livingEntity, actionLine);
                 return;
             case FREEZE:
-                ActionUtils.freeze(player, actionLine);
+                ActionUtils.freeze(livingEntity, actionLine);
                 return;
             case HEAL:
-                ActionUtils.heal(player, actionLine);
+                ActionUtils.heal(livingEntity, actionLine);
                 return;
-            case SET_FOOD_LEVEL:
-                ActionUtils.setFoodLevel(player, actionLine);
-                return;
-            case GIVE_ITEM:
-                ActionUtils.giveItem(player, actionLine);
-                return;
-            case STOPSOUND:
-                ActionUtils.stopSound(player, actionLine);
-                return;
-            case STOPSOUND_RESOURCE_PACK:
-                ActionUtils.stopSoundResourcePack(player, actionLine);
-                return;
-            //case VECTOR:
-            //    ActionUtils.vector(player, actionLine);
-            //    return;
-            case TAB_COMPLETE:
-                ActionUtils.tabComplete(actionLine,minecraftEvent);
         }
+
     }
 
     public void setOnWait(boolean onWait) {
@@ -418,7 +437,7 @@ public class ExecutedEvent {
         return player;
     }
 
-    public Player getTarget() {
+    public LivingEntity getTarget() {
         return target;
     }
 

@@ -3,6 +3,7 @@ package ce.ajneb97.managers;
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.api.ConditionalEventsAction;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -46,9 +47,13 @@ public class APIManager {
         return null;
     }
 
-    public void executeAction(String actionName, Player player, String actionLine, Event minecraftEvent){
+    public void executeAction(String actionName, LivingEntity livingEntity, String actionLine, Event minecraftEvent){
         ConditionalEventsAction action = getApiAction(actionName);
         if(action != null){
+            Player player = null;
+            if(livingEntity instanceof Player){
+                player = (Player)livingEntity;
+            }
             action.execute(player,actionLine,minecraftEvent);
         }
     }

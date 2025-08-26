@@ -10,6 +10,7 @@ import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.TimeUtils;
 import ce.ajneb97.utils.VariablesUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -165,7 +166,12 @@ public class EventsManager {
         List<String> conditions = new ArrayList<String>(conditionEvent.getCurrentEvent().getConditions());
         String eventName = conditionEvent.getCurrentEvent().getName();
         Player player = conditionEvent.getPlayer();
-        Player target = conditionEvent.getTarget();
+
+        Player target = null;
+        if(conditionEvent.getTarget() instanceof Player){
+            target = (Player)conditionEvent.getTarget();
+        }
+
         CEEvent event = conditionEvent.getCurrentEvent();
         Event minecraftEvent = conditionEvent.getMinecraftEvent();
         DebugManager debugManager = plugin.getDebugManager();

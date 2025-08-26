@@ -93,21 +93,21 @@ public class ActionUtils {
         plugin.getBungeeMessagingManager().sendToServer(player,actionLine);
     }
 
-    public static void teleport(Player player, String actionLine, Event minecraftEvent){
+    public static void teleport(LivingEntity livingEntity, String actionLine, Event minecraftEvent){
         String[] sep = actionLine.split(";");
         World world = Bukkit.getWorld(sep[0]);
-        double x = Double.valueOf(sep[1]);
-        double y = Double.valueOf(sep[2]);
-        double z = Double.valueOf(sep[3]);
-        float yaw = Float.valueOf(sep[4]);
-        float pitch = Float.valueOf(sep[5]);
+        double x = Double.parseDouble(sep[1]);
+        double y = Double.parseDouble(sep[2]);
+        double z = Double.parseDouble(sep[3]);
+        float yaw = Float.parseFloat(sep[4]);
+        float pitch = Float.parseFloat(sep[5]);
         Location l = new Location(world,x,y,z,yaw,pitch);
 
         if(minecraftEvent instanceof PlayerRespawnEvent) {
             PlayerRespawnEvent respawnEvent = (PlayerRespawnEvent) minecraftEvent;
             respawnEvent.setRespawnLocation(l);
         }else {
-            player.teleport(l);
+            livingEntity.teleport(l);
         }
     }
 
@@ -207,27 +207,27 @@ public class ActionUtils {
         }
     }
 
-    public static void givePotionEffect(Player player,String actionLine){
+    public static void givePotionEffect(LivingEntity livingEntity,String actionLine){
         String[] sep = actionLine.split(";");
         PotionEffectType potionEffectType = PotionEffectType.getByName(sep[0]);
-        int duration = Integer.valueOf(sep[1]);
-        int level = Integer.valueOf(sep[2])-1;
+        int duration = Integer.parseInt(sep[1]);
+        int level = Integer.parseInt(sep[2])-1;
         boolean showParticles = true;
         if(sep.length >= 4) {
             showParticles = Boolean.valueOf(sep[3]);
         }
         PotionEffect effect = new PotionEffect(potionEffectType,duration,level,false,showParticles);
-        player.addPotionEffect(effect);
+        livingEntity.addPotionEffect(effect);
     }
 
-    public static void removePotionEffect(Player player,String actionLine){
+    public static void removePotionEffect(LivingEntity livingEntity,String actionLine){
         if(actionLine.equals("all")){
-            for(PotionEffect effect : player.getActivePotionEffects()){
-                player.removePotionEffect(effect.getType());
+            for(PotionEffect effect : livingEntity.getActivePotionEffects()){
+                livingEntity.removePotionEffect(effect.getType());
             }
         }else{
             PotionEffectType potionEffectType = PotionEffectType.getByName(actionLine);
-            player.removePotionEffect(potionEffectType);
+            livingEntity.removePotionEffect(potionEffectType);
         }
     }
 
@@ -243,7 +243,7 @@ public class ActionUtils {
         player.kickPlayer(MessagesManager.getColoredMessage(actionLine));
     }
 
-    public static void playSound(Player player,String actionLine){
+    public static void playSound(LivingEntity livingEntity,String actionLine){
         // playsound: sound;volume;pitch;(optional)<x>,<y>,<z>,<world>
         String[] sep = actionLine.split(";");
         Sound sound = null;
@@ -273,12 +273,14 @@ public class ActionUtils {
         if(location != null){
             location.getWorld().playSound(location,sound,volume,pitch);
         }else{
-            player.playSound(player.getLocation(), sound, volume, pitch);
+            if(livingEntity instanceof Player){
+                Player player = (Player)livingEntity;
+                player.playSound(player.getLocation(), sound, volume, pitch);
+            }
         }
-
     }
 
-    public static void playSoundResourcePack(Player player,String actionLine){
+    public static void playSoundResourcePack(LivingEntity livingEntity,String actionLine){
         // playsound_resource_pack: sound;volume;pitch;(optional)<x>,<y>,<z>,<world>
         String[] sep = actionLine.split(";");
         String sound = sep[0];
@@ -299,7 +301,10 @@ public class ActionUtils {
         if(location != null){
             location.getWorld().playSound(location,sound,volume,pitch);
         }else{
-            player.playSound(player.getLocation(), sound, volume, pitch);
+            if(livingEntity instanceof Player){
+                Player player = (Player)livingEntity;
+                player.playSound(player.getLocation(), sound, volume, pitch);
+            }
         }
     }
 
@@ -631,7 +636,7 @@ public class ActionUtils {
         Vector newDirection = new Vector(direction.getX()*front,height,direction.getZ()*front);
         player.setVelocity(player.getVelocity().add(newDirection));
     }*/
-    public static void firework(Player player,String actionLine,ConditionalEvents plugin){
+    public static void firework(LivingEntity livingEntity,String actionLine,ConditionalEvents plugin){
         // firework: colors:<color1>,<color2> type:<type> fade:<color1>,<color2> power:<power> location(optional):<x>;<y>;<z>;<world>
         // flicker:<boolean> trail:<boolean>
         // shot_direction:<off_x_min>,<off_x_max>;<off_y_min>,<off_y_max>;<off_z_min>,<off_z_max>;<velocity_min>-<velocity_max>
@@ -682,7 +687,7 @@ public class ActionUtils {
         }
 
         if(location == null){
-            location = player.getLocation();
+            location = livingEntity.getLocation();
         }
 
         ServerVersion serverVersion = ConditionalEvents.serverVersion;
@@ -727,15 +732,16 @@ public class ActionUtils {
         firework.setMetadata("conditionalevents", new FixedMetadataValue(plugin, "no_damage"));
     }
 
-    public static void particle(Player player,String actionLine){
+    public static void particle(LivingEntity livingEntity,String actionLine){
         // particle: effect:<effect_name> offset:<x>;<y>;<z> speed:<speed> amount:<amount> location(optional):<x>;<y>;<z>;<world>
-        //              force:<true/false>
+        //              force:<true/false> for_player:<true/false>
         String effectName = null;
         double offsetX = 0;double offsetY = 0;double offsetZ = 0;
         double speed = 0;
         int amount = 1;
         Location location = null;
         boolean force = false;
+        boolean forPlayer = false;
 
         String[] sep = actionLine.split(" ");
         for(String s : sep) {
@@ -757,11 +763,13 @@ public class ActionUtils {
                 );
             }else if(s.startsWith("force:")) {
                 force = Boolean.parseBoolean(s.replace("force:",""));
+            }else if(s.startsWith("for_player:")) {
+                forPlayer = Boolean.parseBoolean(s.replace("for_player:",""));
             }
         }
 
         if(location == null){
-            location = player.getLocation();
+            location = livingEntity.getLocation();
         }
 
         ServerVersion serverVersion = ConditionalEvents.serverVersion;
@@ -778,11 +786,21 @@ public class ActionUtils {
                 int blue = Integer.parseInt(effectSeparated[3]);
                 Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(red,green,blue), 1);
 
-                location.getWorld().spawnParticle(
-                        Particle.valueOf(effectSeparated[0]),location,amount,offsetX,offsetY,offsetZ,speed,dustOptions,force);
+                if(forPlayer && livingEntity instanceof Player){
+                    ((Player)livingEntity).spawnParticle(
+                            Particle.valueOf(effectSeparated[0]),location,amount,offsetX,offsetY,offsetZ,speed,dustOptions,force);
+                }else{
+                    location.getWorld().spawnParticle(
+                            Particle.valueOf(effectSeparated[0]),location,amount,offsetX,offsetY,offsetZ,speed,dustOptions,force);
+                }
             }else {
-                location.getWorld().spawnParticle(
-                        Particle.valueOf(effectName),location,amount,offsetX,offsetY,offsetZ,speed,null,force);
+                if(forPlayer && livingEntity instanceof Player){
+                    ((Player)livingEntity).spawnParticle(
+                            Particle.valueOf(effectName),location,amount,offsetX,offsetY,offsetZ,speed,null,force);
+                }else{
+                    location.getWorld().spawnParticle(
+                            Particle.valueOf(effectName),location,amount,offsetX,offsetY,offsetZ,speed,null,force);
+                }
             }
         }catch(Exception e) {
             Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix+
@@ -790,8 +808,8 @@ public class ActionUtils {
         }
     }
 
-    public static void damage(Player player,String actionLine){
-        player.damage(Double.parseDouble(actionLine));
+    public static void damage(LivingEntity livingEntity,String actionLine){
+        livingEntity.damage(Double.parseDouble(actionLine));
     }
 
     public static void gamemode(Player player,String actionLine){
@@ -806,30 +824,30 @@ public class ActionUtils {
         player.getInventory().clear();
     }
 
-    public static void setOnFire(Player player,String actionLine){
+    public static void setOnFire(LivingEntity livingEntity,String actionLine){
         // set_on_fire: <duration_on_ticks>
-        player.setFireTicks(Integer.parseInt(actionLine));
+        livingEntity.setFireTicks(Integer.parseInt(actionLine));
         
     }
 
-    public static void freeze(Player player,String actionLine){
+    public static void freeze(LivingEntity livingEntity,String actionLine){
         // freeze: <duration_on_ticks>
         ServerVersion serverVersion = ConditionalEvents.serverVersion;
         if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_17_R1)) {
-            player.setFreezeTicks(Integer.parseInt(actionLine));
+            livingEntity.setFreezeTicks(Integer.parseInt(actionLine));
         }
     }
 
-    public static void heal(Player player,String actionLine){
+    public static void heal(LivingEntity livingEntity,String actionLine){
         // heal: <amount>
         //double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-        double maxHealth = player.getMaxHealth();
-        double currentHealth = player.getHealth();
+        double maxHealth = livingEntity.getMaxHealth();
+        double currentHealth = livingEntity.getHealth();
         double newHealth = currentHealth+Double.parseDouble(actionLine);
         if(newHealth >= maxHealth){
-            player.setHealth(maxHealth);
+            livingEntity.setHealth(maxHealth);
         }else{
-            player.setHealth(newHealth);
+            livingEntity.setHealth(newHealth);
         }
     }
 
@@ -973,7 +991,13 @@ public class ActionUtils {
         }
     }
 
-    public static boolean callEvent(String actionLine,Player player,ConditionalEvents plugin,ArrayList<StoredVariable> storedVariables){
+    public static boolean callEvent(String actionLine,LivingEntity livingEntity,ConditionalEvents plugin,ArrayList<StoredVariable> storedVariables){
+        // If livingEntity exists, it must be a player
+        Player player = null;
+        if(livingEntity instanceof Player){
+            player = (Player)livingEntity;
+        }
+
         // call_event: <event>;%variable1%=<value1>;%variable2%=<value2>
         // call_event: <event>;%variable1%=<value1>;%variable2%=<value2>;already_stored
         ArrayList<StoredVariable> variables = new ArrayList<>();

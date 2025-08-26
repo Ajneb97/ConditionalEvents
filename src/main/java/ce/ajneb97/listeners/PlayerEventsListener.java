@@ -153,9 +153,9 @@ public class PlayerEventsListener implements Listener {
             return;
         }
 
-        Player target = null;
-        if(entity instanceof Player) {
-            target = (Player) entity;
+        LivingEntity target = null;
+        if(entity instanceof LivingEntity) {
+            target = (LivingEntity) entity;
         }
 
         new ConditionEvent(plugin, player, event, EventType.ENTITY_INTERACT, target)
@@ -197,9 +197,9 @@ public class PlayerEventsListener implements Listener {
             return;
         }
 
-        Player target = null;
-        if(damaged instanceof Player){
-            target = (Player) damaged;
+        LivingEntity target = null;
+        if(damaged instanceof LivingEntity) {
+            target = (LivingEntity) damaged;
         }
 
 
@@ -269,12 +269,8 @@ public class PlayerEventsListener implements Listener {
         }
 
         Player player = entity.getKiller();
-        Player target = null;
-        if(entity instanceof Player){
-            target = (Player) entity;
-        }
 
-        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_KILL, target);
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_KILL, entity);
         if(!conditionEvent.containsValidEvents()) return;
         conditionEvent.setCommonVictimVariables(entity).
                 setCommonItemVariables(player.getItemInHand(),null)
@@ -438,7 +434,7 @@ public class PlayerEventsListener implements Listener {
         double z = 0;
 
         ItemStack caughtItem = null;
-        Player target = null;
+        LivingEntity target = null;
         if(caught != null){
             caughtType = caught.getType().name();
             Location l = caught.getLocation();
@@ -450,8 +446,8 @@ public class PlayerEventsListener implements Listener {
                 caughtItem = ((Item) caught).getItemStack();
             }
 
-            if(caught instanceof Player) {
-                target = (Player) caught;
+            if(caught instanceof LivingEntity) {
+                target = (LivingEntity) caught;
             }
         }
 

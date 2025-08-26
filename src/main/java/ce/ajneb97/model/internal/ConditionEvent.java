@@ -7,7 +7,6 @@ import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.utils.BlockUtils;
 import ce.ajneb97.utils.OtherUtils;
 import ce.ajneb97.utils.ServerVersion;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -28,7 +27,7 @@ public class ConditionEvent {
 
     private ConditionalEvents plugin;
     private Player player;
-    private Player target;
+    private LivingEntity target;
     private ArrayList<StoredVariable> eventVariables;
     private Event minecraftEvent;
     private EventType eventType;
@@ -37,10 +36,10 @@ public class ConditionEvent {
     private boolean async;
 
     public ConditionEvent(ConditionalEvents plugin,Player player, Event minecraftEvent, EventType eventType
-        , Player target) {
+        , LivingEntity target) {
         this.plugin = plugin;
         this.player = player;
-        this.eventVariables = new ArrayList<StoredVariable>();
+        this.eventVariables = new ArrayList<>();
         this.minecraftEvent = minecraftEvent;
         this.eventType = eventType;
         this.target = target;
@@ -51,7 +50,7 @@ public class ConditionEvent {
         return player;
     }
 
-    public Player getTarget() {
+    public LivingEntity getTarget() {
         return target;
     }
 

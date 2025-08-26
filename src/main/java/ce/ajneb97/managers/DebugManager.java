@@ -7,6 +7,7 @@ import ce.ajneb97.model.actions.ActionType;
 import ce.ajneb97.model.internal.DebugSender;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -122,14 +123,21 @@ public class DebugManager {
         }
     }
 
-    public void sendActionMessage(String event, String actionLine, Player player, ActionType actionType, ActionTargeter actionTargeter){
+    public void sendActionMessage(String event, String actionLine, LivingEntity livingEntity, ActionType actionType, ActionTargeter actionTargeter){
         if(debugSenders.isEmpty()){
             return;
         }
 
+        // Can be:
+        // [<event>,<player_name>]
+        // [<event>,<entity_type>]
         String playerInfo = "";
-        if(player != null){
-            playerInfo = ","+player.getName();
+        if(livingEntity != null){
+            if(livingEntity instanceof Player){
+                playerInfo = ","+ livingEntity.getName();
+            }else{
+                playerInfo = ","+ livingEntity.getType().name();
+            }
         }
 
         String actionTargeterInfo = "";
@@ -146,8 +154,8 @@ public class DebugManager {
 
         for(DebugSender debugSender : debugSenders){
             if(debugSender.getEvent().equals(event)){
-                if(player != null && debugSender.getPlayerName() != null){
-                    if(!debugSender.getPlayerName().equals(player.getName())){
+                if(livingEntity instanceof Player && debugSender.getPlayerName() != null){
+                    if(!debugSender.getPlayerName().equals(livingEntity.getName())){
                         continue;
                     }
                 }
