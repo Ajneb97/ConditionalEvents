@@ -21,6 +21,7 @@ public class MainConfigManager {
     private boolean updateNotifications;
     private boolean debugActions;
     private boolean experimentalVariableReplacement;
+    private boolean itemMetaVariableEnabled;
     private ArrayList<ToConditionGroup> toConditionGroups;
     public MainConfigManager(ConditionalEvents plugin){
         this.plugin = plugin;
@@ -35,6 +36,7 @@ public class MainConfigManager {
         updateNotifications = config.getBoolean("Config.update_notification");
         debugActions = config.getBoolean("Config.debug_actions");
         experimentalVariableReplacement = config.getBoolean("Config.experimental.variable_replacement");
+        itemMetaVariableEnabled = config.getBoolean("Config.item_meta_variable_enabled");
         toConditionGroups = new ArrayList<>();
         String path = "Config.to_condition_groups";
         if(config.contains(path)){
@@ -81,6 +83,10 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("item_meta_variable_enabled:")){
+                getConfig().set("Config.item_meta_variable_enabled", false);
+                saveConfig();
+            }
             if(!text.contains("commandInterruptError:")){
                 getConfig().set("Messages.commandInterruptError", "&cUse &7/ce interrupt <event> (optional)<player>");
                 getConfig().set("Messages.commandInterruptCorrect", "&aActions of event &7%event% &ainterrupted.");
@@ -180,5 +186,9 @@ public class MainConfigManager {
 
     public boolean isExperimentalVariableReplacement() {
         return experimentalVariableReplacement;
+    }
+
+    public boolean isItemMetaVariableEnabled() {
+        return itemMetaVariableEnabled;
     }
 }

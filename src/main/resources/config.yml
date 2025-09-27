@@ -4,6 +4,7 @@ Config:
   debug_actions: true
   experimental:
     variable_replacement: false
+  item_meta_variable_enabled: false
   register_commands:
     - "hello"
   to_condition_groups:

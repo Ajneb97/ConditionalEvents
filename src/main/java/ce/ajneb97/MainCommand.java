@@ -106,14 +106,22 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			return;
 		}
 
+		boolean silent = args.length >= 4 && args[3].equals("silent:true");
+
 		if(eventName.equals("all")){
 			if(player.equals("*")){
 				//ALL player data reset
 				playerManager.resetAllDataForPlayers();
+				if(silent){
+					return;
+				}
 				msgManager.sendMessage(sender,config.getString("Messages.eventDataResetAllForAllPlayers"),true);
 			}else{
 				//Reset ALL event data for a player
 				playerData.resetAll();
+				if(silent){
+					return;
+				}
 				msgManager.sendMessage(sender,config.getString("Messages.eventDataResetAll")
 						.replace("%player%", player),true);
 			}
@@ -126,12 +134,18 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			if(player.equals("*")){
 				//Reset an event for ALL players
 				playerManager.resetEventDataForPlayers(eventName);
+				if(silent){
+					return;
+				}
 				msgManager.sendMessage(sender,config.getString("Messages.eventDataResetForAllPlayers")
 						.replace("%event%", eventName),true);
 			}else{
 				//Reset an event for a player
 				playerData.resetCooldown(eventName);
 				playerData.setOneTime(eventName,false);
+				if(silent){
+					return;
+				}
 				msgManager.sendMessage(sender,config.getString("Messages.eventDataReset")
 						.replace("%player%", player).replace("%event%", eventName),true);
 			}
@@ -151,10 +165,15 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			msgManager.sendMessage(sender,config.getString("Messages.eventDoesNotExists"),true);
 			return;
 		}
+
+		boolean silent = args.length >= 3 && args[2].equals("silent:true");
 		
 		e.enable();
 		plugin.getConfigsManager().saveEvent(e);
 
+		if(silent){
+			return;
+		}
 		msgManager.sendMessage(sender,config.getString("Messages.eventEnabled")
 				.replace("%event%", eventName),true);
 	}
@@ -173,11 +192,16 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			return;
 		}
 
+		boolean silent = args.length >= 3 && args[2].equals("silent:true");
+
 		e.disable();
 		plugin.getInterruptEventManager().interruptEvent(eventName,null);
 
 		plugin.getConfigsManager().saveEvent(e);
 
+		if(silent){
+			return;
+		}
 		msgManager.sendMessage(sender,config.getString("Messages.eventDisabled").replace("%event%", eventName),true);
 	}
 
@@ -340,11 +364,16 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		}
 
 		String playerName = null;
-		if (args.length >= 3) {
+		if (args.length >= 3 && !args[2].equals("silent:true")) {
 			playerName = args[2];
 		}
 
+		boolean silent = args[args.length-1].equals("silent:true");
+
 		plugin.getInterruptEventManager().interruptEvent(eventName,playerName);
+		if(silent){
+			return;
+		}
 		if(playerName == null){
 			msgManager.sendMessage(sender, config.getString("Messages.commandInterruptCorrect")
 					.replace("%event%",eventName), true);

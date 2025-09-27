@@ -15,6 +15,8 @@ import java.util.Random;
 
 public class GlobalVariablesUtils {
 
+    private static int lastGeneratedRandomNumber;
+
     public static String variablePlayer(Player finalPlayer){
         return finalPlayer.getName();
     }
@@ -75,10 +77,17 @@ public class GlobalVariablesUtils {
     public static String variableRandomMinMax(String variable){
         String variableLR = variable.replace("random_", "");
         String[] variableLRSplit = variableLR.split("_");
-        int num1 = Integer.valueOf(variableLRSplit[0]);
-        int num2 = Integer.valueOf(variableLRSplit[1]);
+        int num1 = Integer.parseInt(variableLRSplit[0]);
+        int num2 = Integer.parseInt(variableLRSplit[1]);
         int numFinal = MathUtils.getRandomNumber(num1, num2);
+
+        lastGeneratedRandomNumber = numFinal;
+
         return numFinal+"";
+    }
+
+    public static String variableLastRandomMinMax(){
+        return lastGeneratedRandomNumber+"";
     }
 
     public static String variableRandomWorld(String variable){
@@ -198,6 +207,10 @@ public class GlobalVariablesUtils {
     public static String variableWorldIsRaining(Player finalPlayer){
         World world = finalPlayer.getWorld();
         return world.hasStorm()+"";
+    }
+
+    public static String variablePlayerAttackCooldown(Player finalPlayer){
+        return finalPlayer.getAttackCooldown()+"";
     }
 
     public static String isNumber(String variable){

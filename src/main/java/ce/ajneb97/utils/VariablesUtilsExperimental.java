@@ -195,6 +195,9 @@ public class VariablesUtilsExperimental {
         }else if(variable.startsWith("random_player_")) {
             // %random_player_<world>%
             return GlobalVariablesUtils.variableRandomPlayerWorld(variable);
+        }else if(variable.equals("random_last")) {
+            // %random_last%
+            return GlobalVariablesUtils.variableLastRandomMinMax();
         }else if(variable.startsWith("random_")) {
             // %random_min_max%
             return GlobalVariablesUtils.variableRandomMinMax(variable);
@@ -222,6 +225,9 @@ public class VariablesUtilsExperimental {
         }else if(variable.equals("world_is_raining")){
             // %world_is_raining%
             return GlobalVariablesUtils.variableWorldIsRaining(finalPlayer);
+        }else if(variable.equals("player_attack_cooldown")){
+            // %player_attack_cooldown%
+            return GlobalVariablesUtils.variablePlayerAttackCooldown(finalPlayer);
         }else if(variable.startsWith("is_number_")) {
             // %is_number_<variable>%
             return GlobalVariablesUtils.isNumber(variable);

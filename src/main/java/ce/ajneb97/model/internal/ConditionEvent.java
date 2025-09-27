@@ -189,7 +189,14 @@ public class ConditionEvent {
             amount = item.getAmount();
             if(item.hasItemMeta()) {
                 ItemMeta meta = item.getItemMeta();
-                metaString = meta.toString();
+
+                boolean itemMetaVariableEnabled = plugin.getConfigsManager().getMainConfigManager().isItemMetaVariableEnabled();
+                if(itemMetaVariableEnabled){
+                    metaString = meta.toString();
+                }else{
+                    metaString = "variable disabled";
+                }
+
                 if(meta.hasDisplayName()) {
                     name = ChatColor.stripColor(meta.getDisplayName());
                     colorFormatName = meta.getDisplayName().replace("§", "&");
