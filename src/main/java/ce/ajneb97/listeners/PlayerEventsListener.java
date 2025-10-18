@@ -2,6 +2,7 @@ package ce.ajneb97.listeners;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.libs.armorequipevent.ArmorEquipEvent;
+import ce.ajneb97.libs.offhandevent.OffHandEvent;
 import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
@@ -516,6 +517,7 @@ public class PlayerEventsListener implements Listener {
                         new StoredVariable("%slot_type%",slotType),
                         new StoredVariable("%slot%",slot+"")
         ).setCommonItemVariables(event.getCurrentItem(),null)
+                .setCommonItemVariables(event.getCursor(),"cursor")
                 .checkEvent();
     }
 
@@ -579,5 +581,20 @@ public class PlayerEventsListener implements Listener {
                 new StoredVariable("%reason%",event.getRegainReason().name()),
                 new StoredVariable("%amount%",event.getAmount()+"")
         ).checkEvent();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerOffHand(OffHandEvent event) {
+        Player player = event.getPlayer();
+
+        ItemStack placedItem = event.getPlacedInOffhand() != null ? event.getPlacedInOffhand() : new ItemStack(Material.AIR);
+        ItemStack recoveredItem = event.getRecoveredFromOffhand() != null ? event.getRecoveredFromOffhand() : new ItemStack(Material.AIR);
+
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_OFFHAND, null);
+        if(!conditionEvent.containsValidEvents()) return;
+        conditionEvent.addVariables(
+                        new StoredVariable("%movement_type%",event.getMovementType().name())
+                ).setCommonItemVariables(placedItem,null).setCommonItemVariables(recoveredItem,"offhand")
+                .checkEvent();
     }
 }

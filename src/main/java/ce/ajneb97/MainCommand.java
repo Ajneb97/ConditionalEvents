@@ -259,6 +259,10 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			msgManager.sendMessage(sender,config.getString("Messages.commandCallInvalidEvent"),true);
 			return;
 		}
+		if(!e.isEnabled()){
+			msgManager.sendMessage(sender,config.getString("Messages.eventIsNotEnabled"),true);
+			return;
+		}
 
 		String actionLine = eventName;
 		String playerName = null;

@@ -93,6 +93,7 @@ public class EventsManager {
                 if(isOneTime){
                     ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
                          "one_time", conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
+                    plugin.getDebugManager().sendActionsMessage(event.getName(),"one_time",player);
                     executedEvent.executeActions();
                     return;
                 }
@@ -107,6 +108,7 @@ public class EventsManager {
                     conditionEvent.getEventVariables().add(new StoredVariable("%time%",timeString));
                     ExecutedEvent executedEvent = new ExecutedEvent(player, conditionEvent.getEventVariables(), event,
                           "cooldown", conditionEvent.getMinecraftEvent(), conditionEvent.getTarget(), plugin);
+                    plugin.getDebugManager().sendActionsMessage(event.getName(),"cooldown",player);
                     executedEvent.executeActions();
                     return;
                 }

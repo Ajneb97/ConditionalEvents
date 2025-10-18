@@ -108,8 +108,14 @@ public class DebugManager {
             actionGroup = actionGroup.substring(0, pos);
         }
 
-        String debugMessage = MessagesManager.getColoredMessage("&8[&c"+event+playerInfo+
-                                     "&8] &7Executing actions from action group: &f"+actionGroup);
+        String debugMessage = "&8[&c"+event+playerInfo+"&8] ";
+        if(actionGroup.equals("cooldown")){
+            debugMessage = MessagesManager.getColoredMessage(debugMessage+"&7Cooldown present, overriding.");
+        }else if(actionGroup.equals("one_time")){
+            debugMessage = MessagesManager.getColoredMessage(debugMessage+"&7One Time present, overriding.");
+        }else{
+            debugMessage = MessagesManager.getColoredMessage(debugMessage+"&7Executing actions from action group: &f"+actionGroup);
+        }
 
         for(DebugSender debugSender : debugSenders){
             if(debugSender.getEvent().equals(event)){

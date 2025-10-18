@@ -24,6 +24,7 @@ Messages:
   eventDisableError: '&cUse &7/ce disable <event>'
   eventEnabled: '&aEvent &7%event% &aenabled.'
   eventDisabled: '&aEvent &7%event% &adisabled.'
+  eventIsNotEnabled: '&cThat event is not enabled.'
   commandDebugError: '&cUse &7/ce debug <event>'
   debugEnabled: '&aDebug now enabled for event &7%event%&a!'
   debugDisabled: '&aDebug disabled for event &7%event%&a!'

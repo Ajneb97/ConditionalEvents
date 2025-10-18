@@ -2,15 +2,12 @@ package ce.ajneb97.listeners;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.api.ConditionalEventsCallEvent;
-import ce.ajneb97.libs.itemselectevent.ItemSelectEvent;
 import ce.ajneb97.managers.EventsManager;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
-import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -19,16 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.server.ServerCommandEvent;
-import org.bukkit.event.server.TabCompleteEvent;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -78,6 +66,10 @@ public class OtherEventsListener implements Listener {
         EventsManager eventsManager = plugin.getEventsManager();
         CEEvent ceEvent = eventsManager.getEvent(eventName);
         if(!ceEvent.getEventType().equals(EventType.CALL)){
+            return;
+        }
+
+        if(!ceEvent.isEnabled()){
             return;
         }
 

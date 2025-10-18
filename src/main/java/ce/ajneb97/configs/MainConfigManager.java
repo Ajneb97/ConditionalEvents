@@ -83,6 +83,10 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("eventIsNotEnabled:")){
+                getConfig().set("Messages.eventIsNotEnabled", "&cThat event is not enabled.");
+                saveConfig();
+            }
             if(!text.contains("item_meta_variable_enabled:")){
                 getConfig().set("Config.item_meta_variable_enabled", false);
                 saveConfig();

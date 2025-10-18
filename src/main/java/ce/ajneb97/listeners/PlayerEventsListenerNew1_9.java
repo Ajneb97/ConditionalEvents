@@ -8,9 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.event.server.TabCompleteEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 
@@ -19,17 +17,6 @@ public class PlayerEventsListenerNew1_9 implements Listener {
     public ConditionalEvents plugin;
     public PlayerEventsListenerNew1_9(ConditionalEvents plugin) {
         this.plugin = plugin;
-    }
-
-    @EventHandler
-    public void onPlayerSwapHand(PlayerSwapHandItemsEvent event){
-        Player player = event.getPlayer();
-        ItemStack item = event.getMainHandItem();
-        ItemStack itemOffHand = event.getOffHandItem();
-        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.PLAYER_SWAP_HAND, null);
-        if(!conditionEvent.containsValidEvents()) return;
-        conditionEvent.setCommonItemVariables(item,null).setCommonItemVariables(itemOffHand,"offhand")
-                .checkEvent();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

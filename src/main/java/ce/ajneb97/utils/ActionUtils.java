@@ -213,10 +213,21 @@ public class ActionUtils {
         int duration = Integer.parseInt(sep[1]);
         int level = Integer.parseInt(sep[2])-1;
         boolean showParticles = true;
+        boolean icon = false;
         if(sep.length >= 4) {
-            showParticles = Boolean.valueOf(sep[3]);
+            showParticles = Boolean.parseBoolean(sep[3]);
         }
-        PotionEffect effect = new PotionEffect(potionEffectType,duration,level,false,showParticles);
+        if(sep.length >= 5) {
+            icon = Boolean.parseBoolean(sep[4]);
+        }
+
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        PotionEffect effect;
+        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_13_R1)) {
+            effect = new PotionEffect(potionEffectType,duration,level,false,showParticles,icon);
+        }else{
+            effect = new PotionEffect(potionEffectType,duration,level,false,showParticles);
+        }
         livingEntity.addPotionEffect(effect);
     }
 
