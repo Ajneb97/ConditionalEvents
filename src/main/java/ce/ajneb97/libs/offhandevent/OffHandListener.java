@@ -1,6 +1,7 @@
 package ce.ajneb97.libs.offhandevent;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.utils.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -56,14 +57,17 @@ public class OffHandListener implements Listener {
         int slot = event.getSlot();
 
         OffHandEvent swapEvent = null;
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
         if(slotType.equals(InventoryType.SlotType.QUICKBAR) && slot == 40){
             if(click.equals(ClickType.NUMBER_KEY)){
                 swapEvent = new OffHandEvent(player,item2,itemInOffhand);
             }else{
                 swapEvent = new OffHandEvent(player,cursorItem,itemInOffhand);
             }
-        }else if(click.equals(ClickType.SWAP_OFFHAND)){
-            swapEvent = new OffHandEvent(player,clickedItem,itemInOffhand);
+        }else if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_16_R3)){
+            if(click.equals(ClickType.SWAP_OFFHAND)){
+                swapEvent = new OffHandEvent(player,clickedItem,itemInOffhand);
+            }
         }
 
         if(swapEvent != null){

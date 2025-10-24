@@ -243,6 +243,9 @@ public class VariablesUtils {
         }else if(variable.startsWith("is_number_")) {
             // %is_number_<variable>%
             return GlobalVariablesUtils.isNumber(variable);
+        }else if(variable.startsWith("player_location_")) {
+            // %player_location_<coord>_<front_value>_<side_value>_<up_value>%
+            return GlobalVariablesUtils.variablePlayerLocationDirectional(finalPlayer,variable);
         }
         else if(variable.equals("empty")) {
             return "";

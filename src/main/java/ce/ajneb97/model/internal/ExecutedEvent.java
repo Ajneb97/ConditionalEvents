@@ -392,9 +392,6 @@ public class ExecutedEvent {
                 case STOPSOUND_RESOURCE_PACK:
                     ActionUtils.stopSoundResourcePack(player, actionLine);
                     return;
-                //case VECTOR:
-                //    ActionUtils.vector(player, actionLine);
-                //    return;
                 case TAB_COMPLETE:
                     ActionUtils.tabComplete(actionLine,minecraftEvent);
             }
@@ -422,6 +419,12 @@ public class ExecutedEvent {
                 return;
             case HEAL:
                 ActionUtils.heal(livingEntity, actionLine);
+                return;
+            case THROW_DIRECTIONAL:
+                ActionUtils.throwDirectional(livingEntity, actionLine);
+                return;
+            case THROW_COORDINATE:
+                ActionUtils.throwCoordinate(livingEntity, actionLine);
                 return;
         }
 

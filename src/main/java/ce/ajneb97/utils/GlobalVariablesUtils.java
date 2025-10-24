@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -252,5 +253,35 @@ public class GlobalVariablesUtils {
             blockType = block.getType().name();
         }
         return blockType;
+    }
+
+    public static String variablePlayerLocationDirectional(Player finalPlayer,String variable){
+        // %player_location_x_<front_value>_<side_value>_<up_value>%
+        // Example: %player_location_x_1_0_0%
+        variable = variable.replace("player_location_","");
+        String[] variableSep = variable.split("_");
+        String coord = variableSep[0];
+        double front = Double.parseDouble(variableSep[1]);
+        double side = Double.parseDouble(variableSep[2]);
+        double up = Double.parseDouble(variableSep[3]);
+
+        Location base = finalPlayer.getLocation();
+        Vector direction = base.getDirection().normalize();
+        Vector upVector = new Vector(0, 1, 0);
+        Vector right = direction.clone().crossProduct(upVector).normalize();
+        if (Double.isNaN(right.getX()) || Double.isNaN(right.getY()) || Double.isNaN(right.getZ())) {
+            right = new Vector(1, 0, 0);
+        }
+
+        Vector offset = direction.multiply(front).add(right.multiply(side)).add(upVector.multiply(up));
+
+        Location finalLocation = base.add(offset);
+        if(coord.equals("x")){
+            return finalLocation.getX()+"";
+        }else if(coord.equals("y")){
+            return finalLocation.getY()+"";
+        }else{
+            return finalLocation.getZ()+"";
+        }
     }
 }

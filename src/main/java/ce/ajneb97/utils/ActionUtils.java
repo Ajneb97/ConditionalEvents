@@ -636,17 +636,25 @@ public class ActionUtils {
         TitleAPI.sendTitle(player,fadeIn,stay,fadeOut,title,subtitle);
     }
 
-    /*
-    public static void vector(Player player,String actionLine){
-        // vector: <front>;<height>
-        String[] sep = actionLine.split(";");
-        double front = Double.parseDouble(sep[0]);
-        double height = Double.parseDouble(sep[1]);
 
-        Vector direction = player.getLocation().getDirection().normalize();
-        Vector newDirection = new Vector(direction.getX()*front,height,direction.getZ()*front);
-        player.setVelocity(player.getVelocity().add(newDirection));
-    }*/
+    public static void throwDirectional(LivingEntity livingEntity,String actionLine){
+        // throw_directional: <strength>
+        double strength = Double.parseDouble(actionLine);
+        Vector direction = livingEntity.getLocation().getDirection().normalize();
+        Vector velocity = direction.multiply(strength);
+        livingEntity.setVelocity(velocity);
+    }
+
+    public static void throwCoordinate(LivingEntity livingEntity,String actionLine){
+        // throw_coordinate: <strength_x>;<strength_y>;<strength_z>
+        String[] sep = actionLine.split(";");
+        double x = Double.parseDouble(sep[0]);
+        double y = Double.parseDouble(sep[1]);
+        double z = Double.parseDouble(sep[2]);
+        Vector velocity = new Vector(x, y, z);
+        livingEntity.setVelocity(velocity);
+    }
+
     public static void firework(LivingEntity livingEntity,String actionLine,ConditionalEvents plugin){
         // firework: colors:<color1>,<color2> type:<type> fade:<color1>,<color2> power:<power> location(optional):<x>;<y>;<z>;<world>
         // flicker:<boolean> trail:<boolean>
