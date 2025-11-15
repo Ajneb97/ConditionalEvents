@@ -38,7 +38,7 @@ public class CustomEventListener implements Listener {
                 plugin.getServer().getPluginManager().registerEvent(eventClass, this, EventPriority.MONITOR, eventExecutor, plugin);
             } catch (ClassNotFoundException ex) {
                 Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix
-                    + MessagesManager.getColoredMessage("&cClass "+eventPackage+" &cdoesn't exists for custom event &e"+ceEvent.getName()+"&c."));
+                    + MessagesManager.getLegacyColoredMessage("&cClass "+eventPackage+" &cdoesn't exists for custom event &e"+ceEvent.getName()+"&c."));
             }
         }
     }

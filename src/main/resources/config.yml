@@ -5,6 +5,7 @@ Config:
   experimental:
     variable_replacement: false
   item_meta_variable_enabled: false
+  use_minimessage: false
   register_commands:
     - "hello"
   to_condition_groups:

@@ -12,6 +12,9 @@ import ce.ajneb97.utils.InventoryUtils;
 import ce.ajneb97.utils.MathUtils;
 import ce.ajneb97.utils.OtherUtils;
 import ce.ajneb97.utils.ServerVersion;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
@@ -65,8 +68,8 @@ public class PlayerEventsListener implements Listener {
         String latestVersion = plugin.getUpdateCheckerManager().getLatestVersion();
         if(player.isOp() && !(plugin.version.equals(latestVersion)) &&
                 plugin.getConfigsManager().getMainConfigManager().isUpdateNotifications()){
-            player.sendMessage(MessagesManager.getColoredMessage(plugin.prefix+" &cThere is a new version available. &e(&7"+latestVersion+"&e)"));
-            player.sendMessage(MessagesManager.getColoredMessage("&cYou can download it at: &ahttps://modrinth.com/plugin/conditionalevents"));
+            player.sendMessage(MessagesManager.getLegacyColoredMessage(plugin.prefix+" &cThere is a new version available. &e(&7"+latestVersion+"&e)"));
+            player.sendMessage(MessagesManager.getLegacyColoredMessage("&cYou can download it at: &ahttps://modrinth.com/plugin/conditionalevents"));
         }
     }
 
@@ -102,8 +105,13 @@ public class PlayerEventsListener implements Listener {
                 Entity killer = event2.getDamager();
                 killerType = killer.getType().name();
                 if(killer.getCustomName() != null) {
-                    killerName = ChatColor.stripColor(killer.getCustomName());
-                    killerNameColorFormat = killer.getCustomName().replace("§", "&");
+                    if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+                        killerName = PlainTextComponentSerializer.plainText().serialize(killer.customName());
+                        killerNameColorFormat = MiniMessage.miniMessage().serialize(killer.customName());
+                    }else{
+                        killerName = ChatColor.stripColor(killer.getCustomName());
+                        killerNameColorFormat = killer.getCustomName().replace("§", "&");
+                    }
                 }
             }
         }
@@ -246,8 +254,13 @@ public class PlayerEventsListener implements Listener {
             Entity damager = event2.getDamager();
             damagerType = damager.getType().name();
             if(damager != null && damager.getCustomName() != null) {
-                damagerName = ChatColor.stripColor(damager.getCustomName());
-                damagerNameColorFormat = damager.getCustomName().replace("§", "&");
+                if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+                    damagerName = PlainTextComponentSerializer.plainText().serialize(damager.customName());
+                    damagerNameColorFormat = MiniMessage.miniMessage().serialize(damager.customName());
+                }else{
+                    damagerName = ChatColor.stripColor(damager.getCustomName());
+                    damagerNameColorFormat = damager.getCustomName().replace("§", "&");
+                }
             }
         }
 
@@ -465,20 +478,36 @@ public class PlayerEventsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onOpenInventory(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
+
+        String inventoryTitle;
+        if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+            inventoryTitle = PlainTextComponentSerializer.plainText().serialize(InventoryUtils.getViewTitleComponent(event));
+        }else{
+            inventoryTitle = ChatColor.stripColor(InventoryUtils.getViewTitle(event));
+        }
+
         new ConditionEvent(plugin, player, event, EventType.PLAYER_OPEN_INVENTORY, null)
                 .addVariables(
                         new StoredVariable("%inventory_type%",event.getInventory().getType().name()),
-                        new StoredVariable("%inventory_title%",ChatColor.stripColor(InventoryUtils.getViewTitle(event)))
+                        new StoredVariable("%inventory_title%",inventoryTitle)
                 ).checkEvent();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCloseInventory(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
+
+        String inventoryTitle;
+        if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+            inventoryTitle = PlainTextComponentSerializer.plainText().serialize(InventoryUtils.getViewTitleComponent(event));
+        }else{
+            inventoryTitle = ChatColor.stripColor(InventoryUtils.getViewTitle(event));
+        }
+
         new ConditionEvent(plugin, player, event, EventType.PLAYER_CLOSE_INVENTORY, null)
                 .addVariables(
                         new StoredVariable("%inventory_type%",event.getInventory().getType().name()),
-                        new StoredVariable("%inventory_title%",ChatColor.stripColor(InventoryUtils.getViewTitle(event)))
+                        new StoredVariable("%inventory_title%",inventoryTitle)
                 ).checkEvent();
     }
 
@@ -498,9 +527,15 @@ public class PlayerEventsListener implements Listener {
         String title = "";
         String titleColorFormat = "";
         if(event.getView() != null){
-            title = InventoryUtils.getViewTitle(event);
-            titleColorFormat = title.replace("§", "&");
-            title = ChatColor.stripColor(title);
+            if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+                Component titleComponent = InventoryUtils.getViewTitleComponent(event);
+                title = PlainTextComponentSerializer.plainText().serialize(titleComponent);
+                titleColorFormat = MiniMessage.miniMessage().serialize(titleComponent);
+            }else{
+                title = InventoryUtils.getViewTitle(event);
+                titleColorFormat = title.replace("§", "&");
+                title = ChatColor.stripColor(title);
+            }
         }
         String inventoryType = "";
         int slot = event.getSlot();

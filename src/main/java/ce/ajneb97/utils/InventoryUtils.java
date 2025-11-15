@@ -1,5 +1,6 @@
 package ce.ajneb97.utils;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -64,12 +65,34 @@ public class InventoryUtils {
         }
     }
 
+    public static Component getOpenInventoryViewTitleComponent(Player player) {
+        try {
+            Object view = player.getOpenInventory();
+            Method getTitle = view.getClass().getMethod("title");
+            getTitle.setAccessible(true);
+            return (Component) getTitle.invoke(view);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static String getViewTitle(InventoryEvent event) {
         try {
             Object view = event.getView();
             Method getTitle = view.getClass().getMethod("getTitle");
             getTitle.setAccessible(true);
             return (String) getTitle.invoke(view);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Component getViewTitleComponent(InventoryEvent event) {
+        try {
+            Object view = event.getView();
+            Method getTitle = view.getClass().getMethod("title");
+            getTitle.setAccessible(true);
+            return (Component) getTitle.invoke(view);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

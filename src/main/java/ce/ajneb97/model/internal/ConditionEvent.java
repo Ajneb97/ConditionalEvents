@@ -1,14 +1,19 @@
 package ce.ajneb97.model.internal;
 
 import ce.ajneb97.ConditionalEvents;
+import ce.ajneb97.configs.MainConfigManager;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.utils.BlockUtils;
 import ce.ajneb97.utils.OtherUtils;
 import ce.ajneb97.utils.ServerVersion;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -148,9 +153,15 @@ public class ConditionEvent {
         String victimName = "";
         String victimNameColorFormat = "";
         String victimUuid = entity.getUniqueId().toString();
+
         if(entity.getCustomName() != null) {
-            victimName = ChatColor.stripColor(entity.getCustomName());
-            victimNameColorFormat = entity.getCustomName().replace("§", "&");
+            if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+                victimName = PlainTextComponentSerializer.plainText().serialize(entity.customName());
+                victimNameColorFormat = MiniMessage.miniMessage().serialize(entity.customName());
+            }else{
+                victimName = ChatColor.stripColor(entity.getCustomName());
+                victimNameColorFormat = entity.getCustomName().replace("§", "&");
+            }
         }
         Location location = entity.getLocation();
         double health = 0;
@@ -181,6 +192,7 @@ public class ConditionEvent {
         List<String> loreList = new ArrayList<>();
         List<String> colorFormatLoreList = new ArrayList<>();
         int customModelData = 0;
+        String itemModel = "";
         String metaString = "";
 
         if(item != null) {
@@ -190,7 +202,9 @@ public class ConditionEvent {
             if(item.hasItemMeta()) {
                 ItemMeta meta = item.getItemMeta();
 
-                boolean itemMetaVariableEnabled = plugin.getConfigsManager().getMainConfigManager().isItemMetaVariableEnabled();
+                MainConfigManager mainConfigManager = plugin.getConfigsManager().getMainConfigManager();
+                boolean itemMetaVariableEnabled = mainConfigManager.isItemMetaVariableEnabled();
+                boolean useMiniMessage = mainConfigManager.isUseMiniMessage();
                 if(itemMetaVariableEnabled){
                     metaString = meta.toString();
                 }else{
@@ -198,27 +212,58 @@ public class ConditionEvent {
                 }
 
                 if(meta.hasDisplayName()) {
-                    name = ChatColor.stripColor(meta.getDisplayName());
-                    colorFormatName = meta.getDisplayName().replace("§", "&");
+                    if(useMiniMessage){
+                        name = PlainTextComponentSerializer.plainText().serialize(meta.displayName());
+                        colorFormatName = MiniMessage.miniMessage().serialize(meta.displayName());
+                    }else{
+                        name = ChatColor.stripColor(meta.getDisplayName());
+                        colorFormatName = meta.getDisplayName().replace("§", "&");
+                    }
                 }
                 if(meta.hasLore()) {
-                    List<String> lore = meta.getLore();
-                    for(int i=0;i<lore.size();i++) {
-                        loreList.add(ChatColor.stripColor(lore.get(i)));
-                        colorFormatLoreList.add(lore.get(i).replace("§", "&"));
-                        if(i == lore.size()-1) {
-                            loreString = loreString+ChatColor.stripColor(lore.get(i));
-                            colorFormatLoreString = colorFormatLoreString+lore.get(i).replace("§", "&");
-                        }else {
-                            loreString = loreString+ChatColor.stripColor(lore.get(i))+" ";
-                            colorFormatLoreString = colorFormatLoreString+lore.get(i).replace("§", "&")+" ";
+                    if(useMiniMessage){
+                        List<Component> lore = meta.lore();
+                        PlainTextComponentSerializer plainTextComponentSerializer = PlainTextComponentSerializer.plainText();
+                        MiniMessage miniMessage = MiniMessage.miniMessage();
+                        for(int i=0;i<lore.size();i++){
+                            String plainFormat = plainTextComponentSerializer.serialize(lore.get(i));
+                            String tagFormat = miniMessage.serialize(lore.get(i));
+                            loreList.add(plainFormat);
+                            colorFormatLoreList.add(tagFormat);
+                            if(i == lore.size()-1) {
+                                loreString = loreString+plainFormat;
+                                colorFormatLoreString = colorFormatLoreString+tagFormat;
+                            }else{
+                                loreString = loreString+plainFormat + " ";
+                                colorFormatLoreString = colorFormatLoreString+tagFormat + " ";
+                            }
+                        }
+                    }else{
+                        List<String> lore = meta.getLore();
+                        for(int i=0;i<lore.size();i++) {
+                            loreList.add(ChatColor.stripColor(lore.get(i)));
+                            colorFormatLoreList.add(lore.get(i).replace("§", "&"));
+                            if(i == lore.size()-1) {
+                                loreString = loreString+ChatColor.stripColor(lore.get(i));
+                                colorFormatLoreString = colorFormatLoreString+lore.get(i).replace("§", "&");
+                            }else {
+                                loreString = loreString+ChatColor.stripColor(lore.get(i))+" ";
+                                colorFormatLoreString = colorFormatLoreString+lore.get(i).replace("§", "&")+" ";
+                            }
                         }
                     }
                 }
+
+                ServerVersion serverVersion = ConditionalEvents.serverVersion;
                 if(OtherUtils.isNew() && meta.hasCustomModelData()){
-                    ServerVersion serverVersion = ConditionalEvents.serverVersion;
                     if(!serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R3)){
                         customModelData = meta.getCustomModelData();
+                    }
+                }
+                if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R3)){
+                    if(meta.hasItemModel()){
+                        NamespacedKey key = meta.getItemModel();
+                        itemModel = key.getNamespace()+":"+key.getKey();
                     }
                 }
             }
@@ -239,6 +284,7 @@ public class ConditionEvent {
         eventVariables.add(new StoredVariable(otherItemTag+"item_lore%",loreString));
         eventVariables.add(new StoredVariable(otherItemTag+"item_color_format_lore%",colorFormatLoreString));
         eventVariables.add(new StoredVariable(otherItemTag+"item_custom_model_data%",customModelData+""));
+        eventVariables.add(new StoredVariable(otherItemTag+"item_model%",itemModel));
         eventVariables.add(new StoredVariable(otherItemTag+"item_meta%",metaString));
         for(int i=0;i<loreList.size();i++) {
             eventVariables.add(new StoredVariable(otherItemTag+"item_lore_line_"+(i+1)+"%", loreList.get(i)));
@@ -256,8 +302,13 @@ public class ConditionEvent {
         String entityNameColorFormat = "";
         String entityUuid = entity.getUniqueId().toString();
         if(entity.getCustomName() != null) {
-            entityName = ChatColor.stripColor(entity.getCustomName());
-            entityNameColorFormat = entity.getCustomName().replace("§", "&");
+            if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+                entityName = PlainTextComponentSerializer.plainText().serialize(entity.customName());
+                entityNameColorFormat = MiniMessage.miniMessage().serialize(entity.customName());
+            }else{
+                entityName = ChatColor.stripColor(entity.getCustomName());
+                entityNameColorFormat = entity.getCustomName().replace("§", "&");
+            }
         }
         Location location = entity.getLocation();
 

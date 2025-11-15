@@ -22,6 +22,7 @@ public class MainConfigManager {
     private boolean debugActions;
     private boolean experimentalVariableReplacement;
     private boolean itemMetaVariableEnabled;
+    private boolean useMiniMessage;
     private ArrayList<ToConditionGroup> toConditionGroups;
     public MainConfigManager(ConditionalEvents plugin){
         this.plugin = plugin;
@@ -37,6 +38,7 @@ public class MainConfigManager {
         debugActions = config.getBoolean("Config.debug_actions");
         experimentalVariableReplacement = config.getBoolean("Config.experimental.variable_replacement");
         itemMetaVariableEnabled = config.getBoolean("Config.item_meta_variable_enabled");
+        useMiniMessage = config.getBoolean("Config.use_minimessage");
         toConditionGroups = new ArrayList<>();
         String path = "Config.to_condition_groups";
         if(config.contains(path)){
@@ -83,6 +85,10 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("use_minimessage:")){
+                getConfig().set("Config.use_minimessage",false);
+                configFile.saveConfig();
+            }
             if(!text.contains("eventIsNotEnabled:")){
                 getConfig().set("Messages.eventIsNotEnabled", "&cThat event is not enabled.");
                 saveConfig();
@@ -194,5 +200,9 @@ public class MainConfigManager {
 
     public boolean isItemMetaVariableEnabled() {
         return itemMetaVariableEnabled;
+    }
+
+    public boolean isUseMiniMessage() {
+        return useMiniMessage;
     }
 }

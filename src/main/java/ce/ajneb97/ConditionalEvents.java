@@ -84,8 +84,8 @@ public class ConditionalEvents extends JavaPlugin {
 		}
 		Metrics metrics = new Metrics(this, 19371);
 
-		Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &eHas been enabled! &fVersion: "+version));
-        Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &eThanks for using my plugin!   &f~Ajneb97"));
+		Bukkit.getConsoleSender().sendMessage(MessagesManager.getLegacyColoredMessage(prefix+" &eHas been enabled! &fVersion: "+version));
+        Bukkit.getConsoleSender().sendMessage(MessagesManager.getLegacyColoredMessage(prefix+" &eThanks for using my plugin!   &f~Ajneb97"));
 
 		updateCheckerManager = new UpdateCheckerManager(version);
 		if(configsManager.getMainConfigManager().isUpdateNotifications()){
@@ -100,7 +100,7 @@ public class ConditionalEvents extends JavaPlugin {
 		new ConditionEvent(this, null, null, EventType.SERVER_STOP, null)
 				.checkEvent();
 		this.configsManager.getPlayerConfigsManager().saveConfigs();
-		Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &eHas been disabled! &fVersion: "+version));
+		Bukkit.getConsoleSender().sendMessage(MessagesManager.getLegacyColoredMessage(prefix+" &eHas been disabled! &fVersion: "+version));
 	}
 
 	public void registerEvents() {
@@ -130,7 +130,7 @@ public class ConditionalEvents extends JavaPlugin {
 	}
 
 	public void setPrefix(){
-		prefix = MessagesManager.getColoredMessage("&4[&bConditionalEvents&4]");
+		prefix = MessagesManager.getLegacyColoredMessage("&4[&bConditionalEvents&4]");
 	}
 
 	public void setVersion(){
@@ -250,11 +250,11 @@ public class ConditionalEvents extends JavaPlugin {
 		if(!result.isError()){
 			String latestVersion = result.getLatestVersion();
 			if(latestVersion != null){
-				Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage("&cThere is a new version available. &e(&7"+latestVersion+"&e)"));
-				Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage("&cYou can download it at: &fhttps://modrinth.com/plugin/conditionalevents"));
+				Bukkit.getConsoleSender().sendMessage(MessagesManager.getLegacyColoredMessage("&cThere is a new version available. &e(&7"+latestVersion+"&e)"));
+				Bukkit.getConsoleSender().sendMessage(MessagesManager.getLegacyColoredMessage("&cYou can download it at: &fhttps://modrinth.com/plugin/conditionalevents"));
 			}
 		}else{
-			Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(prefix+" &cError while checking update."));
+			Bukkit.getConsoleSender().sendMessage(MessagesManager.getLegacyColoredMessage(prefix+" &cError while checking update."));
 		}
 
 	}

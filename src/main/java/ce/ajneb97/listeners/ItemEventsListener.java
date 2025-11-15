@@ -2,28 +2,22 @@ package ce.ajneb97.listeners;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.libs.itemselectevent.ItemSelectEvent;
-import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.utils.InventoryUtils;
 import ce.ajneb97.utils.OtherUtils;
 import ce.ajneb97.utils.ServerVersion;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -38,7 +32,6 @@ import org.bukkit.inventory.view.AnvilView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class ItemEventsListener implements Listener {
 
@@ -165,7 +158,11 @@ public class ItemEventsListener implements Listener {
         InventoryView view = player.getOpenInventory();
         if(view != null) {
             inventoryType = InventoryUtils.getOpenInventoryViewType(player).name();
-            inventoryTitle = ChatColor.stripColor(InventoryUtils.getOpenInventoryViewTitle(player));
+            if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+                inventoryTitle = PlainTextComponentSerializer.plainText().serialize(InventoryUtils.getOpenInventoryViewTitleComponent(player));
+            }else{
+                inventoryTitle = ChatColor.stripColor(InventoryUtils.getOpenInventoryViewTitle(player));
+            }
         }
         int slot = event.getSlot();
 
@@ -181,7 +178,7 @@ public class ItemEventsListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onItemCraft(CraftItemEvent event) {
         Player player = (Player) event.getWhoClicked();
         ItemStack item = event.getRecipe().getResult();

@@ -24,18 +24,18 @@ public class VerifyManager {
     }
 
     public void sendVerification(Player player) {
-        player.sendMessage(MessagesManager.getColoredMessage("&f&l- - - - - - - - &b&lEVENTS VERIFY &f&l- - - - - - - -"));
-        player.sendMessage(MessagesManager.getColoredMessage(""));
+        player.sendMessage(MessagesManager.getLegacyColoredMessage("&f&l- - - - - - - - &b&lEVENTS VERIFY &f&l- - - - - - - -"));
+        player.sendMessage(MessagesManager.getLegacyColoredMessage(""));
         if(errors.isEmpty()) {
-            player.sendMessage(MessagesManager.getColoredMessage("&aThere are no errors in your events ;)"));
+            player.sendMessage(MessagesManager.getLegacyColoredMessage("&aThere are no errors in your events ;)"));
         }else {
-            player.sendMessage(MessagesManager.getColoredMessage("&e&oHover on the errors to see more information."));
+            player.sendMessage(MessagesManager.getLegacyColoredMessage("&e&oHover on the errors to see more information."));
             for(CEError error : errors) {
                 error.sendMessage(player);
             }
         }
-        player.sendMessage(MessagesManager.getColoredMessage(""));
-        player.sendMessage(MessagesManager.getColoredMessage("&f&l- - - - - - - - &b&lEVENTS VERIFY &f&l- - - - - - - -"));
+        player.sendMessage(MessagesManager.getLegacyColoredMessage(""));
+        player.sendMessage(MessagesManager.getLegacyColoredMessage("&f&l- - - - - - - - &b&lEVENTS VERIFY &f&l- - - - - - - -"));
     }
 
     public void verifyEvents() {

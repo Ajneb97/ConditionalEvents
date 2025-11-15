@@ -77,8 +77,8 @@ public class DebugManager {
         if(start){
             startText = ",&estart";
         }
-        String debugMessage = MessagesManager.getColoredMessage("&8[&c"+event+playerInfo+startText+"&8] &7Checking for: &f")
-                +condition+MessagesManager.getColoredMessage(" &8| &7Result: "+result);
+        String debugMessage = MessagesManager.getLegacyColoredMessage("&8[&c"+event+playerInfo+startText+"&8] &7Checking for: &f")
+                +condition+MessagesManager.getLegacyColoredMessage(" &8| &7Result: "+result);
 
         for(DebugSender debugSender : debugSenders){
             if(debugSender.getEvent().equals(event)){
@@ -110,11 +110,11 @@ public class DebugManager {
 
         String debugMessage = "&8[&c"+event+playerInfo+"&8] ";
         if(actionGroup.equals("cooldown")){
-            debugMessage = MessagesManager.getColoredMessage(debugMessage+"&7Cooldown present, overriding.");
+            debugMessage = MessagesManager.getLegacyColoredMessage(debugMessage+"&7Cooldown present, overriding.");
         }else if(actionGroup.equals("one_time")){
-            debugMessage = MessagesManager.getColoredMessage(debugMessage+"&7One Time present, overriding.");
+            debugMessage = MessagesManager.getLegacyColoredMessage(debugMessage+"&7One Time present, overriding.");
         }else{
-            debugMessage = MessagesManager.getColoredMessage(debugMessage+"&7Executing actions from action group: &f"+actionGroup);
+            debugMessage = MessagesManager.getLegacyColoredMessage(debugMessage+"&7Executing actions from action group: &f"+actionGroup);
         }
 
         for(DebugSender debugSender : debugSenders){
@@ -155,7 +155,7 @@ public class DebugManager {
             }
         }
 
-        String debugMessage = MessagesManager.getColoredMessage("&8[&c"+event+playerInfo+
+        String debugMessage = MessagesManager.getLegacyColoredMessage("&8[&c"+event+playerInfo+
                 ",&eaction&8] &7Executing action:"+actionTargeterInfo+" &6["+actionType+"&6] &f")+actionLine;
 
         for(DebugSender debugSender : debugSenders){

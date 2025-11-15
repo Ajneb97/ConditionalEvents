@@ -3,8 +3,10 @@ package ce.ajneb97.libs.actionbar;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import ce.ajneb97.api.ConditionalEventsAPI;
 import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.utils.OtherUtils;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -18,10 +20,14 @@ public class ActionBarAPI
 
     public static void sendActionBar(Player player, String message) {
 	  if(OtherUtils.isNew()) {
-		  player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(MessagesManager.getColoredMessage(message)));
+          if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+              player.sendActionBar(MiniMessage.miniMessage().deserialize(message));
+          }else{
+              player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(MessagesManager.getLegacyColoredMessage(message)));
+          }
 		  return;
 	  }
-      message = MessagesManager.getColoredMessage(message);
+      message = MessagesManager.getLegacyColoredMessage(message);
 	  boolean useOldMethods = false;
 	  String nmsver = Bukkit.getServer().getClass().getPackage().getName();
       nmsver = nmsver.substring(nmsver.lastIndexOf(".") + 1);

@@ -23,7 +23,7 @@ public class APIManager {
         for(ConditionalEventsAction a : actions){
             a.setPlugin(plugin);
             Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix+
-                    MessagesManager.getColoredMessage(" &7Custom API Action &a"+a.getName()+" &7registered from plugin &e"+a.getPlugin().getName()));
+                    MessagesManager.getLegacyColoredMessage(" &7Custom API Action &a"+a.getName()+" &7registered from plugin &e"+a.getPlugin().getName()));
             apiActions.add(a);
         }
         this.plugin.getConfigsManager().endRepetitiveEvents();

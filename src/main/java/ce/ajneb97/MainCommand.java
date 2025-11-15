@@ -45,7 +45,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 		   if(args.length >= 1) {
 			   if(args[0].equalsIgnoreCase("reload")) {
 				   if(!plugin.getConfigsManager().reload()){
-					   sender.sendMessage(ConditionalEvents.prefix+MessagesManager.getColoredMessage(" &cThere was an error reloading the config, check the console."));
+					   sender.sendMessage(ConditionalEvents.prefix+MessagesManager.getLegacyColoredMessage(" &cThere was an error reloading the config, check the console."));
 					   return true;
 				   }
 				   msgManager.sendMessage(sender,config.getString("Messages.commandReload"),true);

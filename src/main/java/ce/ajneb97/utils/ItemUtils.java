@@ -8,6 +8,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -222,16 +225,29 @@ public class ItemUtils {
         }
 
         //Main Meta
+        boolean useMiniMessage = ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage();
         ItemMeta meta = item.getItemMeta();
         if(name != null) {
-            meta.setDisplayName(MessagesManager.getColoredMessage(name));
+            if(useMiniMessage){
+                meta.displayName(MiniMessage.miniMessage().deserialize(name).decoration(TextDecoration.ITALIC, false));
+            }else{
+                meta.setDisplayName(MessagesManager.getLegacyColoredMessage(name));
+            }
         }
         if(!lore.isEmpty()) {
             List<String> loreCopy = new ArrayList<>(lore);
-            for(int i=0;i<loreCopy.size();i++) {
-                loreCopy.set(i, MessagesManager.getColoredMessage(loreCopy.get(i)));
+            if(useMiniMessage){
+                List<Component> loreComponent = new ArrayList<>();
+                for(int i=0;i<loreCopy.size();i++) {
+                    loreComponent.add(MiniMessage.miniMessage().deserialize(loreCopy.get(i)).decoration(TextDecoration.ITALIC, false));
+                }
+                meta.lore(loreComponent);
+            }else{
+                for(int i=0;i<loreCopy.size();i++) {
+                    loreCopy.set(i, MessagesManager.getLegacyColoredMessage(loreCopy.get(i)));
+                }
+                meta.setLore(loreCopy);
             }
-            meta.setLore(loreCopy);
         }
 
         if(customModelData != 0) {

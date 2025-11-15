@@ -10,9 +10,13 @@ import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.managers.dependencies.DiscordSRVManager;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ExecutedEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.*;
@@ -43,16 +47,32 @@ import java.util.stream.Collectors;
 public class ActionUtils {
 
     public static void message(Player player,String actionLine){
-        player.sendMessage(MessagesManager.getColoredMessage(actionLine));
+        if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()) {
+            player.sendMessage(MiniMessage.miniMessage().deserialize(actionLine));
+        }else{
+            player.sendMessage(MessagesManager.getLegacyColoredMessage(actionLine));
+        }
     }
 
     public static void centeredMessage(Player player,String actionLine){
-        actionLine = MessagesManager.getColoredMessage(actionLine);
-        player.sendMessage(MessagesManager.getCenteredMessage(actionLine));
+        if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+            MiniMessage mm = MiniMessage.miniMessage();
+            Component component = mm.deserialize(actionLine);
+            String centeredTextLegacy = MessagesManager.getCenteredMessage(LegacyComponentSerializer.legacySection().serialize(component)); // to legacy
+            Component centeredTextMiniMessage = LegacyComponentSerializer.legacySection().deserialize(centeredTextLegacy); // to minimessage
+            player.sendMessage(centeredTextMiniMessage);
+        }else{
+            actionLine = MessagesManager.getLegacyColoredMessage(actionLine);
+            player.sendMessage(MessagesManager.getCenteredMessage(actionLine));
+        }
     }
 
     public static void consoleMessage(String actionLine){
-        Bukkit.getConsoleSender().sendMessage(MessagesManager.getColoredMessage(actionLine));
+        if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()) {
+            Bukkit.getConsoleSender().sendMessage(MiniMessage.miniMessage().deserialize(actionLine));
+        }else{
+            Bukkit.getConsoleSender().sendMessage(MessagesManager.getLegacyColoredMessage(actionLine));
+        }
     }
 
     public static void jsonMessage(Player player,String actionLine){
@@ -86,7 +106,12 @@ public class ActionUtils {
     }
 
     public static void playerSendChat(Player player,String actionLine){
-        player.chat(MessagesManager.getColoredMessage(actionLine));
+        if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()) {
+            Component component = MiniMessage.miniMessage().deserialize(actionLine);
+            player.chat(MessagesManager.getLegacyColoredMessage(LegacyComponentSerializer.legacySection().serialize(component)));
+        }else{
+            player.chat(MessagesManager.getLegacyColoredMessage(actionLine));
+        }
     }
 
     public static void sendToServer(Player player,String actionLine,ConditionalEvents plugin){
@@ -243,7 +268,7 @@ public class ActionUtils {
     }
 
     public static void cancelEvent(String actionLine,Event minecraftEvent){
-        boolean cancel = Boolean.valueOf(actionLine);
+        boolean cancel = Boolean.parseBoolean(actionLine);
         if(minecraftEvent != null && minecraftEvent instanceof Cancellable) {
             Cancellable cancellableEvent = (Cancellable) minecraftEvent;
             cancellableEvent.setCancelled(cancel);
@@ -251,7 +276,11 @@ public class ActionUtils {
     }
 
     public static void kick(Player player,String actionLine){
-        player.kickPlayer(MessagesManager.getColoredMessage(actionLine));
+        if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()) {
+            player.kick(MiniMessage.miniMessage().deserialize(actionLine));
+        }else{
+            player.kickPlayer(MessagesManager.getLegacyColoredMessage(actionLine));
+        }
     }
 
     public static void playSound(LivingEntity livingEntity,String actionLine){
@@ -266,7 +295,7 @@ public class ActionUtils {
             pitch = Float.parseFloat(sep[2]);
         }catch(Exception e ) {
             Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix+
-                    MessagesManager.getColoredMessage(" &7Sound Name: &c"+sep[0]+" &7is not valid. Change it in the config!"));
+                    MessagesManager.getLegacyColoredMessage(" &7Sound Name: &c"+sep[0]+" &7is not valid. Change it in the config!"));
             return;
         }
 
@@ -334,7 +363,7 @@ public class ActionUtils {
                     sound = getSoundByName(actionLine);
                 }catch(Exception e ) {
                     Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix+
-                            MessagesManager.getColoredMessage(" &7Sound Name: &c"+actionLine+" &7is not valid. Change it in the config!"));
+                            MessagesManager.getLegacyColoredMessage(" &7Sound Name: &c"+actionLine+" &7is not valid. Change it in the config!"));
                     return;
                 }
                 player.stopSound(sound);
@@ -525,6 +554,7 @@ public class ActionUtils {
         // summon: location:<x>,<y>,<z>,<world>;entity:<id>,<property>:<value>
         // custom_name:<value>
         // health:<value>
+        // scale:<value>
         // equipment:<helmet>,<chestplate>,<leggings>,<boots> (material or 'none')
         // amount:<amount>
         // hand_equipment:<mainhand>,<offhand>
@@ -535,6 +565,7 @@ public class ActionUtils {
 
         String customName = null;
         double health = 0;
+        double scale = 0;
         String equipmentString = null;
         String handEquipmentString = null;
         int amount = 1;
@@ -554,6 +585,8 @@ public class ActionUtils {
                 customName = property.replace("custom_name:","");
             }else if(property.startsWith("health:")){
                 health = Double.parseDouble(property.replace("health:",""));
+            }else if(property.startsWith("scale:")){
+                scale = Double.parseDouble(property.replace("scale:",""));
             }else if(property.startsWith("equipment:")){
                 equipmentString = property.replace("equipment:","");
             }else if(property.startsWith("hand_equipment:")){
@@ -563,12 +596,17 @@ public class ActionUtils {
             }
         }
 
+        boolean isMiniMessage = ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage();
         if(location != null){
             for(int i=0;i<amount;i++){
                 Entity entity = location.getWorld().spawnEntity(location,type);
                 if(customName != null){
                     entity.setCustomNameVisible(true);
-                    entity.setCustomName(MessagesManager.getColoredMessage(customName));
+                    if(isMiniMessage){
+                        entity.customName(MiniMessage.miniMessage().deserialize(customName));
+                    }else{
+                        entity.setCustomName(MessagesManager.getLegacyColoredMessage(customName));
+                    }
                 }
 
                 if(entity instanceof LivingEntity){
@@ -576,6 +614,10 @@ public class ActionUtils {
                     if(health != 0){
                         livingEntity.setMaxHealth(health);
                         livingEntity.setHealth(health);
+                    }
+
+                    if(scale != 0){
+                        livingEntity.getAttribute(Attribute.SCALE).setBaseValue(scale);
                     }
 
                     EntityEquipment equipment = livingEntity.getEquipment();
@@ -823,7 +865,7 @@ public class ActionUtils {
             }
         }catch(Exception e) {
             Bukkit.getConsoleSender().sendMessage(ConditionalEvents.prefix+
-                    MessagesManager.getColoredMessage(" &7Particle Name: &c"+effectName+" &7is not valid. Change it in the config!"));
+                    MessagesManager.getLegacyColoredMessage(" &7Particle Name: &c"+effectName+" &7is not valid. Change it in the config!"));
         }
     }
 
@@ -989,7 +1031,11 @@ public class ActionUtils {
             if(actionLine.equals("no")){
                 deathEvent.setDeathMessage(null);
             }else{
-                deathEvent.setDeathMessage(MessagesManager.getColoredMessage(actionLine));
+                if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+                    deathEvent.deathMessage(MiniMessage.miniMessage().deserialize(actionLine));
+                }else{
+                    deathEvent.setDeathMessage(MessagesManager.getLegacyColoredMessage(actionLine));
+                }
             }
         }
     }
@@ -999,7 +1045,11 @@ public class ActionUtils {
         if(minecraftEvent instanceof AsyncPlayerPreLoginEvent) {
             AsyncPlayerPreLoginEvent preJoinEvent = (AsyncPlayerPreLoginEvent) minecraftEvent;
             preJoinEvent.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            preJoinEvent.setKickMessage(MessagesManager.getColoredMessage(actionLine));
+            if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+                preJoinEvent.kickMessage(MiniMessage.miniMessage().deserialize(actionLine));
+            }else{
+                preJoinEvent.setKickMessage(MessagesManager.getLegacyColoredMessage(actionLine));
+            }
         }
     }
 
