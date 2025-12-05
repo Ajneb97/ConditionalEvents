@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 
 import ce.ajneb97.api.ConditionalEventsAPI;
 import ce.ajneb97.managers.MessagesManager;
+import ce.ajneb97.utils.MiniMessageUtils;
 import ce.ajneb97.utils.OtherUtils;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -21,7 +21,7 @@ public class ActionBarAPI
     public static void sendActionBar(Player player, String message) {
 	  if(OtherUtils.isNew()) {
           if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()){
-              player.sendActionBar(MiniMessage.miniMessage().deserialize(message));
+              MiniMessageUtils.actionbar(player,message);
           }else{
               player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(MessagesManager.getLegacyColoredMessage(message)));
           }

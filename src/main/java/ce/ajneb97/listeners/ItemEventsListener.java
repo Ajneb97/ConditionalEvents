@@ -6,9 +6,9 @@ import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.utils.InventoryUtils;
+import ce.ajneb97.utils.MiniMessageUtils;
 import ce.ajneb97.utils.OtherUtils;
 import ce.ajneb97.utils.ServerVersion;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -159,7 +159,7 @@ public class ItemEventsListener implements Listener {
         if(view != null) {
             inventoryType = InventoryUtils.getOpenInventoryViewType(player).name();
             if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
-                inventoryTitle = PlainTextComponentSerializer.plainText().serialize(InventoryUtils.getOpenInventoryViewTitleComponent(player));
+                inventoryTitle = MiniMessageUtils.getOpenInventoryViewTitlePlain(player);
             }else{
                 inventoryTitle = ChatColor.stripColor(InventoryUtils.getOpenInventoryViewTitle(player));
             }

@@ -10,9 +10,6 @@ import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.managers.dependencies.DiscordSRVManager;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ExecutedEvent;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.*;
@@ -48,7 +45,7 @@ public class ActionUtils {
 
     public static void message(Player player,String actionLine){
         if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize(actionLine));
+            MiniMessageUtils.message(player,actionLine);
         }else{
             player.sendMessage(MessagesManager.getLegacyColoredMessage(actionLine));
         }
@@ -56,11 +53,7 @@ public class ActionUtils {
 
     public static void centeredMessage(Player player,String actionLine){
         if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()){
-            MiniMessage mm = MiniMessage.miniMessage();
-            Component component = mm.deserialize(actionLine);
-            String centeredTextLegacy = MessagesManager.getCenteredMessage(LegacyComponentSerializer.legacySection().serialize(component)); // to legacy
-            Component centeredTextMiniMessage = LegacyComponentSerializer.legacySection().deserialize(centeredTextLegacy); // to minimessage
-            player.sendMessage(centeredTextMiniMessage);
+            MiniMessageUtils.centeredMessage(player,actionLine);
         }else{
             actionLine = MessagesManager.getLegacyColoredMessage(actionLine);
             player.sendMessage(MessagesManager.getCenteredMessage(actionLine));
@@ -69,7 +62,7 @@ public class ActionUtils {
 
     public static void consoleMessage(String actionLine){
         if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()) {
-            Bukkit.getConsoleSender().sendMessage(MiniMessage.miniMessage().deserialize(actionLine));
+            MiniMessageUtils.consoleMessage(actionLine);
         }else{
             Bukkit.getConsoleSender().sendMessage(MessagesManager.getLegacyColoredMessage(actionLine));
         }
@@ -99,16 +92,17 @@ public class ActionUtils {
     public static void playerCommandAsOp(Player player,String actionLine){
         boolean isOp = player.isOp();
         player.setOp(true);
-        player.performCommand(actionLine);
-        if(!isOp) {
-            player.setOp(false);
+        try{
+            player.performCommand(actionLine);
+        }catch(Exception e){
+            e.printStackTrace();
         }
+        player.setOp(isOp);
     }
 
     public static void playerSendChat(Player player,String actionLine){
         if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()) {
-            Component component = MiniMessage.miniMessage().deserialize(actionLine);
-            player.chat(MessagesManager.getLegacyColoredMessage(LegacyComponentSerializer.legacySection().serialize(component)));
+            MiniMessageUtils.playerSendChat(player,actionLine);
         }else{
             player.chat(MessagesManager.getLegacyColoredMessage(actionLine));
         }
@@ -277,7 +271,7 @@ public class ActionUtils {
 
     public static void kick(Player player,String actionLine){
         if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()) {
-            player.kick(MiniMessage.miniMessage().deserialize(actionLine));
+            MiniMessageUtils.kick(player,actionLine);
         }else{
             player.kickPlayer(MessagesManager.getLegacyColoredMessage(actionLine));
         }
@@ -603,7 +597,7 @@ public class ActionUtils {
                 if(customName != null){
                     entity.setCustomNameVisible(true);
                     if(isMiniMessage){
-                        entity.customName(MiniMessage.miniMessage().deserialize(customName));
+                        MiniMessageUtils.setEntityCustomName(entity,customName);
                     }else{
                         entity.setCustomName(MessagesManager.getLegacyColoredMessage(customName));
                     }
@@ -1032,7 +1026,7 @@ public class ActionUtils {
                 deathEvent.setDeathMessage(null);
             }else{
                 if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()){
-                    deathEvent.deathMessage(MiniMessage.miniMessage().deserialize(actionLine));
+                    MiniMessageUtils.deathMessage(deathEvent,actionLine);
                 }else{
                     deathEvent.setDeathMessage(MessagesManager.getLegacyColoredMessage(actionLine));
                 }
@@ -1046,7 +1040,7 @@ public class ActionUtils {
             AsyncPlayerPreLoginEvent preJoinEvent = (AsyncPlayerPreLoginEvent) minecraftEvent;
             preJoinEvent.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             if(ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage()){
-                preJoinEvent.kickMessage(MiniMessage.miniMessage().deserialize(actionLine));
+                MiniMessageUtils.preLoginKickMessage(preJoinEvent,actionLine);
             }else{
                 preJoinEvent.setKickMessage(MessagesManager.getLegacyColoredMessage(actionLine));
             }

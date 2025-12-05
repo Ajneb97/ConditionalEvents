@@ -8,13 +8,7 @@ import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.model.player.PlayerData;
-import ce.ajneb97.utils.InventoryUtils;
-import ce.ajneb97.utils.MathUtils;
-import ce.ajneb97.utils.OtherUtils;
-import ce.ajneb97.utils.ServerVersion;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import ce.ajneb97.utils.*;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
@@ -106,8 +100,8 @@ public class PlayerEventsListener implements Listener {
                 killerType = killer.getType().name();
                 if(killer.getCustomName() != null) {
                     if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
-                        killerName = PlainTextComponentSerializer.plainText().serialize(killer.customName());
-                        killerNameColorFormat = MiniMessage.miniMessage().serialize(killer.customName());
+                        killerName = MiniMessageUtils.getEntityCustomNamePlain(killer);
+                        killerNameColorFormat = MiniMessageUtils.getEntityCustomNameMiniMessage(killer);
                     }else{
                         killerName = ChatColor.stripColor(killer.getCustomName());
                         killerNameColorFormat = killer.getCustomName().replace("§", "&");
@@ -255,8 +249,8 @@ public class PlayerEventsListener implements Listener {
             damagerType = damager.getType().name();
             if(damager != null && damager.getCustomName() != null) {
                 if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
-                    damagerName = PlainTextComponentSerializer.plainText().serialize(damager.customName());
-                    damagerNameColorFormat = MiniMessage.miniMessage().serialize(damager.customName());
+                    damagerName = MiniMessageUtils.getEntityCustomNamePlain(damager);
+                    damagerNameColorFormat = MiniMessageUtils.getEntityCustomNameMiniMessage(damager);
                 }else{
                     damagerName = ChatColor.stripColor(damager.getCustomName());
                     damagerNameColorFormat = damager.getCustomName().replace("§", "&");
@@ -481,7 +475,7 @@ public class PlayerEventsListener implements Listener {
 
         String inventoryTitle;
         if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
-            inventoryTitle = PlainTextComponentSerializer.plainText().serialize(InventoryUtils.getViewTitleComponent(event));
+            inventoryTitle = MiniMessageUtils.getInventoryTitlePlain(event);
         }else{
             inventoryTitle = ChatColor.stripColor(InventoryUtils.getViewTitle(event));
         }
@@ -499,7 +493,7 @@ public class PlayerEventsListener implements Listener {
 
         String inventoryTitle;
         if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
-            inventoryTitle = PlainTextComponentSerializer.plainText().serialize(InventoryUtils.getViewTitleComponent(event));
+            inventoryTitle = MiniMessageUtils.getInventoryTitlePlain(event);
         }else{
             inventoryTitle = ChatColor.stripColor(InventoryUtils.getViewTitle(event));
         }
@@ -528,9 +522,8 @@ public class PlayerEventsListener implements Listener {
         String titleColorFormat = "";
         if(event.getView() != null){
             if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
-                Component titleComponent = InventoryUtils.getViewTitleComponent(event);
-                title = PlainTextComponentSerializer.plainText().serialize(titleComponent);
-                titleColorFormat = MiniMessage.miniMessage().serialize(titleComponent);
+                title = MiniMessageUtils.getInventoryTitlePlain(event);
+                titleColorFormat = MiniMessageUtils.getInventoryTitleMiniMessage(event);
             }else{
                 title = InventoryUtils.getViewTitle(event);
                 titleColorFormat = title.replace("§", "&");

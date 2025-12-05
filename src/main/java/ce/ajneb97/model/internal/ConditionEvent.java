@@ -5,12 +5,11 @@ import ce.ajneb97.configs.MainConfigManager;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
+import ce.ajneb97.model.internal.minimessage.GetVariablesItemLore;
 import ce.ajneb97.utils.BlockUtils;
+import ce.ajneb97.utils.MiniMessageUtils;
 import ce.ajneb97.utils.OtherUtils;
 import ce.ajneb97.utils.ServerVersion;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -156,8 +155,8 @@ public class ConditionEvent {
 
         if(entity.getCustomName() != null) {
             if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
-                victimName = PlainTextComponentSerializer.plainText().serialize(entity.customName());
-                victimNameColorFormat = MiniMessage.miniMessage().serialize(entity.customName());
+                victimName = MiniMessageUtils.getEntityCustomNamePlain(entity);
+                victimNameColorFormat = MiniMessageUtils.getEntityCustomNameMiniMessage(entity);
             }else{
                 victimName = ChatColor.stripColor(entity.getCustomName());
                 victimNameColorFormat = entity.getCustomName().replace("§", "&");
@@ -213,8 +212,8 @@ public class ConditionEvent {
 
                 if(meta.hasDisplayName()) {
                     if(useMiniMessage){
-                        name = PlainTextComponentSerializer.plainText().serialize(meta.displayName());
-                        colorFormatName = MiniMessage.miniMessage().serialize(meta.displayName());
+                        name = MiniMessageUtils.getItemNamePlain(meta);
+                        colorFormatName = MiniMessageUtils.getItemNameMiniMessage(meta);
                     }else{
                         name = ChatColor.stripColor(meta.getDisplayName());
                         colorFormatName = meta.getDisplayName().replace("§", "&");
@@ -222,22 +221,12 @@ public class ConditionEvent {
                 }
                 if(meta.hasLore()) {
                     if(useMiniMessage){
-                        List<Component> lore = meta.lore();
-                        PlainTextComponentSerializer plainTextComponentSerializer = PlainTextComponentSerializer.plainText();
-                        MiniMessage miniMessage = MiniMessage.miniMessage();
-                        for(int i=0;i<lore.size();i++){
-                            String plainFormat = plainTextComponentSerializer.serialize(lore.get(i));
-                            String tagFormat = miniMessage.serialize(lore.get(i));
-                            loreList.add(plainFormat);
-                            colorFormatLoreList.add(tagFormat);
-                            if(i == lore.size()-1) {
-                                loreString = loreString+plainFormat;
-                                colorFormatLoreString = colorFormatLoreString+tagFormat;
-                            }else{
-                                loreString = loreString+plainFormat + " ";
-                                colorFormatLoreString = colorFormatLoreString+tagFormat + " ";
-                            }
-                        }
+                        GetVariablesItemLore getVariablesItemLore = MiniMessageUtils.getVariablesItemLore(
+                                meta,loreList,colorFormatLoreList,loreString,colorFormatLoreString);
+                        loreList = getVariablesItemLore.getLoreList();
+                        colorFormatLoreList = getVariablesItemLore.getColorFormatLoreList();
+                        loreString = getVariablesItemLore.getLoreString();
+                        colorFormatLoreString = getVariablesItemLore.getColorFormatLoreString();
                     }else{
                         List<String> lore = meta.getLore();
                         for(int i=0;i<lore.size();i++) {
@@ -303,8 +292,8 @@ public class ConditionEvent {
         String entityUuid = entity.getUniqueId().toString();
         if(entity.getCustomName() != null) {
             if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
-                entityName = PlainTextComponentSerializer.plainText().serialize(entity.customName());
-                entityNameColorFormat = MiniMessage.miniMessage().serialize(entity.customName());
+                entityName = MiniMessageUtils.getEntityCustomNamePlain(entity);
+                entityNameColorFormat = MiniMessageUtils.getEntityCustomNameMiniMessage(entity);
             }else{
                 entityName = ChatColor.stripColor(entity.getCustomName());
                 entityNameColorFormat = entity.getCustomName().replace("§", "&");

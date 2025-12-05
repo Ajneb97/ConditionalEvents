@@ -3,14 +3,10 @@ package ce.ajneb97.utils;
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.api.ConditionalEventsAPI;
 import ce.ajneb97.managers.MessagesManager;
-import ce.ajneb97.managers.SavedItemsManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -26,7 +22,6 @@ import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
 
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -229,7 +224,7 @@ public class ItemUtils {
         ItemMeta meta = item.getItemMeta();
         if(name != null) {
             if(useMiniMessage){
-                meta.displayName(MiniMessage.miniMessage().deserialize(name).decoration(TextDecoration.ITALIC, false));
+                MiniMessageUtils.setItemName(meta,name);
             }else{
                 meta.setDisplayName(MessagesManager.getLegacyColoredMessage(name));
             }
@@ -237,11 +232,7 @@ public class ItemUtils {
         if(!lore.isEmpty()) {
             List<String> loreCopy = new ArrayList<>(lore);
             if(useMiniMessage){
-                List<Component> loreComponent = new ArrayList<>();
-                for(int i=0;i<loreCopy.size();i++) {
-                    loreComponent.add(MiniMessage.miniMessage().deserialize(loreCopy.get(i)).decoration(TextDecoration.ITALIC, false));
-                }
-                meta.lore(loreComponent);
+                MiniMessageUtils.setItemLore(meta,loreCopy);
             }else{
                 for(int i=0;i<loreCopy.size();i++) {
                     loreCopy.set(i, MessagesManager.getLegacyColoredMessage(loreCopy.get(i)));
