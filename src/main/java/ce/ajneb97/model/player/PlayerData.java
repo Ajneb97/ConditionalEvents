@@ -1,27 +1,26 @@
 package ce.ajneb97.model.player;
 
-import org.bukkit.Bukkit;
-
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class PlayerData {
-    private String uuid;
+    private UUID uuid;
     private String name;
     private boolean modified;
     private ArrayList<EventData> eventData;
 
-    public PlayerData(String uuid, String name) {
+    public PlayerData(UUID uuid, String name) {
         this.uuid = uuid;
         this.name = name;
-        this.eventData = new ArrayList<EventData>();
+        this.eventData = new ArrayList<>();
         this.modified = false;
     }
 
-    public String getUuid() {
+    public UUID getUuid() {
         return uuid;
     }
 
-    public void setUuid(String uuid) {
+    public void setUuid(UUID uuid) {
         this.uuid = uuid;
     }
 
@@ -50,12 +49,14 @@ public class PlayerData {
         return null;
     }
 
-    public void resetAll(){
-        eventData.clear();
+    public void resetEvent(String eventName){
+        eventData.removeIf(c -> c.getName().equals(eventName));
+        modified = true;
     }
 
-    public void resetCooldown(String eventName){
-        setCooldown(eventName,0);
+    public void resetAll(){
+        eventData.clear();
+        modified = true;
     }
 
     public void setCooldown(String eventName,long currentMillis){

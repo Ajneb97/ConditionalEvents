@@ -237,7 +237,7 @@ public class ConfigsManager {
         if(path.equals("config.yml")){
             commonConfig = mainConfigManager.getConfigFile();
         }else{
-            commonConfig = eventsFolderConfigManager.getConfigFile(path);
+            commonConfig = eventsFolderConfigManager.getConfigFile(path,true);
         }
 
         FileConfiguration config = commonConfig.getConfig();
@@ -265,7 +265,6 @@ public class ConfigsManager {
     public boolean reload(){
         endRepetitiveEvents();
 
-        playerConfigsManager.saveConfigs();
         if(!mainConfigManager.reloadConfig()){
             return false;
         }

@@ -52,11 +52,7 @@ public class PlayerEventsListener implements Listener {
         new ConditionEvent(plugin, player, event, EventType.PLAYER_JOIN, null)
                 .checkEvent();
 
-        //Update player data
-        PlayerData playerData = plugin.getPlayerManager().getPlayerData(player);
-        if(playerData != null){
-            playerData.setName(player.getName());
-        }
+        plugin.getPlayerManager().manageJoin(player);
 
         //Update notification
         String latestVersion = plugin.getUpdateCheckerManager().getLatestVersion();
@@ -70,6 +66,9 @@ public class PlayerEventsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLeave(PlayerQuitEvent event){
         Player player = event.getPlayer();
+
+        plugin.getPlayerManager().manageLeave(player);
+
         new ConditionEvent(plugin, player, event, EventType.PLAYER_LEAVE, null)
                 .checkEvent();
     }

@@ -98,57 +98,22 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
 		String player = args[1];
 		String eventName = args[2];
-
-		PlayerManager playerManager = plugin.getPlayerManager();
-		PlayerData playerData = playerManager.getPlayerDataByName(player);
-		if(!player.equals("*") && playerData == null){
-			msgManager.sendMessage(sender,config.getString("Messages.playerDoesNotExists"),true);
-			return;
-		}
-
 		boolean silent = args.length >= 4 && args[3].equals("silent:true");
 
-		if(eventName.equals("all")){
-			if(player.equals("*")){
-				//ALL player data reset
-				playerManager.resetAllDataForPlayers();
+		PlayerManager playerManager = plugin.getPlayerManager();
+		if(player.equals("*")){
+			playerManager.resetDataForAllPlayers(eventName,config,result -> {
 				if(silent){
 					return;
 				}
-				msgManager.sendMessage(sender,config.getString("Messages.eventDataResetAllForAllPlayers"),true);
-			}else{
-				//Reset ALL event data for a player
-				playerData.resetAll();
-				if(silent){
-					return;
-				}
-				msgManager.sendMessage(sender,config.getString("Messages.eventDataResetAll")
-						.replace("%player%", player),true);
-			}
+				msgManager.sendMessage(sender,result,true);
+			});
 		}else{
-			CEEvent e = plugin.getEventsManager().getEvent(eventName);
-			if(e == null){
-				msgManager.sendMessage(sender,config.getString("Messages.eventDoesNotExists"),true);
+			String result = playerManager.resetDataForPlayer(player,eventName,config);
+			if(silent){
 				return;
 			}
-			if(player.equals("*")){
-				//Reset an event for ALL players
-				playerManager.resetEventDataForPlayers(eventName);
-				if(silent){
-					return;
-				}
-				msgManager.sendMessage(sender,config.getString("Messages.eventDataResetForAllPlayers")
-						.replace("%event%", eventName),true);
-			}else{
-				//Reset an event for a player
-				playerData.resetCooldown(eventName);
-				playerData.setOneTime(eventName,false);
-				if(silent){
-					return;
-				}
-				msgManager.sendMessage(sender,config.getString("Messages.eventDataReset")
-						.replace("%player%", player).replace("%event%", eventName),true);
-			}
+			msgManager.sendMessage(sender,result,true);
 		}
 	}
 	
