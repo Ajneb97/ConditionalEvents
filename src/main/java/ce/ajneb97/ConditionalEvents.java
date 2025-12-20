@@ -20,6 +20,7 @@ import ce.ajneb97.manager.dependencies.Metrics;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.model.internal.UpdateCheckerResult;
+import ce.ajneb97.tasks.PlayOneMinuteTask;
 import ce.ajneb97.tasks.PlayerDataSaveTask;
 import ce.ajneb97.utils.ServerVersion;
 import org.bukkit.Bukkit;
@@ -53,6 +54,7 @@ public class ConditionalEvents extends JavaPlugin {
     private APIManager apiManager;
     private InterruptEventManager interruptEventManager;
     private PlayerDataSaveTask playerDataSaveTask;
+    private PlayOneMinuteTask playOneMinuteTask;
     public final boolean isFolia = checkFolia();
 
     public void onEnable() {
@@ -100,6 +102,7 @@ public class ConditionalEvents extends JavaPlugin {
         commandRegisterManager.registerCommands();
 
         reloadPlayerDataSaveTask();
+        reloadPlayOneMinuteTask();
 
         ConditionalEventsAPI.init(this);
 
@@ -214,6 +217,12 @@ public class ConditionalEvents extends JavaPlugin {
         if (playerDataSaveTask != null) playerDataSaveTask.stop();
         playerDataSaveTask = new PlayerDataSaveTask(this);
         playerDataSaveTask.start(configsManager.getMainConfigManager().getConfig().getInt("Config.data_save_time"));
+    }
+
+    public void reloadPlayOneMinuteTask() {
+        if (playOneMinuteTask != null) playOneMinuteTask.stop();
+        playOneMinuteTask = new PlayOneMinuteTask(this);
+        playOneMinuteTask.start();
     }
 
     public void registerCommands() {
