@@ -134,7 +134,7 @@ public class MySQLConnection {
 
     public void saveAllData() {
         Map<UUID, PlayerData> players = plugin.getPlayerManager().getPlayers();
-        for (PlayerData player : players.values()) {
+        for (PlayerData player : new ArrayList<>(players.values())) {
             if (player.isModified()) {
                 saveData(player);
                 player.setModified(false);
