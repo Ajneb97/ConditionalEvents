@@ -83,7 +83,12 @@ public class ActionUtils {
 
     public static void consoleCommand(String actionLine) {
         ConsoleCommandSender sender = Bukkit.getConsoleSender();
-        Bukkit.dispatchCommand(sender, actionLine);
+
+        if (ConditionalEventsAPI.getPlugin().isFolia) {
+            Bukkit.getGlobalRegionScheduler().run(ConditionalEventsAPI.getPlugin(), task -> Bukkit.dispatchCommand(sender, actionLine));
+        } else {
+            Bukkit.dispatchCommand(sender, actionLine);
+        }
     }
 
     public static void playerCommand(Player player, String actionLine) {
