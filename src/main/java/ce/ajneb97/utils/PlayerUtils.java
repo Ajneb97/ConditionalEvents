@@ -5,11 +5,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+@SuppressWarnings("deprecation")
 public class PlayerUtils {
 
-    public static ItemStack getItemBySlot(Player player, String slot){
+    public static ItemStack getItemBySlot(Player player, String slot) {
         PlayerInventory inventory = player.getInventory();
-        switch(slot){
+        switch (slot) {
             case "HAND":
                 return inventory.getItemInHand();
             case "OFF_HAND":
@@ -27,9 +28,9 @@ public class PlayerUtils {
         }
     }
 
-    public static void setItemBySlot(Player player, String slot, ItemStack item){
+    public static void setItemBySlot(Player player, String slot, ItemStack item) {
         PlayerInventory inventory = player.getInventory();
-        switch(slot){
+        switch (slot) {
             case "HAND":
                 inventory.setItemInHand(item);
                 break;
@@ -49,14 +50,14 @@ public class PlayerUtils {
                 inventory.setBoots(item);
                 break;
             default:
-                inventory.setItem(Integer.parseInt(slot),item);
+                inventory.setItem(Integer.parseInt(slot), item);
                 break;
         }
     }
 
-    public static void updatePlayerInventory(Player player){
+    public static void updatePlayerInventory(Player player) {
         ServerVersion serverVersion = ConditionalEvents.serverVersion;
-        if(!serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_13_R1)) {
+        if (!serverVersion.serverVersionGreaterEqualThan(serverVersion, ServerVersion.v1_13_R1)) {
             //1.12-
             player.updateInventory();
         }

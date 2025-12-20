@@ -1,8 +1,7 @@
 package ce.ajneb97.model;
 
-import ce.ajneb97.managers.RepetitiveManager;
+import ce.ajneb97.manager.RepetitiveManager;
 import ce.ajneb97.model.actions.ActionGroup;
-import org.bukkit.Bukkit;
 
 import java.util.List;
 
@@ -31,9 +30,7 @@ public class CEEvent {
     private List<String> preventCooldownActivationActionGroups;
     private List<String> preventOneTimeActivationActionGroups;
 
-
-
-    public CEEvent(String name){
+    public CEEvent(String name) {
         this.name = name;
     }
 
@@ -133,17 +130,17 @@ public class CEEvent {
         this.allowMathFormulasInConditions = allowMathFormulasInConditions;
     }
 
-    public void enable(){
+    public void enable() {
         this.enabled = true;
-        if(repetitiveManager != null && !repetitiveManager.isStarted()){
+        if (repetitiveManager != null && !repetitiveManager.isStarted()) {
             repetitiveManager.start();
         }
     }
 
-    public void disable(){
+    public void disable() {
         this.enabled = false;
-        if(repetitiveManager != null){
-            repetitiveManager.end();
+        if (repetitiveManager != null) {
+            repetitiveManager.stop();
         }
     }
 
@@ -164,10 +161,9 @@ public class CEEvent {
     }
 
 
-
-    public ActionGroup getActionGroup(String name){
-        for(ActionGroup actionGroup : actionGroups){
-            if(actionGroup.getName().equals(name)){
+    public ActionGroup getActionGroup(String name) {
+        for (ActionGroup actionGroup : actionGroups) {
+            if (actionGroup.getName().equals(name)) {
                 return actionGroup;
             }
         }

@@ -13,12 +13,13 @@ import org.bukkit.event.Listener;
 public class WGRegionEventsListener implements Listener {
 
     public ConditionalEvents plugin;
+
     public WGRegionEventsListener(ConditionalEvents plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler
-    public void onRegionEnter(RegionEnteredEvent event){
+    public void onRegionEnter(RegionEnteredEvent event) {
         Player player = event.getPlayer();
 
         new ConditionEvent(plugin, player, event, EventType.WGEVENTS_REGION_ENTER, null)
@@ -29,7 +30,7 @@ public class WGRegionEventsListener implements Listener {
     }
 
     @EventHandler
-    public void onRegionLeave(RegionLeftEvent event){
+    public void onRegionLeave(RegionLeftEvent event) {
         Player player = event.getPlayer();
 
         new ConditionEvent(plugin, player, event, EventType.WGEVENTS_REGION_LEAVE, null)

@@ -57,5 +57,4 @@ public enum ActionType {
     EXECUTE_ACTION_GROUP,
     TAB_COMPLETE,
     API
-
 }

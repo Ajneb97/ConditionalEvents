@@ -3,6 +3,7 @@ package ce.ajneb97.model.actions;
 import java.util.List;
 
 public class ActionGroup {
+
     private String name;
     private List<CEAction> actions;
 

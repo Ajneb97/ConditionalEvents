@@ -4,44 +4,42 @@ import ce.ajneb97.model.StoredVariable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.List;
 
+public class ConditionalEventsCallEvent extends Event {
 
-public class ConditionalEventsCallEvent extends Event{
+    private final Player player;
+    private final ArrayList<StoredVariable> variables;
+    private final String event;
+    private static final HandlerList handlers = new HandlerList();
 
-	private Player player;
-	private ArrayList<StoredVariable> variables;
-	private String event;
-	private static final HandlerList handlers = new HandlerList();
+    public ConditionalEventsCallEvent(Player player, ArrayList<StoredVariable> variables, String event) {
+        this.player = player;
+        this.variables = variables;
+        this.event = event;
+    }
 
-	public ConditionalEventsCallEvent(Player player, ArrayList<StoredVariable> variables, String event){
-		this.player = player;
-		this.variables = variables;
-		this.event = event;
-	}	
-	
-	public Player getPlayer() {
-		return player;
-	}
+    public Player getPlayer() {
+        return player;
+    }
 
-	public String getEvent() {
-		return event;
-	}
+    public String getEvent() {
+        return event;
+    }
 
-	public ArrayList<StoredVariable> getVariables() {
-		return variables;
-	}
+    public ArrayList<StoredVariable> getVariables() {
+        return variables;
+    }
 
-	@Override
-	public HandlerList getHandlers() {
-		// TODO Auto-generated method stub
-		return handlers;
-	}
-	
-	public static HandlerList getHandlerList() {
-	    return handlers;
-	}
+    @Override
+    public @NotNull HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 
 }

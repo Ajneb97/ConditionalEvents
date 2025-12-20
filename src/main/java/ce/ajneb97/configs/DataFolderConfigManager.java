@@ -6,11 +6,13 @@ import ce.ajneb97.configs.model.CommonConfig;
 import java.io.File;
 import java.util.ArrayList;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public abstract class DataFolderConfigManager {
+
     protected String folderName;
     protected ConditionalEvents plugin;
 
-    public DataFolderConfigManager(ConditionalEvents plugin, String folderName){
+    public DataFolderConfigManager(ConditionalEvents plugin, String folderName) {
         this.plugin = plugin;
         this.folderName = folderName;
     }
@@ -20,24 +22,23 @@ public abstract class DataFolderConfigManager {
         loadConfigs();
     }
 
-    public void createFolder(){
+    public void createFolder() {
         File folder;
         try {
             folder = new File(plugin.getDataFolder() + File.separator + folderName);
-            if(!folder.exists()){
+            if (!folder.exists()) {
                 folder.mkdirs();
                 createFiles();
             }
-        } catch(SecurityException e) {
-            folder = null;
+        } catch (SecurityException ignored) {
         }
     }
 
-    public CommonConfig getConfigFile(String pathName,boolean create) {
+    public CommonConfig getConfigFile(String pathName, boolean create) {
         String pathFile = plugin.getDataFolder() + File.separator + folderName;
         File folder = new File(pathFile);
         File file = new File(folder, pathName);
-        if(!file.exists() && !create) {
+        if (!file.exists() && !create) {
             return null;
         }
 
@@ -46,12 +47,15 @@ public abstract class DataFolderConfigManager {
         return commonConfig;
     }
 
-    public ArrayList<CommonConfig> getConfigs(){
+    public ArrayList<CommonConfig> getConfigs() {
         ArrayList<CommonConfig> configs = new ArrayList<>();
 
         String pathFile = plugin.getDataFolder() + File.separator + folderName;
         File folder = new File(pathFile);
         File[] listOfFiles = folder.listFiles();
+
+        if (listOfFiles == null) return configs;
+
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 String pathName = file.getName();
@@ -68,5 +72,5 @@ public abstract class DataFolderConfigManager {
 
     public abstract void loadConfigs();
 
-    public abstract void saveConfigs();
+    public abstract void saveAllData();
 }

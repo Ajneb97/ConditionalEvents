@@ -1,17 +1,19 @@
 package ce.ajneb97.api;
 
 import ce.ajneb97.ConditionalEvents;
-import ce.ajneb97.managers.MessagesManager;
+import ce.ajneb97.manager.MessagesManager;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.utils.TimeUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+@SuppressWarnings("unused")
 public class ConditionalEventsAPI {
 
     private static ConditionalEvents plugin;
-    public ConditionalEventsAPI(ConditionalEvents plugin){
-        this.plugin = plugin;
+
+    public static void init(ConditionalEvents plugin) {
+        ConditionalEventsAPI.plugin = plugin;
     }
 
     public static String getEventCooldown(Player player, String event){

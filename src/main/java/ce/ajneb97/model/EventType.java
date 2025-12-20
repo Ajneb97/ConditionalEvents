@@ -1,6 +1,7 @@
 package ce.ajneb97.model;
 
 public enum EventType {
+
     PLAYER_RESPAWN,
     PLAYER_DEATH,
     PLAYER_ATTACK,
@@ -53,4 +54,5 @@ public enum EventType {
     PROTOCOLLIB_RECEIVE_MESSAGE,
     CUSTOM,
     CALL
+
 }

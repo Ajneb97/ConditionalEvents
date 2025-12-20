@@ -3,6 +3,7 @@ package ce.ajneb97.model;
 import java.util.List;
 
 public class ToConditionGroup {
+
     private String name;
     private List<String> conditions;
 

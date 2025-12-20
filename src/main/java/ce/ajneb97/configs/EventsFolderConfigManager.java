@@ -1,10 +1,9 @@
 package ce.ajneb97.configs;
 
-
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.configs.model.CommonConfig;
 
-public class EventsFolderConfigManager extends DataFolderConfigManager{
+public class EventsFolderConfigManager extends DataFolderConfigManager {
 
     public EventsFolderConfigManager(ConditionalEvents plugin, String folderName) {
         super(plugin, folderName);
@@ -12,7 +11,7 @@ public class EventsFolderConfigManager extends DataFolderConfigManager{
 
     @Override
     public void createFiles() {
-        new CommonConfig("more_events.yml",plugin,folderName,false).registerConfig();
+        new CommonConfig("events.yml", plugin, folderName, false).registerConfig();
     }
 
     @Override
@@ -21,9 +20,7 @@ public class EventsFolderConfigManager extends DataFolderConfigManager{
     }
 
     @Override
-    public void saveConfigs() {
+    public void saveAllData() {
 
     }
-
-
 }

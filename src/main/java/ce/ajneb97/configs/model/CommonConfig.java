@@ -8,18 +8,19 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class CommonConfig {
 
-    private String fileName;
+    private final String fileName;
     private FileConfiguration fileConfiguration = null;
     private File file = null;
     private String route;
-    private ConditionalEvents plugin;
-    private String folderName;
-    private boolean newFile;
+    private final ConditionalEvents plugin;
+    private final String folderName;
+    private final boolean newFile;
     private boolean isFirstTime;
 
-    public CommonConfig(String fileName, ConditionalEvents plugin, String folderName, boolean newFile){
+    public CommonConfig(String fileName, ConditionalEvents plugin, String folderName, boolean newFile) {
         this.fileName = fileName;
         this.plugin = plugin;
         this.newFile = newFile;
@@ -27,31 +28,31 @@ public class CommonConfig {
         this.isFirstTime = false;
     }
 
-    public String getPath(){
+    public String getPath() {
         return this.fileName;
     }
 
-    public void registerConfig(){
-        if(folderName != null){
-            file = new File(plugin.getDataFolder() +File.separator + folderName,fileName);
-        }else{
+    public void registerConfig() {
+        if (folderName != null) {
+            file = new File(plugin.getDataFolder() + File.separator + folderName, fileName);
+        } else {
             file = new File(plugin.getDataFolder(), fileName);
         }
 
         route = file.getPath();
 
-        if(!file.exists()){
+        if (!file.exists()) {
             isFirstTime = true;
-            if(newFile) {
+            if (newFile) {
                 try {
                     file.createNewFile();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }else {
-                if(folderName != null){
-                    plugin.saveResource(folderName+File.separator+fileName, false);
-                }else{
+            } else {
+                if (folderName != null) {
+                    plugin.saveResource(folderName + File.separator + fileName, false);
+                } else {
                     plugin.saveResource(fileName, false);
                 }
 
@@ -61,12 +62,11 @@ public class CommonConfig {
         fileConfiguration = new YamlConfiguration();
         try {
             fileConfiguration.load(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidConfigurationException e) {
+        } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
     }
+
     public void saveConfig() {
         try {
             fileConfiguration.save(file);
@@ -84,16 +84,16 @@ public class CommonConfig {
 
     public boolean reloadConfig() {
         if (fileConfiguration == null) {
-            if(folderName != null){
-                file = new File(plugin.getDataFolder() +File.separator + folderName, fileName);
-            }else{
+            if (folderName != null) {
+                file = new File(plugin.getDataFolder() + File.separator + folderName, fileName);
+            } else {
                 file = new File(plugin.getDataFolder(), fileName);
             }
 
         }
         fileConfiguration = YamlConfiguration.loadConfiguration(file);
 
-        if(file != null) {
+        if (file != null) {
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(file);
             fileConfiguration.setDefaults(defConfig);
         }
@@ -104,11 +104,7 @@ public class CommonConfig {
         return route;
     }
 
-    public boolean isFirstTime() {
-        return isFirstTime;
-    }
-
-    public void setFirstTime(boolean firstTime) {
-        isFirstTime = firstTime;
+    public File getFile() {
+        return file;
     }
 }

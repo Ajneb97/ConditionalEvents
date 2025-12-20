@@ -2,33 +2,36 @@ package ce.ajneb97.configs;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.configs.model.CommonConfig;
-import ce.ajneb97.managers.RepetitiveManager;
+import ce.ajneb97.manager.RepetitiveManager;
 import ce.ajneb97.model.CEEvent;
 import ce.ajneb97.model.CustomEventProperties;
 import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.actions.*;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("DataFlowIssue")
 public class ConfigsManager {
 
-    private MainConfigManager mainConfigManager;
-    private PlayersConfigsManager playerConfigsManager;
-    private EventsFolderConfigManager eventsFolderConfigManager;
-    private SavedItemsConfigManager savedItemsConfigManager;
-    private ConditionalEvents plugin;
-    public ConfigsManager(ConditionalEvents plugin){
+    private final MainConfigManager mainConfigManager;
+    private final PlayerConfigsManager playerConfigsManager;
+    private final EventsFolderConfigManager eventsFolderConfigManager;
+    private final SavedItemsConfigManager savedItemsConfigManager;
+    private final ConditionalEvents plugin;
+
+    public ConfigsManager(ConditionalEvents plugin) {
         mainConfigManager = new MainConfigManager(plugin);
-        playerConfigsManager = new PlayersConfigsManager(plugin,"players");
-        eventsFolderConfigManager = new EventsFolderConfigManager(plugin,"events");
+        playerConfigsManager = new PlayerConfigsManager(plugin, "players");
+        eventsFolderConfigManager = new EventsFolderConfigManager(plugin, "events");
         savedItemsConfigManager = new SavedItemsConfigManager(plugin);
 
         this.plugin = plugin;
     }
 
-    public void configure(){
+    public void configure() {
         mainConfigManager.configure();
         playerConfigsManager.configure();
         eventsFolderConfigManager.configure();
@@ -40,7 +43,7 @@ public class ConfigsManager {
         return mainConfigManager;
     }
 
-    public PlayersConfigsManager getPlayerConfigsManager() {
+    public PlayerConfigsManager getPlayerConfigsManager() {
         return playerConfigsManager;
     }
 
@@ -48,21 +51,21 @@ public class ConfigsManager {
         return savedItemsConfigManager;
     }
 
-    public void configureEvents(){
+    public void configureEvents() {
         ArrayList<CommonConfig> ceConfigs = getEventConfigs();
 
         ArrayList<CEEvent> events = new ArrayList<>();
 
-        for(CommonConfig configFile : ceConfigs){
+        for (CommonConfig configFile : ceConfigs) {
             FileConfiguration config = configFile.getConfig();
 
-            if(config.contains("Events")){
-                for(String key : config.getConfigurationSection("Events").getKeys(false)){
-                    String path = "Events."+key;
+            if (config.contains("Events")) {
+                for (String key : config.getConfigurationSection("Events").getKeys(false)) {
+                    String path = "Events." + key;
                     String filePath = configFile.getPath();
 
-                    List<String> conditions = new ArrayList<String>();
-                    List<ActionGroup> actionGroups = new ArrayList<ActionGroup>();
+                    List<String> conditions = new ArrayList<>();
+                    List<ActionGroup> actionGroups = new ArrayList<>();
                     boolean oneTime = false;
                     String ignoreWithPermission = null;
                     long cooldown = 0;
@@ -70,117 +73,108 @@ public class ConfigsManager {
                     boolean ignoreIfCancelled = false;
                     boolean allowMathFormulasInConditions = false;
 
-                    List<String> preventCooldownActivationActionGroups = new ArrayList<String>();
-                    List<String> preventOneTimeActivationActionGroups = new ArrayList<String>();
+                    List<String> preventCooldownActivationActionGroups = new ArrayList<>();
+                    List<String> preventOneTimeActivationActionGroups = new ArrayList<>();
 
                     CEEvent event = new CEEvent(key);
-                    EventType eventType = null;
-                    try{
-                        eventType = EventType.valueOf(config.getString(path+".type").toUpperCase());
-                    }catch(Exception e){
+                    EventType eventType;
+                    try {
+                        eventType = EventType.valueOf(config.getString(path + ".type").toUpperCase());
+                    } catch (Exception e) {
                         continue;
                     }
 
-                    if(config.contains(path+".conditions")) {
-                        conditions = config.getStringList(path+".conditions");
+                    if (config.contains(path + ".conditions")) {
+                        conditions = config.getStringList(path + ".conditions");
                     }
-                    if(config.contains(path+".actions")) {
-                        for(String groupName : config.getConfigurationSection(path+".actions").getKeys(false)) {
-                            List<String> actionsList = config.getStringList(path+".actions."+groupName);
-                            List<CEAction> ceActions = new ArrayList<CEAction>();
-                            for(String action : actionsList){
+                    if (config.contains(path + ".actions")) {
+                        for (String groupName : config.getConfigurationSection(path + ".actions").getKeys(false)) {
+                            List<String> actionsList = config.getStringList(path + ".actions." + groupName);
+                            List<CEAction> ceActions = new ArrayList<>();
+                            for (String action : actionsList) {
                                 ActionTargeter targeter = new ActionTargeter(ActionTargeterType.NORMAL);
 
-                                if(action.startsWith("to_all: ")){
+                                if (action.startsWith("to_all: ")) {
                                     // to_all: message: hi
-                                    action = action.replace("to_all: ","");
+                                    action = action.replace("to_all: ", "");
                                     targeter.setType(ActionTargeterType.TO_ALL);
-                                }else if(action.startsWith("to_target: ")){
+                                } else if (action.startsWith("to_target: ")) {
                                     // to_target: message: hi
-                                    action = action.replace("to_target: ","");
+                                    action = action.replace("to_target: ", "");
                                     targeter.setType(ActionTargeterType.TO_TARGET);
-                                }else if(action.startsWith("to_world: ") || action.startsWith("to_range: ")
-                                        || action.startsWith("to_condition: ") || action.startsWith("to_player: ")){
+                                } else if (action.startsWith("to_world: ") || action.startsWith("to_range: ")
+                                        || action.startsWith("to_condition: ") || action.startsWith("to_player: ")) {
                                     // to_world: parkour: message: hi
                                     // to_range: 5;true: message: hi
                                     // to_condition: toConditionGroup1: message: hi
                                     // to_player: <player>: message: hi
-                                    ActionTargeterType targeterType = null;
-                                    if(action.startsWith("to_world: ")){
-                                        targeterType = ActionTargeterType.TO_WORLD;
-                                    }else if(action.startsWith("to_range: ")){
-                                        targeterType = ActionTargeterType.TO_RANGE;
-                                    }else if(action.startsWith("to_condition: ")){
-                                        targeterType = ActionTargeterType.TO_CONDITION;
-                                    }else if(action.startsWith("to_player: ")){
-                                        targeterType = ActionTargeterType.TO_PLAYER;
-                                    }
+                                    ActionTargeterType targeterType = getActionTargeterType(action);
                                     targeter.setType(targeterType);
 
-                                    action = action.replace(targeterType.name().toLowerCase()+": ","");
+                                    action = action.replace(targeterType.name().toLowerCase() + ": ", "");
                                     String[] sep = action.split(" ");
-                                    String parameter = sep[0].substring(0,sep[0].length()-1);
-                                    action = action.replace(sep[0]+" ", "");
+                                    String parameter = sep[0].substring(0, sep[0].length() - 1);
+                                    action = action.replace(sep[0] + " ", "");
 
                                     targeter.setParameter(parameter);
                                 }
 
-                                String actionTypeText = null;
-                                ActionType actionType = null;
+                                String actionTypeText;
+                                ActionType actionType;
                                 String actionApiType = null;
-                                try{
-                                    if(action.equalsIgnoreCase("close_inventory")
-                                        || action.equalsIgnoreCase("clear_inventory")){
+                                try {
+                                    if (action.equalsIgnoreCase("close_inventory")
+                                            || action.equalsIgnoreCase("clear_inventory")) {
                                         actionTypeText = action;
-                                    }else{
-                                        actionTypeText = action.substring(0,action.indexOf(":"));
+                                    } else {
+                                        actionTypeText = action.substring(0, action.indexOf(":"));
                                     }
 
                                     //Check API actions
-                                    if(plugin.getApiManager().getApiAction(actionTypeText) != null){
+                                    if (plugin.getApiManager().getApiAction(actionTypeText) != null) {
                                         actionType = ActionType.API;
                                         actionApiType = actionTypeText;
-                                    }else{
+                                    } else {
                                         actionType = ActionType.valueOf(actionTypeText.toUpperCase());
                                     }
-                                }catch(Exception e){
+                                } catch (Exception e) {
                                     continue;
                                 }
 
-                                String actionLine = action.replace(actionTypeText+": ","");
+                                String actionLine = action.replace(actionTypeText + ": ", "");
 
-                                CEAction ceAction = new CEAction(actionType,actionLine,targeter);
+                                CEAction ceAction = new CEAction(actionType, actionLine, targeter);
                                 ceAction.setApiType(actionApiType);
                                 ceActions.add(ceAction);
                             }
 
-                            ActionGroup actionGroup = new ActionGroup(groupName,ceActions);
+                            ActionGroup actionGroup = new ActionGroup(groupName, ceActions);
                             actionGroups.add(actionGroup);
                         }
                     }
-                    if(config.contains(path+".cooldown")) {
-                        cooldown = Long.valueOf(config.getString(path+".cooldown"));
+                    if (config.contains(path + ".cooldown")) {
+                        cooldown = Long.parseLong(config.getString(path + ".cooldown"));
                     }
-                    if(config.contains(path+".ignore_with_permission")) {
-                        ignoreWithPermission = config.getString(path+".ignore_with_permission");
+                    if (config.contains(path + ".ignore_with_permission")) {
+                        ignoreWithPermission = config.getString(path + ".ignore_with_permission");
                     }
-                    if(config.contains(path+".one_time")) {
-                        oneTime = Boolean.valueOf(config.getString(path+".one_time"));
+                    if (config.contains(path + ".one_time")) {
+                        oneTime = Boolean.parseBoolean(config.getString(path + ".one_time"));
                     }
-                    if(config.contains(path+".enabled")) {
-                        enabled = Boolean.valueOf(config.getString(path+".enabled"));
+                    if (config.contains(path + ".enabled")) {
+                        enabled = Boolean.parseBoolean(config.getString(path + ".enabled"));
                     }
-                    if(config.contains(path+".ignore_if_cancelled")) {
-                        ignoreIfCancelled = Boolean.valueOf(config.getString(path+".ignore_if_cancelled"));
+                    if (config.contains(path + ".ignore_if_cancelled")) {
+                        ignoreIfCancelled = Boolean.parseBoolean(config.getString(path + ".ignore_if_cancelled"));
                     }
-                    if(config.contains(path+".prevent_cooldown_activation")){
-                        preventCooldownActivationActionGroups = config.getStringList(path+".prevent_cooldown_activation");
+                    if (config.contains(path + ".prevent_cooldown_activation")) {
+                        preventCooldownActivationActionGroups = config.getStringList(path + ".prevent_cooldown_activation");
                     }
-                    if(config.contains(path+".prevent_one_time_activation")){
-                        preventOneTimeActivationActionGroups = config.getStringList(path+".prevent_one_time_activation");
+                    if (config.contains(path + ".prevent_one_time_activation")) {
+                        preventOneTimeActivationActionGroups = config.getStringList(path + ".prevent_one_time_activation");
                     }
-                    if(config.contains(path+".allow_math_formulas_in_conditions")) {
-                        allowMathFormulasInConditions = Boolean.valueOf(config.getString(path+".allow_math_formulas_in_conditions"));
+                    if (config.contains(path + ".allow_math_formulas_in_conditions")) {
+                        allowMathFormulasInConditions = Boolean.parseBoolean(config.getString(path + ".allow_math_formulas_in_conditions"));
                     }
 
                     event.setFilePath(filePath);
@@ -196,27 +190,27 @@ public class ConfigsManager {
                     event.setPreventOneTimeActivationActionGroups(preventOneTimeActivationActionGroups);
                     event.setAllowMathFormulasInConditions(allowMathFormulasInConditions);
 
-                    if(event.getEventType().equals(EventType.CUSTOM)) {
-                        String eventPackage = config.getString(path+".custom_event_data.event");
+                    if (event.getEventType().equals(EventType.CUSTOM)) {
+                        String eventPackage = config.getString(path + ".custom_event_data.event");
                         String playerVariable = null;
-                        if(config.contains(path+".custom_event_data.player_variable")) {
-                            playerVariable = config.getString(path+".custom_event_data.player_variable");
+                        if (config.contains(path + ".custom_event_data.player_variable")) {
+                            playerVariable = config.getString(path + ".custom_event_data.player_variable");
                         }
-                        List<String> variablesToCapture = new ArrayList<String>();
-                        if(config.contains(path+".custom_event_data.variables_to_capture")) {
-                            variablesToCapture = config.getStringList(path+".custom_event_data.variables_to_capture");
+                        List<String> variablesToCapture = new ArrayList<>();
+                        if (config.contains(path + ".custom_event_data.variables_to_capture")) {
+                            variablesToCapture = config.getStringList(path + ".custom_event_data.variables_to_capture");
                         }
 
                         event.setCustomEventProperties(new CustomEventProperties(
-                                eventPackage,playerVariable,variablesToCapture
+                                eventPackage, playerVariable, variablesToCapture
                         ));
                     }
 
-                    if(event.getEventType().equals(EventType.REPETITIVE) || event.getEventType().equals(EventType.REPETITIVE_SERVER)){
-                        int repetitiveTime = config.getInt(path+".repetitive_time");
+                    if (event.getEventType().equals(EventType.REPETITIVE) || event.getEventType().equals(EventType.REPETITIVE_SERVER)) {
+                        int repetitiveTime = config.getInt(path + ".repetitive_time");
                         RepetitiveManager repetitiveManager = new RepetitiveManager(plugin, event, repetitiveTime);
                         event.setRepetitiveManager(repetitiveManager);
-                        if(event.isEnabled()){
+                        if (event.isEnabled()) {
                             repetitiveManager.start();
                         }
                     }
@@ -229,19 +223,33 @@ public class ConfigsManager {
         plugin.getEventsManager().setEvents(events);
     }
 
-    public void saveEvent(CEEvent event){
+    private static @Nullable ActionTargeterType getActionTargeterType(String action) {
+        ActionTargeterType targeterType = null;
+        if (action.startsWith("to_world: ")) {
+            targeterType = ActionTargeterType.TO_WORLD;
+        } else if (action.startsWith("to_range: ")) {
+            targeterType = ActionTargeterType.TO_RANGE;
+        } else if (action.startsWith("to_condition: ")) {
+            targeterType = ActionTargeterType.TO_CONDITION;
+        } else if (action.startsWith("to_player: ")) {
+            targeterType = ActionTargeterType.TO_PLAYER;
+        }
+        return targeterType;
+    }
+
+    public void saveEvent(CEEvent event) {
         String eventName = event.getName();
         String path = event.getFilePath();
 
         CommonConfig commonConfig;
-        if(path.equals("config.yml")){
+        if (path.equals("config.yml")) {
             commonConfig = mainConfigManager.getConfigFile();
-        }else{
-            commonConfig = eventsFolderConfigManager.getConfigFile(path,true);
+        } else {
+            commonConfig = eventsFolderConfigManager.getConfigFile(path, true);
         }
 
         FileConfiguration config = commonConfig.getConfig();
-        config.set("Events."+eventName+".enabled",event.isEnabled());
+        config.set("Events." + eventName + ".enabled", event.isEnabled());
         commonConfig.saveConfig();
     }
 
@@ -254,18 +262,18 @@ public class ConfigsManager {
         return configs;
     }
 
-    public void endRepetitiveEvents(){
-        for(CEEvent event : plugin.getEventsManager().getEvents()){
-            if(event.getRepetitiveManager() != null){
-                event.getRepetitiveManager().end();
+    public void endRepetitiveEvents() {
+        for (CEEvent event : plugin.getEventsManager().getEvents()) {
+            if (event.getRepetitiveManager() != null) {
+                event.getRepetitiveManager().stop();
             }
         }
     }
 
-    public boolean reload(){
+    public boolean reload() {
         endRepetitiveEvents();
 
-        if(!mainConfigManager.reloadConfig()){
+        if (!mainConfigManager.reloadConfig()) {
             return false;
         }
 

@@ -26,7 +26,6 @@ public class VariablesProperties {
         this.minecraftEvent = minecraftEvent;
     }
 
-
     public ArrayList<StoredVariable> getEventVariables() {
         return eventVariables;
     }

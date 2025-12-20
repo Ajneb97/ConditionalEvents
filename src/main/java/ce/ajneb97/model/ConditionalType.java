@@ -1,6 +1,7 @@
 package ce.ajneb97.model;
 
 public enum ConditionalType {
+
     EQUALS("=="),
     NOT_EQUALS("!="),
     EQUALS_LEGACY("equals"),
@@ -20,7 +21,8 @@ public enum ConditionalType {
     LOWER("<"),
     LOWER_EQUALS("<=");
 
-    private String text;
+    private final String text;
+
     ConditionalType(String text) {
         this.text = text;
     }

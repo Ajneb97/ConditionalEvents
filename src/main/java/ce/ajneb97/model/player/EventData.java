@@ -1,11 +1,12 @@
 package ce.ajneb97.model.player;
 
 public class EventData {
+
     private String name;
     private long cooldown; //Represents the millis time when the event was executed
     private boolean oneTime;
 
-    public EventData(String name,long cooldown,boolean oneTime) {
+    public EventData(String name, long cooldown, boolean oneTime) {
         this.name = name;
         this.cooldown = cooldown;
         this.oneTime = oneTime;

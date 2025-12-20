@@ -1,6 +1,7 @@
 package ce.ajneb97.model;
 
 public class StoredVariable {
+
     private String name;
     private String value;
 

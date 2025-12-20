@@ -1,21 +1,17 @@
-package ce.ajneb97.managers.dependencies;
+package ce.ajneb97.manager.dependencies;
 
-import ce.ajneb97.ConditionalEvents;
 import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageChannel;
 import org.bukkit.Bukkit;
+
 import java.awt.Color;
+
 import org.bukkit.entity.Player;
 
 public class DiscordSRVManager {
 
-    private ConditionalEvents plugin;
-    public DiscordSRVManager(ConditionalEvents plugin){
-        this.plugin = plugin;
-    }
-
-    public void sendEmbedMessage(String actionLine){
+    public void sendEmbedMessage(String actionLine) {
         // discordsrv_embed: channel:<channel>;author_name:<name>;title:<title>;player_skin_name:<name>;
         //color:<r>,<g>,<b>;image:<url>
         EmbedBuilder embed = new EmbedBuilder();
@@ -33,11 +29,11 @@ public class DiscordSRVManager {
         int colorB = 0;
 
         String[] sep = actionLine.split(";");
-        for(String s : sep) {
+        for (String s : sep) {
             String key = s.split(":")[0];
-            String value = s.replace(key+":","");
+            String value = s.replace(key + ":", "");
 
-            switch(key){
+            switch (key) {
                 case "channel":
                     channel = value;
                     break;
@@ -51,22 +47,22 @@ public class DiscordSRVManager {
                     footer = value;
                     break;
                 case "author_avatar":
-                    if(value.startsWith("http:/") || value.startsWith("https:/")){
+                    if (value.startsWith("http:/") || value.startsWith("https:/")) {
                         authorAvatarURL = value;
-                    }else{
+                    } else {
                         Player player = Bukkit.getPlayer(value);
-                        if(player != null){
+                        if (player != null) {
                             authorAvatarURL = DiscordSRV.getAvatarUrl(player);
                         }
                     }
                     break;
                 case "color":
-                    try{
+                    try {
                         String[] color = value.split(",");
                         colorR = Integer.parseInt(color[0]);
                         colorG = Integer.parseInt(color[1]);
                         colorB = Integer.parseInt(color[2]);
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         colorR = 0;
                         colorG = 0;
                         colorB = 0;
@@ -84,7 +80,7 @@ public class DiscordSRVManager {
             }
         }
 
-        embed.setAuthor(authorName,null,authorAvatarURL);
+        embed.setAuthor(authorName, null, authorAvatarURL);
         embed.setTitle(title);
         embed.setFooter(footer);
         embed.setColor(new Color(colorR, colorG, colorB));

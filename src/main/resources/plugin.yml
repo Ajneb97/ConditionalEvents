@@ -4,6 +4,7 @@ name: ConditionalEvents
 api-version: 1.13
 softdepend: [PlaceholderAPI,Citizens,WorldGuardEvents,WorldGuard,ProtocolLib,DiscordSRV]
 author: Ajneb97
+folia-supported: true
 
 commands:
   conditionalevents:

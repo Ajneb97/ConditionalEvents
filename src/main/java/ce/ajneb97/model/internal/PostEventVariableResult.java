@@ -1,6 +1,7 @@
 package ce.ajneb97.model.internal;
 
 public class PostEventVariableResult {
+
     private String variable;
     private boolean replaced;
 
@@ -25,11 +26,11 @@ public class PostEventVariableResult {
         this.replaced = replaced;
     }
 
-    public static PostEventVariableResult replaced(String variable){
-        return new PostEventVariableResult(variable,true);
+    public static PostEventVariableResult replaced(String variable) {
+        return new PostEventVariableResult(variable, true);
     }
 
-    public static PostEventVariableResult noReplaced(){
-        return new PostEventVariableResult(null,false);
+    public static PostEventVariableResult noReplaced() {
+        return new PostEventVariableResult(null, false);
     }
 }

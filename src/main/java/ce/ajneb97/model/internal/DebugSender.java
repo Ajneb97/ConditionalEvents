@@ -3,6 +3,7 @@ package ce.ajneb97.model.internal;
 import org.bukkit.command.CommandSender;
 
 public class DebugSender {
+
     private CommandSender sender;
     private String event;
     private String playerName;

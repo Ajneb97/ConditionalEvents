@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class PlayerData {
+
     private UUID uuid;
     private String name;
     private boolean modified;
@@ -40,59 +41,59 @@ public class PlayerData {
         this.eventData = eventData;
     }
 
-    public EventData getEventData(String eventName){
-        for(EventData e : eventData){
-            if(e.getName().equals(eventName)){
+    public EventData getEventData(String eventName) {
+        for (EventData e : eventData) {
+            if (e.getName().equals(eventName)) {
                 return e;
             }
         }
         return null;
     }
 
-    public void resetEvent(String eventName){
+    public void resetEvent(String eventName) {
         eventData.removeIf(c -> c.getName().equals(eventName));
         modified = true;
     }
 
-    public void resetAll(){
+    public void resetAll() {
         eventData.clear();
         modified = true;
     }
 
-    public void setCooldown(String eventName,long currentMillis){
+    public void setCooldown(String eventName, long currentMillis) {
         EventData e = getEventData(eventName);
-        if(e == null){
-            e = new EventData(eventName,currentMillis,false);
+        if (e == null) {
+            e = new EventData(eventName, currentMillis, false);
             eventData.add(e);
-        }else{
+        } else {
             e.setCooldown(currentMillis);
         }
     }
 
-    public long getCooldown(String eventName){
+    public long getCooldown(String eventName) {
         EventData e = getEventData(eventName);
-        if(e == null){
+        if (e == null) {
             return 0;
-        }else{
+        } else {
             return e.getCooldown();
         }
     }
 
-    public void setOneTime(String eventName,boolean oneTime){
+    public void setOneTime(String eventName, boolean oneTime) {
         EventData e = getEventData(eventName);
-        if(e == null){
-            e = new EventData(eventName,0,oneTime);
+        if (e == null) {
+            e = new EventData(eventName, 0, oneTime);
             eventData.add(e);
-        }else{
+        } else {
             e.setOneTime(oneTime);
         }
     }
 
-    public boolean isEventOneTime(String eventName){
+    public boolean isEventOneTime(String eventName) {
         EventData e = getEventData(eventName);
-        if(e == null){
+        if (e == null) {
             return false;
-        }else{
+        } else {
             return e.isOneTime();
         }
     }
