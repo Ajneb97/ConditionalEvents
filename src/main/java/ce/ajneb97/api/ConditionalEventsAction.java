@@ -9,9 +9,10 @@ public abstract class ConditionalEventsAction {
     protected String name;
     protected JavaPlugin plugin;
 
-    public ConditionalEventsAction(String name){
+    public ConditionalEventsAction(String name) {
         this.name = name;
     }
+
     public abstract void execute(Player player, String actionLine, Event minecraftEvent);
 
     public String getName() {

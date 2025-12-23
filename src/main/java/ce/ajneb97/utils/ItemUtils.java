@@ -2,7 +2,7 @@ package ce.ajneb97.utils;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.api.ConditionalEventsAPI;
-import ce.ajneb97.managers.MessagesManager;
+import ce.ajneb97.manager.MessagesManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
@@ -26,69 +26,67 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings({"DataFlowIssue", "deprecation", "UnstableApiUsage"})
 public class ItemUtils {
 
     @SuppressWarnings("deprecation")
     public static ItemStack createItemFromID(String id) {
-        ItemStack item = null;
-        if(id.contains(":")){
+        ItemStack item;
+        if (id.contains(":")) {
             String[] sep = id.split(":");
             Material mat = Material.getMaterial(sep[0].toUpperCase());
-            item = new ItemStack(mat,1,Short.parseShort(sep[1]));
-        }else{
+            item = new ItemStack(mat, 1, Short.parseShort(sep[1]));
+        } else {
             Material mat = Material.getMaterial(id.toUpperCase());
-            item = new ItemStack(mat,1);
+            item = new ItemStack(mat, 1);
         }
         return item;
     }
 
-    public static ItemStack createItemFromString(String string, Player player){
-        ItemStack item = null;
-        if(string.startsWith("e")){
+    public static ItemStack createItemFromString(String string, Player player) {
+        ItemStack item;
+        if (string.startsWith("e")) {
             item = ItemUtils.createHead();
-            ItemUtils.setSkullData(item,string,null,null);
+            ItemUtils.setSkullData(item, string, null, null);
             return item;
         }
 
-        if(string.startsWith("saved_item:")){
-            return ConditionalEventsAPI.getPlugin().getSavedItemsManager().getItem(string.replace("saved_item:",""),player);
+        if (string.startsWith("saved_item:")) {
+            return ConditionalEventsAPI.getPlugin().getSavedItemsManager().getItem(string.replace("saved_item:", ""), player);
         }
 
         item = ItemUtils.createItemFromID(string);
         return item;
     }
 
-    public static boolean isAir(Material material){
-        if(material.name().contains("_AIR") || material.name().equals("AIR")){
-            return true;
-        }
-        return false;
+    public static boolean isAir(Material material) {
+        return material.name().contains("_AIR") || material.name().equals("AIR");
     }
 
-    public static ItemStack createHead(){
-        if(OtherUtils.isLegacy()){
-            return new ItemStack(Material.valueOf("SKULL_ITEM"),1,(short)3);
-        }else{
+    public static ItemStack createHead() {
+        if (OtherUtils.isLegacy()) {
+            return new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (short) 3);
+        } else {
             return new ItemStack(Material.PLAYER_HEAD);
         }
     }
 
     @SuppressWarnings("deprecation")
-    public static void setSkullData(ItemStack item,String texture,String id,String owner){
+    public static void setSkullData(ItemStack item, String texture, String id, String owner) {
         String typeName = item.getType().name();
-        if(!typeName.equals("PLAYER_HEAD") && !typeName.equals("SKULL_ITEM")) {
+        if (!typeName.equals("PLAYER_HEAD") && !typeName.equals("SKULL_ITEM")) {
             return;
         }
         SkullMeta skullMeta = (SkullMeta) item.getItemMeta();
-        if(owner != null) {
+        if (owner != null) {
             skullMeta.setOwner(owner);
         }
 
-        if(texture != null){
+        if (texture != null) {
             ServerVersion serverVersion = ConditionalEvents.serverVersion;
-            if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_20_R2)){
+            if (serverVersion.serverVersionGreaterEqualThan(serverVersion, ServerVersion.v1_20_R2)) {
                 UUID uuid = id != null ? UUID.fromString(id) : UUID.randomUUID();
-                PlayerProfile profile = Bukkit.createPlayerProfile(uuid,"ce");
+                PlayerProfile profile = Bukkit.createPlayerProfile(uuid, "ce");
                 PlayerTextures textures = profile.getTextures();
                 URL url;
                 try {
@@ -106,11 +104,11 @@ public class ItemUtils {
                 textures.setSkin(url);
                 profile.setTextures(textures);
                 skullMeta.setOwnerProfile(profile);
-            }else{
-                GameProfile profile = null;
-                if(id == null) {
+            } else {
+                GameProfile profile;
+                if (id == null) {
                     profile = new GameProfile(UUID.randomUUID(), owner != null ? owner : "");
-                }else {
+                } else {
                     profile = new GameProfile(UUID.fromString(id), owner != null ? owner : "");
                 }
                 profile.getProperties().put("textures", new Property("textures", texture));
@@ -119,7 +117,8 @@ public class ItemUtils {
                     Field profileField = skullMeta.getClass().getDeclaredField("profile");
                     profileField.setAccessible(true);
                     profileField.set(skullMeta, profile);
-                } catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException error) {
+                } catch (IllegalArgumentException | NoSuchFieldException | SecurityException |
+                         IllegalAccessException error) {
                     error.printStackTrace();
                 }
             }
@@ -128,7 +127,7 @@ public class ItemUtils {
         item.setItemMeta(skullMeta);
     }
 
-    public static ItemStack getItemFromProperties(String[] properties,Player player){
+    public static ItemStack getItemFromProperties(String[] properties, Player player) {
         String id = null;
         int amount = 1;
         short durability = 0;
@@ -152,101 +151,95 @@ public class ItemUtils {
 
         ItemStack savedItem = null;
 
-        for(String property : properties) {
-            if(property.startsWith("id:")) {
+        for (String property : properties) {
+            if (property.startsWith("id:")) {
                 id = property.replace("id:", "");
-            }else if(property.startsWith("amount:")) {
+            } else if (property.startsWith("amount:")) {
                 amount = Integer.parseInt(property.replace("amount:", ""));
-            }else if(property.startsWith("custom_model_data:")) {
+            } else if (property.startsWith("custom_model_data:")) {
                 customModelData = Integer.parseInt(property.replace("custom_model_data:", ""));
-            }else if(property.startsWith("custom_model_component_data_strings:")){
+            } else if (property.startsWith("custom_model_component_data_strings:")) {
                 String[] splitC = property.replace("custom_model_component_data_strings:", "").split("\\|");
                 customModelComponentDataStrings.addAll(Arrays.asList(splitC));
                 hasCustomModelComponentData = true;
-            }else if(property.startsWith("custom_model_component_data_floats:")){
+            } else if (property.startsWith("custom_model_component_data_floats:")) {
                 String[] splitC = property.replace("custom_model_component_data_floats:", "").split("\\|");
                 customModelComponentDataFloats.addAll(Arrays.asList(splitC));
                 hasCustomModelComponentData = true;
-            }else if(property.startsWith("custom_model_component_data_flags:")){
+            } else if (property.startsWith("custom_model_component_data_flags:")) {
                 String[] splitC = property.replace("custom_model_component_data_flags:", "").split("\\|");
                 customModelComponentDataFlags.addAll(Arrays.asList(splitC));
                 hasCustomModelComponentData = true;
-            }else if(property.startsWith("custom_model_component_data_colors:")){
+            } else if (property.startsWith("custom_model_component_data_colors:")) {
                 String[] splitC = property.replace("custom_model_component_data_colors:", "").split("\\|");
                 customModelComponentDataColors.addAll(Arrays.asList(splitC));
                 hasCustomModelComponentData = true;
-            }else if(property.startsWith("item_model:")){
-                itemModel = property.replace("item_model:","");
-            }else if(property.startsWith("durability:")) {
+            } else if (property.startsWith("item_model:")) {
+                itemModel = property.replace("item_model:", "");
+            } else if (property.startsWith("durability:")) {
                 durability = Short.parseShort(property.replace("durability:", ""));
-            }else if(property.startsWith("name:")) {
+            } else if (property.startsWith("name:")) {
                 name = property.replace("name:", "");
-            }else if(property.startsWith("lore:")) {
+            } else if (property.startsWith("lore:")) {
                 String[] splitLore = property.replace("lore:", "").split("\\|");
-                for(String loreLine : splitLore) {
-                    lore.add(loreLine);
-                }
-            }else if(property.startsWith("enchants:")) {
+                Collections.addAll(lore, splitLore);
+            } else if (property.startsWith("enchants:")) {
                 String[] splitEnchants = property.replace("enchants:", "").split("\\|");
-                for(String enchantLine : splitEnchants) {
+                for (String enchantLine : splitEnchants) {
                     String[] splitEnchants2 = enchantLine.split("-");
-                    enchants.add(splitEnchants2[0]+";"+splitEnchants2[1]);
+                    enchants.add(splitEnchants2[0] + ";" + splitEnchants2[1]);
                 }
-            }else if(property.startsWith("flags:")) {
+            } else if (property.startsWith("flags:")) {
                 String[] splitFlags = property.replace("flags:", "").split("\\|");
-                for(String flagLine : splitFlags) {
-                    flags.add(flagLine);
-                }
-            }else if(property.startsWith("skull_texture:")) {
+                Collections.addAll(flags, splitFlags);
+            } else if (property.startsWith("skull_texture:")) {
                 skullTexture = property.replace("skull_texture:", "");
-            }else if(property.startsWith("skull_owner:")) {
+            } else if (property.startsWith("skull_owner:")) {
                 skullOwner = property.replace("skull_owner:", "");
-            }else if(property.startsWith("skull_id")) {
+            } else if (property.startsWith("skull_id")) {
                 skullId = property.replace("skull_id:", "");
-            }else if(property.startsWith("saved_item")){
-                savedItem = ConditionalEventsAPI.getPlugin().getSavedItemsManager().getItem(property.replace("saved_item:", ""),player);
+            } else if (property.startsWith("saved_item")) {
+                savedItem = ConditionalEventsAPI.getPlugin().getSavedItemsManager().getItem(property.replace("saved_item:", ""), player);
             }
         }
 
-        if(savedItem != null){
+        if (savedItem != null) {
             savedItem.setAmount(amount);
             return savedItem;
         }
 
         ItemStack item = ItemUtils.createItemFromID(id);
         item.setAmount(amount);
-        if(durability != 0) {
+        if (durability != 0) {
             item.setDurability(durability);
         }
 
         //Main Meta
         boolean useMiniMessage = ConditionalEventsAPI.getPlugin().getConfigsManager().getMainConfigManager().isUseMiniMessage();
         ItemMeta meta = item.getItemMeta();
-        if(name != null) {
-            if(useMiniMessage){
-                MiniMessageUtils.setItemName(meta,name);
-            }else{
+        if (name != null) {
+            if (useMiniMessage) {
+                MiniMessageUtils.setItemName(meta, name);
+            } else {
                 meta.setDisplayName(MessagesManager.getLegacyColoredMessage(name));
             }
         }
-        if(!lore.isEmpty()) {
+        if (!lore.isEmpty()) {
             List<String> loreCopy = new ArrayList<>(lore);
-            if(useMiniMessage){
-                MiniMessageUtils.setItemLore(meta,loreCopy);
-            }else{
-                for(int i=0;i<loreCopy.size();i++) {
-                    loreCopy.set(i, MessagesManager.getLegacyColoredMessage(loreCopy.get(i)));
-                }
+            if (useMiniMessage) {
+                MiniMessageUtils.setItemLore(meta, loreCopy);
+            } else {
+                loreCopy.replaceAll(MessagesManager::getLegacyColoredMessage);
                 meta.setLore(loreCopy);
             }
         }
 
-        if(customModelData != 0) {
+        if (customModelData != 0) {
             meta.setCustomModelData(customModelData);
         }
 
         ServerVersion serverVersion = ConditionalEvents.serverVersion;
-        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R3) && hasCustomModelComponentData){
+        if (serverVersion.serverVersionGreaterEqualThan(serverVersion, ServerVersion.v1_21_R3) && hasCustomModelComponentData) {
             CustomModelDataComponent customModelDataComponent = meta.getCustomModelDataComponent();
 
             customModelDataComponent.setFlags(customModelComponentDataFlags.stream()
@@ -262,30 +255,30 @@ public class ItemUtils {
             meta.setCustomModelDataComponent(customModelDataComponent);
         }
 
-        if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R3)){
-            if(itemModel != null){
+        if (serverVersion.serverVersionGreaterEqualThan(serverVersion, ServerVersion.v1_21_R3)) {
+            if (itemModel != null) {
                 String[] sep = itemModel.split("\\|");
-                meta.setItemModel(new NamespacedKey(sep[0],sep[1]));
+                meta.setItemModel(new NamespacedKey(sep[0], sep[1]));
             }
         }
 
-        if(!enchants.isEmpty()) {
-            for(int i=0;i<enchants.size();i++) {
-                String[] sep2 = enchants.get(i).split(";");
+        if (!enchants.isEmpty()) {
+            for (String enchant : enchants) {
+                String[] sep2 = enchant.split(";");
                 String enchantName = sep2[0];
-                int enchantLevel = Integer.valueOf(sep2[1]);
+                int enchantLevel = Integer.parseInt(sep2[1]);
                 meta.addEnchant(Enchantment.getByName(enchantName), enchantLevel, true);
             }
         }
-        if(!flags.isEmpty()) {
-            for(int i=0;i<flags.size();i++) {
-                meta.addItemFlags(ItemFlag.valueOf(flags.get(i)));
+        if (!flags.isEmpty()) {
+            for (String flag : flags) {
+                meta.addItemFlags(ItemFlag.valueOf(flag));
             }
         }
         item.setItemMeta(meta);
 
         //Other Meta
-        ItemUtils.setSkullData(item,skullTexture,skullId,skullOwner);
+        ItemUtils.setSkullData(item, skullTexture, skullId, skullOwner);
 
         return item;
     }

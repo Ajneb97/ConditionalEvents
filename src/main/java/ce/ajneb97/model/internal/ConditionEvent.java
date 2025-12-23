@@ -23,24 +23,25 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 // Represent an event that is being executed and conditions need
 // to be checked.
+@SuppressWarnings({"removal", "BooleanMethodIsAlwaysInverted", "deprecation"})
 public class ConditionEvent {
 
-    private ConditionalEvents plugin;
-    private Player player;
-    private LivingEntity target;
-    private ArrayList<StoredVariable> eventVariables;
-    private Event minecraftEvent;
-    private EventType eventType;
+    private final ConditionalEvents plugin;
+    private final Player player;
+    private final LivingEntity target;
+    private final ArrayList<StoredVariable> eventVariables;
+    private final Event minecraftEvent;
+    private final EventType eventType;
     private CEEvent currentEvent; //The current event that is being checked
 
     private boolean async;
 
-    public ConditionEvent(ConditionalEvents plugin,Player player, Event minecraftEvent, EventType eventType
-        , LivingEntity target) {
+    public ConditionEvent(ConditionalEvents plugin, Player player, Event minecraftEvent, EventType eventType, LivingEntity target) {
         this.plugin = plugin;
         this.player = player;
         this.eventVariables = new ArrayList<>();
@@ -78,41 +79,36 @@ public class ConditionEvent {
         this.currentEvent = currentEvent;
     }
 
-    public void checkEvent(){
+    public void checkEvent() {
         plugin.getEventsManager().checkEvent(this);
     }
 
-    public boolean containsValidEvents(){
+    public boolean containsValidEvents() {
         ArrayList<CEEvent> validEvents = plugin.getEventsManager().getValidEvents(eventType);
-        if(validEvents.size() == 0){
-            return false;
-        }
-        return true;
+        return !validEvents.isEmpty();
     }
 
-    public ConditionEvent addVariables(StoredVariable... storedVariables){
-        for(StoredVariable v : storedVariables){
-            eventVariables.add(v);
-        }
+    public ConditionEvent addVariables(StoredVariable... storedVariables) {
+        eventVariables.addAll(Arrays.asList(storedVariables));
         return this;
     }
 
-    public ConditionEvent addVariables(ArrayList<StoredVariable> storedVariables){
+    public ConditionEvent addVariables(ArrayList<StoredVariable> storedVariables) {
         eventVariables.addAll(storedVariables);
         return this;
     }
 
-    public ConditionEvent setCommonBlockVariables(Block block){
+    public ConditionEvent setCommonBlockVariables(Block block) {
         Location l = block.getLocation();
-        eventVariables.add(new StoredVariable("%block_x%",l.getBlockX()+""));
-        eventVariables.add(new StoredVariable("%block_y%",l.getBlockY()+""));
-        eventVariables.add(new StoredVariable("%block_z%",l.getBlockZ()+""));
-        eventVariables.add(new StoredVariable("%block_world%",l.getWorld().getName()));
-        eventVariables.add(new StoredVariable("%block%",block.getType().name()));
+        eventVariables.add(new StoredVariable("%block_x%", l.getBlockX() + ""));
+        eventVariables.add(new StoredVariable("%block_y%", l.getBlockY() + ""));
+        eventVariables.add(new StoredVariable("%block_z%", l.getBlockZ() + ""));
+        eventVariables.add(new StoredVariable("%block_world%", l.getWorld().getName()));
+        eventVariables.add(new StoredVariable("%block%", block.getType().name()));
         eventVariables.add(new StoredVariable("%block_head_texture%", BlockUtils.getHeadTextureData(block)));
-        if(OtherUtils.isLegacy()){
-            eventVariables.add(new StoredVariable("%block_data%",block.getData()+""));
-        }else{
+        if (OtherUtils.isLegacy()) {
+            eventVariables.add(new StoredVariable("%block_data%", block.getData() + ""));
+        } else {
             eventVariables.add(new StoredVariable("%block_data%",
                     BlockUtils.getBlockDataStringFromObject(block.getBlockData())));
         }
@@ -120,72 +116,72 @@ public class ConditionEvent {
         return this;
     }
 
-    public ConditionEvent setCommonActionVariables(Action action,Player player){
+    public ConditionEvent setCommonActionVariables(Action action, Player player) {
         String actionVariable = null;
         String actionName = action.name();
-        if(player.isSneaking()) {
-            if(actionName.contains("RIGHT_CLICK")) {
+        if (player.isSneaking()) {
+            if (actionName.contains("RIGHT_CLICK")) {
                 actionVariable = "SHIFT_RIGHT_CLICK";
-            }else if(actionName.contains("LEFT_CLICK")) {
+            } else if (actionName.contains("LEFT_CLICK")) {
                 actionVariable = "SHIFT_LEFT_CLICK";
-            }else if(action.equals(Action.PHYSICAL)) {
+            } else if (action.equals(Action.PHYSICAL)) {
                 actionVariable = "PHYSICAL";
             }
-        }else {
-            if(actionName.contains("RIGHT_CLICK")) {
+        } else {
+            if (actionName.contains("RIGHT_CLICK")) {
                 actionVariable = "RIGHT_CLICK";
-            }else if(actionName.contains("LEFT_CLICK")) {
+            } else if (actionName.contains("LEFT_CLICK")) {
                 actionVariable = "LEFT_CLICK";
-            }else if(action.equals(Action.PHYSICAL)) {
+            } else if (action.equals(Action.PHYSICAL)) {
                 actionVariable = "PHYSICAL";
             }
         }
 
-        if(actionVariable != null){
-            eventVariables.add(new StoredVariable("%action_type%",actionVariable));
+        if (actionVariable != null) {
+            eventVariables.add(new StoredVariable("%action_type%", actionVariable));
         }
         return this;
     }
 
-    public ConditionEvent setCommonVictimVariables(Entity entity){
+    public ConditionEvent setCommonVictimVariables(Entity entity) {
         String victimType = entity.getType().name();
         String victimName = "";
         String victimNameColorFormat = "";
         String victimUuid = entity.getUniqueId().toString();
 
-        if(entity.getCustomName() != null) {
-            if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+        if (entity.getCustomName() != null) {
+            if (plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()) {
                 victimName = MiniMessageUtils.getEntityCustomNamePlain(entity);
                 victimNameColorFormat = MiniMessageUtils.getEntityCustomNameMiniMessage(entity);
-            }else{
+            } else {
                 victimName = ChatColor.stripColor(entity.getCustomName());
                 victimNameColorFormat = entity.getCustomName().replace("§", "&");
             }
         }
         Location location = entity.getLocation();
         double health = 0;
-        if(entity instanceof LivingEntity){
-            health = ((LivingEntity)entity).getHealth();
+        if (entity instanceof LivingEntity) {
+            health = ((LivingEntity) entity).getHealth();
         }
 
-        eventVariables.add(new StoredVariable("%victim%",victimType));
-        eventVariables.add(new StoredVariable("%victim_name%",victimName));
-        eventVariables.add(new StoredVariable("%victim_health%",health+""));
-        eventVariables.add(new StoredVariable("%victim_color_format_name%",victimNameColorFormat));
-        eventVariables.add(new StoredVariable("%victim_block_x%",location.getBlockX()+""));
-        eventVariables.add(new StoredVariable("%victim_block_y%",location.getBlockY()+""));
-        eventVariables.add(new StoredVariable("%victim_block_z%",location.getBlockZ()+""));
-        eventVariables.add(new StoredVariable("%victim_block_world%",location.getWorld().getName()));
-        eventVariables.add(new StoredVariable("%victim_uuid%",victimUuid));
+        eventVariables.add(new StoredVariable("%victim%", victimType));
+        eventVariables.add(new StoredVariable("%victim_name%", victimName));
+        eventVariables.add(new StoredVariable("%victim_health%", health + ""));
+        eventVariables.add(new StoredVariable("%victim_color_format_name%", victimNameColorFormat));
+        eventVariables.add(new StoredVariable("%victim_block_x%", location.getBlockX() + ""));
+        eventVariables.add(new StoredVariable("%victim_block_y%", location.getBlockY() + ""));
+        eventVariables.add(new StoredVariable("%victim_block_z%", location.getBlockZ() + ""));
+        eventVariables.add(new StoredVariable("%victim_block_world%", location.getWorld().getName()));
+        eventVariables.add(new StoredVariable("%victim_uuid%", victimUuid));
         return this;
     }
 
-    public ConditionEvent setCommonItemVariables(ItemStack item,String otherItemTag){
+    public ConditionEvent setCommonItemVariables(ItemStack item, String otherItemTag) {
         String name = "";
         String colorFormatName = "";
         String material = "";
-        String loreString = "";
-        String colorFormatLoreString = "";
+        StringBuilder loreString = new StringBuilder();
+        StringBuilder colorFormatLoreString = new StringBuilder();
         short durability = 0;
         int amount = 0;
         List<String> loreList = new ArrayList<>();
@@ -194,121 +190,125 @@ public class ConditionEvent {
         String itemModel = "";
         String metaString = "";
 
-        if(item != null) {
+        if (item != null) {
             durability = item.getDurability();
             material = item.getType().name();
             amount = item.getAmount();
-            if(item.hasItemMeta()) {
+            if (item.hasItemMeta()) {
                 ItemMeta meta = item.getItemMeta();
 
                 MainConfigManager mainConfigManager = plugin.getConfigsManager().getMainConfigManager();
                 boolean itemMetaVariableEnabled = mainConfigManager.isItemMetaVariableEnabled();
                 boolean useMiniMessage = mainConfigManager.isUseMiniMessage();
-                if(itemMetaVariableEnabled){
+                if (itemMetaVariableEnabled) {
                     metaString = meta.toString();
-                }else{
+                } else {
                     metaString = "variable disabled";
                 }
 
-                if(meta.hasDisplayName()) {
-                    if(useMiniMessage){
+                if (meta.hasDisplayName()) {
+                    if (useMiniMessage) {
                         name = MiniMessageUtils.getItemNamePlain(meta);
                         colorFormatName = MiniMessageUtils.getItemNameMiniMessage(meta);
-                    }else{
+                    } else {
                         name = ChatColor.stripColor(meta.getDisplayName());
                         colorFormatName = meta.getDisplayName().replace("§", "&");
                     }
                 }
-                if(meta.hasLore()) {
-                    if(useMiniMessage){
+                if (meta.hasLore()) {
+                    if (useMiniMessage) {
                         GetVariablesItemLore getVariablesItemLore = MiniMessageUtils.getVariablesItemLore(
-                                meta,loreList,colorFormatLoreList,loreString,colorFormatLoreString);
+                                meta, loreList, colorFormatLoreList, loreString.toString(), colorFormatLoreString.toString());
                         loreList = getVariablesItemLore.getLoreList();
                         colorFormatLoreList = getVariablesItemLore.getColorFormatLoreList();
-                        loreString = getVariablesItemLore.getLoreString();
-                        colorFormatLoreString = getVariablesItemLore.getColorFormatLoreString();
-                    }else{
+                        loreString = new StringBuilder(getVariablesItemLore.getLoreString());
+                        colorFormatLoreString = new StringBuilder(getVariablesItemLore.getColorFormatLoreString());
+                    } else {
                         List<String> lore = meta.getLore();
-                        for(int i=0;i<lore.size();i++) {
-                            loreList.add(ChatColor.stripColor(lore.get(i)));
-                            colorFormatLoreList.add(lore.get(i).replace("§", "&"));
-                            if(i == lore.size()-1) {
-                                loreString = loreString+ChatColor.stripColor(lore.get(i));
-                                colorFormatLoreString = colorFormatLoreString+lore.get(i).replace("§", "&");
-                            }else {
-                                loreString = loreString+ChatColor.stripColor(lore.get(i))+" ";
-                                colorFormatLoreString = colorFormatLoreString+lore.get(i).replace("§", "&")+" ";
+                        if (lore != null) {
+                            for (int i = 0; i < lore.size(); i++) {
+                                loreList.add(ChatColor.stripColor(lore.get(i)));
+                                colorFormatLoreList.add(lore.get(i).replace("§", "&"));
+                                if (i == lore.size() - 1) {
+                                    loreString.append(ChatColor.stripColor(lore.get(i)));
+                                    colorFormatLoreString.append(lore.get(i).replace("§", "&"));
+                                } else {
+                                    loreString.append(ChatColor.stripColor(lore.get(i))).append(" ");
+                                    colorFormatLoreString.append(lore.get(i).replace("§", "&")).append(" ");
+                                }
                             }
                         }
                     }
                 }
 
                 ServerVersion serverVersion = ConditionalEvents.serverVersion;
-                if(OtherUtils.isNew() && meta.hasCustomModelData()){
-                    if(!serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R3)){
+                if (OtherUtils.isNew() && meta.hasCustomModelData()) {
+                    if (!serverVersion.serverVersionGreaterEqualThan(serverVersion, ServerVersion.v1_21_R3)) {
                         customModelData = meta.getCustomModelData();
                     }
                 }
-                if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_21_R3)){
-                    if(meta.hasItemModel()){
+                if (serverVersion.serverVersionGreaterEqualThan(serverVersion, ServerVersion.v1_21_R3)) {
+                    if (meta.hasItemModel()) {
                         NamespacedKey key = meta.getItemModel();
-                        itemModel = key.getNamespace()+":"+key.getKey();
+                        if (key != null) {
+                            itemModel = key.getNamespace() + ":" + key.getKey();
+                        }
                     }
                 }
             }
         }
 
         //Example: %offhand:<variable>%
-        if(otherItemTag == null){
+        if (otherItemTag == null) {
             otherItemTag = "%";
-        }else{
-            otherItemTag = "%"+otherItemTag+":";
+        } else {
+            otherItemTag = "%" + otherItemTag + ":";
         }
 
-        eventVariables.add(new StoredVariable(otherItemTag+"item%",material));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_name%",name));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_color_format_name%",colorFormatName));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_durability%",durability+""));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_amount%",amount+""));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_lore%",loreString));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_color_format_lore%",colorFormatLoreString));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_custom_model_data%",customModelData+""));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_model%",itemModel));
-        eventVariables.add(new StoredVariable(otherItemTag+"item_meta%",metaString));
-        for(int i=0;i<loreList.size();i++) {
-            eventVariables.add(new StoredVariable(otherItemTag+"item_lore_line_"+(i+1)+"%", loreList.get(i)));
+        eventVariables.add(new StoredVariable(otherItemTag + "item%", material));
+        eventVariables.add(new StoredVariable(otherItemTag + "item_name%", name));
+        eventVariables.add(new StoredVariable(otherItemTag + "item_color_format_name%", colorFormatName));
+        eventVariables.add(new StoredVariable(otherItemTag + "item_durability%", durability + ""));
+        eventVariables.add(new StoredVariable(otherItemTag + "item_amount%", amount + ""));
+        eventVariables.add(new StoredVariable(otherItemTag + "item_lore%", loreString.toString()));
+        eventVariables.add(new StoredVariable(otherItemTag + "item_color_format_lore%", colorFormatLoreString.toString()));
+        eventVariables.add(new StoredVariable(otherItemTag + "item_custom_model_data%", customModelData + ""));
+        eventVariables.add(new StoredVariable(otherItemTag + "item_model%", itemModel));
+        eventVariables.add(new StoredVariable(otherItemTag + "item_meta%", metaString));
+        for (int i = 0; i < loreList.size(); i++) {
+            eventVariables.add(new StoredVariable(otherItemTag + "item_lore_line_" + (i + 1) + "%", loreList.get(i)));
         }
-        for(int i=0;i<colorFormatLoreList.size();i++) {
-            eventVariables.add(new StoredVariable(otherItemTag+"item_color_format_lore_line_"+(i+1)+"%", colorFormatLoreList.get(i)));
+        for (int i = 0; i < colorFormatLoreList.size(); i++) {
+            eventVariables.add(new StoredVariable(otherItemTag + "item_color_format_lore_line_" + (i + 1) + "%", colorFormatLoreList.get(i)));
         }
 
         return this;
     }
 
-    public ConditionEvent setCommonEntityVariables(Entity entity){
+    public ConditionEvent setCommonEntityVariables(Entity entity) {
         String entityType = entity.getType().name();
         String entityName = "";
         String entityNameColorFormat = "";
         String entityUuid = entity.getUniqueId().toString();
-        if(entity.getCustomName() != null) {
-            if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
+        if (entity.getCustomName() != null) {
+            if (plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()) {
                 entityName = MiniMessageUtils.getEntityCustomNamePlain(entity);
                 entityNameColorFormat = MiniMessageUtils.getEntityCustomNameMiniMessage(entity);
-            }else{
+            } else {
                 entityName = ChatColor.stripColor(entity.getCustomName());
                 entityNameColorFormat = entity.getCustomName().replace("§", "&");
             }
         }
         Location location = entity.getLocation();
 
-        eventVariables.add(new StoredVariable("%entity%",entityType));
-        eventVariables.add(new StoredVariable("%entity_name%",entityName));
-        eventVariables.add(new StoredVariable("%entity_color_format_name%",entityNameColorFormat));
-        eventVariables.add(new StoredVariable("%entity_x%",location.getBlockX()+""));
-        eventVariables.add(new StoredVariable("%entity_y%",location.getBlockY()+""));
-        eventVariables.add(new StoredVariable("%entity_z%",location.getBlockZ()+""));
-        eventVariables.add(new StoredVariable("%entity_world%",location.getWorld().getName()));
-        eventVariables.add(new StoredVariable("%entity_uuid%",entityUuid));
+        eventVariables.add(new StoredVariable("%entity%", entityType));
+        eventVariables.add(new StoredVariable("%entity_name%", entityName));
+        eventVariables.add(new StoredVariable("%entity_color_format_name%", entityNameColorFormat));
+        eventVariables.add(new StoredVariable("%entity_x%", location.getBlockX() + ""));
+        eventVariables.add(new StoredVariable("%entity_y%", location.getBlockY() + ""));
+        eventVariables.add(new StoredVariable("%entity_z%", location.getBlockZ() + ""));
+        eventVariables.add(new StoredVariable("%entity_world%", location.getWorld().getName()));
+        eventVariables.add(new StoredVariable("%entity_uuid%", entityUuid));
         return this;
     }
 

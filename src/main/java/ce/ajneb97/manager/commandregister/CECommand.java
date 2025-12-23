@@ -1,4 +1,4 @@
-package ce.ajneb97.managers.commandregister;
+package ce.ajneb97.manager.commandregister;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;

@@ -3,7 +3,7 @@ package ce.ajneb97.model.actions;
 public class CEAction {
 
     private ActionType type;
-    private String apiType; //Just for API events.
+    private String apiType;
     private ActionTargeter targeter;
     private String actionLine;
 

@@ -5,33 +5,32 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemSelectEvent extends PlayerEvent{
-	
-	private static final HandlerList handlers = new HandlerList();
-	private SelectType selectType;
-	private ItemStack item;
+public class ItemSelectEvent extends PlayerEvent {
 
-	public ItemSelectEvent(Player player,ItemStack item,SelectType selectType) {
-		super(player);
-		this.item = item;
-		this.selectType = selectType;
-	}
+    private static final HandlerList handlers = new HandlerList();
+    private final SelectType selectType;
+    private final ItemStack item;
 
-	public SelectType getSelectType() {
-		return selectType;
-	}
+    public ItemSelectEvent(Player player, ItemStack item, SelectType selectType) {
+        super(player);
+        this.item = item;
+        this.selectType = selectType;
+    }
 
-	public ItemStack getItem() {
-		return item;
-	}
+    public SelectType getSelectType() {
+        return selectType;
+    }
 
-	@Override
-	public HandlerList getHandlers() {
-		// TODO Auto-generated method stub
-		return handlers;
-	}
-	
-	public static HandlerList getHandlerList() {
-	    return handlers;
-	}
+    public ItemStack getItem() {
+        return item;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 }

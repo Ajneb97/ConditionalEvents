@@ -1,6 +1,7 @@
 package ce.ajneb97.model.actions;
 
 public class ActionTargeter {
+
     private ActionTargeterType type;
     private String parameter;
 

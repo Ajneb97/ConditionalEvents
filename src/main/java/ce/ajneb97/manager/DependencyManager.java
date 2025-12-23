@@ -1,10 +1,11 @@
-package ce.ajneb97.managers;
+package ce.ajneb97.manager;
 
 import ce.ajneb97.ConditionalEvents;
-import ce.ajneb97.managers.dependencies.DiscordSRVManager;
-import ce.ajneb97.managers.dependencies.ProtocolLibManager;
+import ce.ajneb97.manager.dependencies.DiscordSRVManager;
+import ce.ajneb97.manager.dependencies.ProtocolLibManager;
 import org.bukkit.Bukkit;
 
+@SuppressWarnings("DataFlowIssue")
 public class DependencyManager {
 
     private boolean placeholderAPI;
@@ -14,37 +15,36 @@ public class DependencyManager {
     private ProtocolLibManager protocolLibManager;
     private DiscordSRVManager discordSRVManager;
 
-    public DependencyManager(ConditionalEvents plugin){
+    public DependencyManager(ConditionalEvents plugin) {
         placeholderAPI = false;
         citizens = false;
         worldGuardEvents = false;
         paper = false;
-        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null
-            && Bukkit.getPluginManager().getPlugin("PlaceholderAPI").isEnabled()){
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null
+                && Bukkit.getPluginManager().getPlugin("PlaceholderAPI").isEnabled()) {
             placeholderAPI = true;
         }
-        if(Bukkit.getPluginManager().getPlugin("Citizens") != null
-            && Bukkit.getPluginManager().getPlugin("Citizens").isEnabled()){
+        if (Bukkit.getPluginManager().getPlugin("Citizens") != null
+                && Bukkit.getPluginManager().getPlugin("Citizens").isEnabled()) {
             citizens = true;
         }
-        if(Bukkit.getPluginManager().getPlugin("WorldGuardEvents") != null
-            && Bukkit.getPluginManager().getPlugin("WorldGuardEvents").isEnabled()){
+        if (Bukkit.getPluginManager().getPlugin("WorldGuardEvents") != null
+                && Bukkit.getPluginManager().getPlugin("WorldGuardEvents").isEnabled()) {
             worldGuardEvents = true;
         }
-        if(Bukkit.getPluginManager().getPlugin("ProtocolLib") != null
-                && Bukkit.getPluginManager().getPlugin("ProtocolLib").isEnabled()){
+        if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null
+                && Bukkit.getPluginManager().getPlugin("ProtocolLib").isEnabled()) {
             protocolLibManager = new ProtocolLibManager(plugin);
         }
-        if(Bukkit.getPluginManager().getPlugin("DiscordSRV") != null
-                && Bukkit.getPluginManager().getPlugin("DiscordSRV").isEnabled()){
-            discordSRVManager = new DiscordSRVManager(plugin);
+        if (Bukkit.getPluginManager().getPlugin("DiscordSRV") != null
+                && Bukkit.getPluginManager().getPlugin("DiscordSRV").isEnabled()) {
+            discordSRVManager = new DiscordSRVManager();
         }
 
-        try{
+        try {
             Class.forName("com.destroystokyo.paper.ParticleBuilder");
             paper = true;
-        }catch(Exception e){
-
+        } catch (Exception ignored) {
         }
     }
 

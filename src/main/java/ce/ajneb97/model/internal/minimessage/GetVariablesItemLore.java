@@ -3,10 +3,11 @@ package ce.ajneb97.model.internal.minimessage;
 import java.util.List;
 
 public class GetVariablesItemLore {
-    private List<String> loreList;
-    private List<String> colorFormatLoreList;
-    private String loreString;
-    private String colorFormatLoreString;
+
+    private final List<String> loreList;
+    private final List<String> colorFormatLoreList;
+    private final String loreString;
+    private final String colorFormatLoreString;
 
     public GetVariablesItemLore(List<String> loreList, List<String> colorFormatLoreList, String loreString, String colorFormatLoreString) {
         this.loreList = loreList;

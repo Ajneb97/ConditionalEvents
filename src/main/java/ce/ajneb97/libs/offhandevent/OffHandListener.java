@@ -14,30 +14,25 @@ import org.bukkit.inventory.ItemStack;
 
 public class OffHandListener implements Listener {
 
-    private ConditionalEvents plugin;
-    public OffHandListener(ConditionalEvents plugin){
-        this.plugin = plugin;
-    }
-
     @EventHandler
-    public void onPlayerSwapHand(PlayerSwapHandItemsEvent event){
-        if(event.isCancelled()){
+    public void onPlayerSwapHand(PlayerSwapHandItemsEvent event) {
+        if (event.isCancelled()) {
             return;
         }
         Player player = event.getPlayer();
         ItemStack item = event.getMainHandItem();
         ItemStack itemOffHand = event.getOffHandItem();
 
-        OffHandEvent swapEvent = new OffHandEvent(player,itemOffHand,item);
+        OffHandEvent swapEvent = new OffHandEvent(player, itemOffHand, item);
         Bukkit.getServer().getPluginManager().callEvent(swapEvent);
-        if(swapEvent.isCancelled()){
+        if (swapEvent.isCancelled()) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onMoveOffHand(InventoryClickEvent event) {
-        if(event.isCancelled()){
+        if (event.isCancelled()) {
             return;
         }
 
@@ -58,21 +53,21 @@ public class OffHandListener implements Listener {
 
         OffHandEvent swapEvent = null;
         ServerVersion serverVersion = ConditionalEvents.serverVersion;
-        if(slotType.equals(InventoryType.SlotType.QUICKBAR) && slot == 40){
-            if(click.equals(ClickType.NUMBER_KEY)){
-                swapEvent = new OffHandEvent(player,item2,itemInOffhand);
-            }else{
-                swapEvent = new OffHandEvent(player,cursorItem,itemInOffhand);
+        if (slotType.equals(InventoryType.SlotType.QUICKBAR) && slot == 40) {
+            if (click.equals(ClickType.NUMBER_KEY)) {
+                swapEvent = new OffHandEvent(player, item2, itemInOffhand);
+            } else {
+                swapEvent = new OffHandEvent(player, cursorItem, itemInOffhand);
             }
-        }else if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_16_R3)){
-            if(click.equals(ClickType.SWAP_OFFHAND)){
-                swapEvent = new OffHandEvent(player,clickedItem,itemInOffhand);
+        } else if (serverVersion.serverVersionGreaterEqualThan(serverVersion, ServerVersion.v1_16_R3)) {
+            if (click.equals(ClickType.SWAP_OFFHAND)) {
+                swapEvent = new OffHandEvent(player, clickedItem, itemInOffhand);
             }
         }
 
-        if(swapEvent != null){
+        if (swapEvent != null) {
             Bukkit.getServer().getPluginManager().callEvent(swapEvent);
-            if(swapEvent.isCancelled()){
+            if (swapEvent.isCancelled()) {
                 event.setCancelled(true);
             }
         }

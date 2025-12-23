@@ -1,4 +1,4 @@
-package ce.ajneb97.managers.dependencies;
+package ce.ajneb97.manager.dependencies;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.model.CEEvent;
@@ -22,17 +22,19 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("deprecation")
 public class ProtocolLibManager {
 
-    private ConditionalEvents plugin;
-    public ProtocolLibManager(ConditionalEvents plugin){
+    private final ConditionalEvents plugin;
+
+    public ProtocolLibManager(ConditionalEvents plugin) {
         this.plugin = plugin;
         configure();
     }
 
-    public void configure(){
+    public void configure() {
         ProtocolLibrary.getProtocolManager().addPacketListener(getChatAdapter(PacketType.Play.Server.CHAT));
-        if(OtherUtils.isChatNew()) {
+        if (OtherUtils.isChatNew()) {
             ProtocolLibrary.getProtocolManager().addPacketListener(getChatAdapter(PacketType.Play.Server.SYSTEM_CHAT));
             ProtocolLibrary.getProtocolManager().addPacketListener(getChatAdapter(PacketType.Play.Server.DISGUISED_CHAT));
         }
@@ -45,72 +47,72 @@ public class ProtocolLibManager {
                 ConditionalEvents pluginInstance = (ConditionalEvents) plugin;
                 boolean isPaper = pluginInstance.getDependencyManager().isPaper();
 
-                //Check if config has a protocollib event
+                //Check if config has a protocol event
                 ArrayList<CEEvent> validEvents = pluginInstance.getEventsManager().getValidEvents(EventType.PROTOCOLLIB_RECEIVE_MESSAGE);
-                if(validEvents.size() == 0){
+                if (validEvents.isEmpty()) {
                     return;
                 }
 
                 PacketContainer packet = event.getPacket();
                 Player player = event.getPlayer();
-                for(EnumWrappers.ChatType type : packet.getChatTypes().getValues()) {
-                    if(type.equals(EnumWrappers.ChatType.GAME_INFO)) {
+                for (EnumWrappers.ChatType type : packet.getChatTypes().getValues()) {
+                    if (type.equals(EnumWrappers.ChatType.GAME_INFO)) {
                         return;
                     }
                 }
 
-                if(isPaper && OtherUtils.isChatNew()){
-                    for(boolean b : packet.getBooleans().getValues()){
-                        if(b){
+                if (isPaper && OtherUtils.isChatNew()) {
+                    for (boolean b : packet.getBooleans().getValues()) {
+                        if (b) {
                             return;
                         }
                     }
                 }
 
-                for(Object object : packet.getModifier().getValues()) {
-                    if(object == null) {
+                for (Object object : packet.getModifier().getValues()) {
+                    if (object == null) {
                         continue;
                     }
 
                     String jsonMessage = null;
                     String normalMessage = null;
 
-                    if(object instanceof String) {
+                    if (object instanceof String) {
                         jsonMessage = (String) object;
                         normalMessage = OtherUtils.fromJsonMessageToNormalMessage(jsonMessage);
-                    }else if(object instanceof BaseComponent[]) {
+                    } else if (object instanceof BaseComponent[]) {
                         BaseComponent[] baseComponents = (BaseComponent[]) object;
                         normalMessage = BaseComponent.toLegacyText(baseComponents);
                         jsonMessage = ComponentSerializer.toString(baseComponents);
                     }
 
-                    if(isPaper && OtherUtils.isChatNew()){
-                        if(object instanceof Component){
+                    if (isPaper && OtherUtils.isChatNew()) {
+                        if (object instanceof Component) {
                             WrappedChatComponent wrappedChatComponent = AdventureComponentConverter
-                                    .fromComponent((Component)object);
+                                    .fromComponent((Component) object);
                             jsonMessage = wrappedChatComponent.getJson();
                             normalMessage = OtherUtils.fromJsonMessageToNormalMessage(jsonMessage);
                         }
                     }
 
-                    if(jsonMessage != null && normalMessage != null) {
-                        executeEvent(player,jsonMessage,normalMessage,event);
+                    if (jsonMessage != null && normalMessage != null) {
+                        executeEvent(player, jsonMessage, normalMessage, event);
                         return;
                     }
                 }
 
-                for(WrappedChatComponent wrappedChatComponent : packet.getChatComponents().getValues()) {
-                    if(wrappedChatComponent != null) {
+                for (WrappedChatComponent wrappedChatComponent : packet.getChatComponents().getValues()) {
+                    if (wrappedChatComponent != null) {
                         String jsonMessage = wrappedChatComponent.getJson();
-                        String normalMessage = null;
-                        if(isPaper && OtherUtils.isChatNew()){
+                        String normalMessage;
+                        if (isPaper && OtherUtils.isChatNew()) {
                             normalMessage = LegacyComponentSerializer.legacyAmpersand().serialize(AdventureComponentConverter.fromWrapper(wrappedChatComponent));
-                        }else{
+                        } else {
                             normalMessage = OtherUtils.fromJsonMessageToNormalMessage(jsonMessage);
                         }
 
-                        if(jsonMessage != null && normalMessage != null){
-                            executeEvent(player,jsonMessage,normalMessage,event);
+                        if (jsonMessage != null && normalMessage != null) {
+                            executeEvent(player, jsonMessage, normalMessage, event);
                         }
                         return;
                     }
@@ -119,16 +121,16 @@ public class ProtocolLibManager {
         };
     }
 
-    public void executeEvent(Player player,String jsonMessage,String normalMessage,PacketEvent event){
-        ProtocolLibReceiveMessageEvent messageEvent = new ProtocolLibReceiveMessageEvent(player,jsonMessage,normalMessage);
+    public void executeEvent(Player player, String jsonMessage, String normalMessage, PacketEvent event) {
+        ProtocolLibReceiveMessageEvent messageEvent = new ProtocolLibReceiveMessageEvent(player, jsonMessage, normalMessage);
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, messageEvent, EventType.PROTOCOLLIB_RECEIVE_MESSAGE, null);
         conditionEvent.addVariables(
-                new StoredVariable("%json_message%",jsonMessage),
-                new StoredVariable("%normal_message%",normalMessage.replace("§", "&")),
-                new StoredVariable("%normal_message_without_color_codes%",ChatColor.stripColor(normalMessage))
+                new StoredVariable("%json_message%", jsonMessage),
+                new StoredVariable("%normal_message%", normalMessage.replace("§", "&")),
+                new StoredVariable("%normal_message_without_color_codes%", ChatColor.stripColor(normalMessage))
         ).checkEvent();
 
-        if(messageEvent.isCancelled()){
+        if (messageEvent.isCancelled()) {
             event.setCancelled(true);
         }
     }

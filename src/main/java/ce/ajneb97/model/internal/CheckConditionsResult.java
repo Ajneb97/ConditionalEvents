@@ -2,8 +2,8 @@ package ce.ajneb97.model.internal;
 
 public class CheckConditionsResult {
 
-    private boolean conditionsAccomplished;
-    private String executeActionGroup;
+    private final boolean conditionsAccomplished;
+    private final String executeActionGroup;
 
     public CheckConditionsResult(boolean conditionsAccomplished, String executeActionGroup) {
         this.conditionsAccomplished = conditionsAccomplished;
@@ -15,9 +15,9 @@ public class CheckConditionsResult {
     }
 
     public String getExecuteActionGroup() {
-        if(executeActionGroup == null){
+        if (executeActionGroup == null) {
             return "default";
-        }else{
+        } else {
             return executeActionGroup;
         }
     }

@@ -11,6 +11,21 @@ Config:
   to_condition_groups:
     group1:
       - "%player_has_permission_conditionalevents.somepermission% == yes"
+  mysql_database:
+    enabled: false
+    migrate: false
+    host: localhost
+    port: 3306
+    username: root
+    password: ''
+    database: conditionalevents
+    pool:
+      connectionTimeout: 5000
+    advanced:
+      verifyServerCertificate: false
+      useSSL: true
+      allowPublicKeyRetrieval: true
+
 Messages:
   prefix: '&4[&bConditionalEvents&4] '
   commandReload: '&aConfig Reloaded.'
@@ -54,81 +69,3 @@ Messages:
   commandInterruptError: '&cUse &7/ce interrupt <event> (optional)<player>'
   commandInterruptCorrect: '&aActions of event &7%event% &ainterrupted.'
   commandInterruptCorrectPlayer: '&aActions of event &7%event% &ainterrupted for player &7%player%&a.'
-Events:
-  event1:
-    type: player_join
-    conditions:
-      - '%player% == Ajneb'
-    actions:
-      default:
-        - 'to_all: message: &e&l[ALERT] &f&lAjneb joined the game!'
-  event2:
-    type: block_interact
-    one_time: true
-    conditions:
-      - '%block_x% == 20'
-      - '%block_y% == 60'
-      - '%block_z% == 20'
-      - '%block_world% == lobby'
-      - '%block% == STONE_BUTTON'
-      - '%action_type% == RIGHT_CLICK'
-      - '%player_has_permission_conditionalevents.event.event2% == no execute actions2'
-    actions:
-      default:
-        - 'message: &aYou''ve received $500!'
-        - 'console_command: eco give %player% 500'
-        - 'playsound: ENTITY_PLAYER_LEVELUP;10;2'
-      actions2:
-        - 'message: &cYou need to have a rank to use this button.'
-      one_time:
-        - 'message: &cYou can claim this reward just once!'
-  event3:
-    type: player_attack
-    conditions:
-      - '%victim% == PLAYER'
-      - '%item% == DIAMOND_SWORD'
-      - '%item_name% == Super Sword'
-      - '%random_1_10% >= 8'
-    actions:
-      default:
-        - 'message: &aYour diamond sword poison effect was activated! &6%target:player_name% &ais now poisoned!'
-        - 'to_target: give_potion_effect: POISON;120;1'
-        - 'to_target: message: &cYou were poisoned by &e%player%&c!'
-  event4:
-    type: block_break
-    ignore_with_permission: conditionalevents.ignore.event4
-    conditions:
-      - '%block_world% == spawn'
-    actions:
-      default:
-        - 'cancel_event: true'
-        - 'message: &cYou can''t break blocks on this world.'
-        - 'playsound: BLOCK_NOTE_BLOCK_PLING;10;0.1'
-  event5:
-    type: player_command
-    ignore_with_permission: conditionalevents.ignore.event5
-    conditions:
-      - '%main_command% equalsIgnoreCase //calc or %main_command% equalsIgnoreCase //solve or %main_command% equalsIgnoreCase //eval'
-    actions:
-      default:
-        - 'cancel_event: true'
-        - 'kick: &cWhat are you trying to do?'
-  event6:
-    type: repetitive
-    repetitive_time: 10
-    conditions:
-      - '%player_world% == plotworld'
-      - '%player_gamemode% != CREATIVE'
-    actions:
-      default:
-        - 'gamemode: CREATIVE'
-        - 'actionbar: &6Changing gamemode to creative.;100'
-  event7:
-    type: player_command
-    conditions:
-      - '%main_command% == /hello'
-    actions:
-      default:
-        - 'cancel_event: true'
-        - "message: &7You said hello to nearby players!"
-        - 'to_range: 10;false: message: &e%player% &7says you hello!'

@@ -1,4 +1,4 @@
-package ce.ajneb97.managers;
+package ce.ajneb97.manager;
 
 import ce.ajneb97.model.internal.UpdateCheckerResult;
 
@@ -9,14 +9,14 @@ import java.net.URL;
 
 public class UpdateCheckerManager {
 
-    private String version;
+    private final String version;
     private String latestVersion;
 
-    public UpdateCheckerManager(String version){
+    public UpdateCheckerManager(String version) {
         this.version = version;
     }
 
-    public UpdateCheckerResult check(){
+    public UpdateCheckerResult check() {
         try {
             HttpURLConnection con = (HttpURLConnection) new URL(
                     "https://api.spigotmc.org/legacy/update.php?resource=82271").openConnection();
@@ -25,7 +25,7 @@ public class UpdateCheckerManager {
             con.setReadTimeout(timed_out);
             latestVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
             if (latestVersion.length() <= 7) {
-                if(!version.equals(latestVersion)){
+                if (!version.equals(latestVersion)) {
                     return UpdateCheckerResult.noErrors(latestVersion);
                 }
             }

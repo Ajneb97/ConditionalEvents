@@ -2,10 +2,9 @@ package ce.ajneb97.model.internal;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.api.ConditionalEventsEvent;
-import ce.ajneb97.managers.DebugManager;
-import ce.ajneb97.managers.EventsManager;
+import ce.ajneb97.manager.DebugManager;
+import ce.ajneb97.manager.EventsManager;
 import ce.ajneb97.model.CEEvent;
-import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.StoredVariable;
 import ce.ajneb97.model.ToConditionGroup;
 import ce.ajneb97.model.actions.*;
@@ -21,16 +20,17 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.List;
 
-// Represent an event that has accomplished all conditions and actions
+// Represent an event that has achieved all conditions and actions
 // are being executed.
+@SuppressWarnings({"ReassignedVariable", "DataFlowIssue"})
 public class ExecutedEvent {
-    private Player player;
-    private LivingEntity target;
-    private ArrayList<StoredVariable> eventVariables;
-    private CEEvent event;
-    private Event minecraftEvent;
+    private final Player player;
+    private final LivingEntity target;
+    private final ArrayList<StoredVariable> eventVariables;
+    private final CEEvent event;
+    private final Event minecraftEvent;
     private String actionGroupName;
-    private ConditionalEvents plugin;
+    private final ConditionalEvents plugin;
 
 
     private boolean isPlaceholderAPI;
@@ -40,7 +40,7 @@ public class ExecutedEvent {
     private int currentActionPos;
 
     public ExecutedEvent(Player player, ArrayList<StoredVariable> eventVariables, CEEvent event, String actionGroupName
-        , Event minecraftEvent, LivingEntity target, ConditionalEvents plugin) {
+            , Event minecraftEvent, LivingEntity target, ConditionalEvents plugin) {
         this.player = player;
         this.eventVariables = eventVariables;
         this.event = event;
@@ -55,23 +55,23 @@ public class ExecutedEvent {
 
     private VariablesProperties generateVariableProperties() {
         Player playerTarget = null;
-        if(target instanceof Player){
-            playerTarget = (Player)target;
+        if (target instanceof Player) {
+            playerTarget = (Player) target;
         }
         return new VariablesProperties(
-                eventVariables,player,playerTarget,isPlaceholderAPI,event,minecraftEvent
+                eventVariables, player, playerTarget, isPlaceholderAPI, event, minecraftEvent
         );
     }
 
-    public boolean setActionGroup(String actionGroupName){
+    public boolean setActionGroup(String actionGroupName) {
         //Check if parameters are present
         int pos = actionGroupName.indexOf("{");
-        if(pos != -1){
+        if (pos != -1) {
             VariablesProperties variablesProperties = generateVariableProperties();
 
-            String parameters = actionGroupName.substring(pos+1, actionGroupName.length()-1);
+            String parameters = actionGroupName.substring(pos + 1, actionGroupName.length() - 1);
             String[] sep = parameters.split(";");
-            for(String s : sep) {
+            for (String s : sep) {
                 int eIndex = s.indexOf("=");
                 String newVariable = s.substring(0, eIndex).trim();
                 String variable = s.substring(eIndex + 1).trim();
@@ -82,16 +82,16 @@ public class ExecutedEvent {
         }
 
         ActionGroup actionGroup = event.getActionGroup(this.actionGroupName);
-        if(actionGroup == null){
+        if (actionGroup == null) {
             return false;
         }
-        this.actions = new ArrayList<CEAction>(actionGroup.getActions());
+        this.actions = new ArrayList<>(actionGroup.getActions());
         return true;
     }
 
-    public void executeActions(){
+    public void executeActions() {
         this.isPlaceholderAPI = plugin.getDependencyManager().isPlaceholderAPI();
-        if(!setActionGroup(actionGroupName)){
+        if (!setActionGroup(actionGroupName)) {
             return;
         }
 
@@ -101,46 +101,53 @@ public class ExecutedEvent {
         //Check cancel event or prevent join, always first to prevent issues with async events.
         executeCancelActions();
 
-        if(!Bukkit.isPrimaryThread()){
-            new BukkitRunnable(){
-                @Override
-                public void run() {
+        if (!Bukkit.isPrimaryThread()) {
+            if (plugin.isFolia) {
+                plugin.getServer().getGlobalRegionScheduler().execute(plugin, () -> {
                     plugin.getServer().getPluginManager().callEvent(ceEvent);
                     executeActionsFinal();
-                }
-            }.runTask(plugin);
-        }else{
+                });
+            } else {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        plugin.getServer().getPluginManager().callEvent(ceEvent);
+                        executeActionsFinal();
+                    }
+                }.runTask(plugin);
+            }
+        } else {
             plugin.getServer().getPluginManager().callEvent(ceEvent);
             executeActionsFinal();
         }
     }
 
-    public void executeCancelActions(){
-        for(CEAction ceAction : actions){
-            if(ceAction.getType().equals(ActionType.CANCEL_EVENT)){
-                ActionUtils.cancelEvent(ceAction.getActionLine(),minecraftEvent);
+    public void executeCancelActions() {
+        for (CEAction ceAction : actions) {
+            if (ceAction.getType().equals(ActionType.CANCEL_EVENT)) {
+                ActionUtils.cancelEvent(ceAction.getActionLine(), minecraftEvent);
                 return;
-            }else if(ceAction.getType().equals(ActionType.PREVENT_JOIN)){
+            } else if (ceAction.getType().equals(ActionType.PREVENT_JOIN)) {
                 String actionLine = ceAction.getActionLine();
                 VariablesProperties variablesProperties = generateVariableProperties();
-                actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties,false);
-                ActionUtils.preventJoin(actionLine,minecraftEvent);
+                actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine, variablesProperties, false);
+                ActionUtils.preventJoin(actionLine, minecraftEvent);
                 return;
             }
         }
     }
 
-    public void continueWithActions(){
+    public void continueWithActions() {
         this.onWait = false;
         executeActionsFinal();
     }
 
-    private void executeActionsFinal(){
+    private void executeActionsFinal() {
         DebugManager debugManager = plugin.getDebugManager();
         boolean isDebugActions = plugin.getConfigsManager().getMainConfigManager().isDebugActions();
         VariablesProperties variablesProperties = generateVariableProperties();
 
-        for(int i=currentActionPos;i<actions.size();i++){
+        for (int i = currentActionPos; i < actions.size(); i++) {
             CEAction action = actions.get(i);
             ActionType actionType = action.getType();
             String apiType = action.getApiType();
@@ -152,102 +159,98 @@ public class ExecutedEvent {
             ActionTargeterType targeterType = targeter.getType();
 
             String parametersLine = targeter.getParameter();
-            if(parametersLine != null){
-                parametersLine = VariablesUtils.replaceAllVariablesInLine(parametersLine,variablesProperties,false);
+            if (parametersLine != null) {
+                parametersLine = VariablesUtils.replaceAllVariablesInLine(parametersLine, variablesProperties, false);
             }
 
-            if(targeterType.equals(ActionTargeterType.TO_ALL)) {
-                for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
-                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,apiType,isDebugActions,targeter,debugManager);
+            if (targeterType.equals(ActionTargeterType.TO_ALL)) {
+                for (Player globalPlayer : Bukkit.getOnlinePlayers()) {
+                    executeActionsFromToTarget(variablesProperties, globalPlayer, actionLine, actionType, apiType, isDebugActions, targeter, debugManager);
                 }
-            }else if(targeterType.equals(ActionTargeterType.TO_TARGET)){
-                executeActionsFromToTarget(variablesProperties,target,actionLine,actionType,apiType,isDebugActions,targeter,debugManager);
-            }else if(targeterType.equals(ActionTargeterType.TO_WORLD)){
-                String world = parametersLine;
-                for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
-                    if(globalPlayer.getWorld().getName().equals(world)){
-                        executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,apiType,isDebugActions,targeter,debugManager);
+            } else if (targeterType.equals(ActionTargeterType.TO_TARGET)) {
+                executeActionsFromToTarget(variablesProperties, target, actionLine, actionType, apiType, isDebugActions, targeter, debugManager);
+            } else if (targeterType.equals(ActionTargeterType.TO_WORLD)) {
+                for (Player globalPlayer : Bukkit.getOnlinePlayers()) {
+                    if (globalPlayer.getWorld().getName().equals(parametersLine)) {
+                        executeActionsFromToTarget(variablesProperties, globalPlayer, actionLine, actionType, apiType, isDebugActions, targeter, debugManager);
                     }
                 }
-            }else if(targeterType.equals(ActionTargeterType.TO_PLAYER)){
-                String playerName = parametersLine;
-                Player onlinePlayer = Bukkit.getPlayer(playerName);
-                if(onlinePlayer != null){
-                    executeActionsFromToTarget(variablesProperties,onlinePlayer,actionLine,actionType,apiType,isDebugActions,targeter,debugManager);
+            } else if (targeterType.equals(ActionTargeterType.TO_PLAYER)) {
+                Player onlinePlayer = Bukkit.getPlayer(parametersLine);
+                if (onlinePlayer != null) {
+                    executeActionsFromToTarget(variablesProperties, onlinePlayer, actionLine, actionType, apiType, isDebugActions, targeter, debugManager);
                 }
-            }else if(targeterType.equals(ActionTargeterType.TO_RANGE)){
+            } else if (targeterType.equals(ActionTargeterType.TO_RANGE)) {
                 String[] sep = parametersLine.split(";");
-                double range = Double.valueOf(sep[0]);
-                boolean includePlayer = Boolean.valueOf(sep[1]);
-                ArrayList<Player> globalPlayers = new ArrayList<Player>();
-                if(includePlayer){
+                double range = Double.parseDouble(sep[0]);
+                boolean includePlayer = Boolean.parseBoolean(sep[1]);
+                ArrayList<Player> globalPlayers = new ArrayList<>();
+                if (includePlayer) {
                     globalPlayers.add(player);
                 }
-                for(Entity e : player.getWorld().getNearbyEntities(player.getLocation(), range, range, range)) {
-                    if(e instanceof Player) {
+                for (Entity e : player.getWorld().getNearbyEntities(player.getLocation(), range, range, range)) {
+                    if (e instanceof Player) {
                         Player p = (Player) e;
-                        if(!p.getName().equals(player.getName())){
+                        if (!p.getName().equals(player.getName())) {
                             globalPlayers.add(p);
                         }
                     }
                 }
-                for(Player globalPlayer : globalPlayers){
-                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,apiType,isDebugActions,targeter,debugManager);
+                for (Player globalPlayer : globalPlayers) {
+                    executeActionsFromToTarget(variablesProperties, globalPlayer, actionLine, actionType, apiType, isDebugActions, targeter, debugManager);
                 }
-            }else if(targeterType.equals(ActionTargeterType.TO_CONDITION)) {
-                String toConditionGroup = parametersLine;
-                ToConditionGroup group = plugin.getConfigsManager().getMainConfigManager().getToConditionGroup(toConditionGroup);
-                if(group == null){
+            } else if (targeterType.equals(ActionTargeterType.TO_CONDITION)) {
+                ToConditionGroup group = plugin.getConfigsManager().getMainConfigManager().getToConditionGroup(parametersLine);
+                if (group == null) {
                     continue;
                 }
                 EventsManager eventsManager = plugin.getEventsManager();
-                ArrayList<Player> players = new ArrayList<Player>();
-                for(Player globalPlayer : Bukkit.getOnlinePlayers()) {
+                ArrayList<Player> players = new ArrayList<>();
+                for (Player globalPlayer : Bukkit.getOnlinePlayers()) {
                     //Check for conditions
                     variablesProperties.setToTarget(player);
                     boolean accomplishesConditions = eventsManager.checkToConditionAction(group.getConditions()
-                            ,globalPlayer,isPlaceholderAPI,event,minecraftEvent);
-                    if(accomplishesConditions){
+                            , globalPlayer, isPlaceholderAPI, event, minecraftEvent);
+                    if (accomplishesConditions) {
                         players.add(globalPlayer);
                     }
                 }
-                for(Player globalPlayer : players){
-                    executeActionsFromToTarget(variablesProperties,globalPlayer,actionLine,actionType,apiType,isDebugActions,targeter,debugManager);
+                for (Player globalPlayer : players) {
+                    executeActionsFromToTarget(variablesProperties, globalPlayer, actionLine, actionType, apiType, isDebugActions, targeter, debugManager);
                 }
-            }
-            else {
-                actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties,false);
+            } else {
+                actionLine = VariablesUtils.replaceAllVariablesInLine(actionLine, variablesProperties, false);
                 //Debug if enabled
-                if(isDebugActions){
+                if (isDebugActions) {
                     debugManager.sendActionMessage(event.getName(), actionLine, player, actionType, targeter);
                 }
-                executeAction(player,actionType,apiType,actionLine);
+                executeAction(player, actionType, apiType, actionLine);
             }
 
-            if(onWait){
-                currentActionPos = i+1;
+            if (onWait) {
+                currentActionPos = i + 1;
                 return;
             }
         }
     }
 
-    private void executeActionsFromToTarget(VariablesProperties variablesProperties,LivingEntity livingEntity,String actionLine,ActionType actionType,
-                                            String apiType,boolean isDebugActions,ActionTargeter targeter,DebugManager debugManager){
+    private void executeActionsFromToTarget(VariablesProperties variablesProperties, LivingEntity livingEntity, String actionLine, ActionType actionType,
+                                            String apiType, boolean isDebugActions, ActionTargeter targeter, DebugManager debugManager) {
         //Replaces %to:<variable>% variables
-        if(livingEntity instanceof Player){
-            variablesProperties.setToTarget((Player)livingEntity);
+        if (livingEntity instanceof Player) {
+            variablesProperties.setToTarget((Player) livingEntity);
         }
 
-        String toActionLine = VariablesUtils.replaceAllVariablesInLine(actionLine,variablesProperties,false);
-        if(isDebugActions){
+        String toActionLine = VariablesUtils.replaceAllVariablesInLine(actionLine, variablesProperties, false);
+        if (isDebugActions) {
             debugManager.sendActionMessage(event.getName(), toActionLine, livingEntity, actionType, targeter);
         }
-        executeAction(livingEntity,actionType,apiType,toActionLine);
+        executeAction(livingEntity, actionType, apiType, toActionLine);
     }
 
-    private void executeAction(LivingEntity livingEntity,ActionType type,String apiType,String actionLine){
-        //Non player actions
-        switch(type){
+    private void executeAction(LivingEntity livingEntity, ActionType type, String apiType, String actionLine) {
+        //Non-player actions
+        switch (type) {
             case CONSOLE_MESSAGE:
                 ActionUtils.consoleMessage(actionLine);
                 return;
@@ -255,34 +258,34 @@ public class ExecutedEvent {
                 ActionUtils.consoleCommand(actionLine);
                 return;
             case WAIT:
-                ActionUtils.wait(actionLine,this);
+                ActionUtils.wait(actionLine, this);
                 return;
             case WAIT_TICKS:
-                ActionUtils.waitTicks(actionLine,this);
+                ActionUtils.waitTicks(actionLine, this);
                 return;
             case KEEP_ITEMS:
-                ActionUtils.keepItems(actionLine,minecraftEvent);
+                ActionUtils.keepItems(actionLine, minecraftEvent);
                 return;
             case CANCEL_DROP:
-                ActionUtils.cancelDrop(actionLine,minecraftEvent);
+                ActionUtils.cancelDrop(actionLine, minecraftEvent);
                 return;
             case SET_DAMAGE:
-                ActionUtils.setDamage(actionLine,minecraftEvent);
+                ActionUtils.setDamage(actionLine, minecraftEvent);
                 return;
             case HIDE_JOIN_MESSAGE:
-                ActionUtils.hideJoinMessage(actionLine,minecraftEvent);
+                ActionUtils.hideJoinMessage(actionLine, minecraftEvent);
                 return;
             case HIDE_LEAVE_MESSAGE:
-                ActionUtils.hideLeaveMessage(actionLine,minecraftEvent);
+                ActionUtils.hideLeaveMessage(actionLine, minecraftEvent);
                 return;
             case SET_DEATH_MESSAGE:
-                ActionUtils.setDeathMessage(actionLine,minecraftEvent);
+                ActionUtils.setDeathMessage(actionLine, minecraftEvent);
                 return;
             case SET_EVENT_XP:
-                ActionUtils.setEventXp(actionLine,minecraftEvent);
+                ActionUtils.setEventXp(actionLine, minecraftEvent);
                 return;
             case DISCORDSRV_EMBED:
-                ActionUtils.discordSRVEmbed(actionLine,plugin);
+                ActionUtils.discordSRVEmbed(actionLine, plugin);
                 return;
             case DROP_ITEM:
                 ActionUtils.dropItem(actionLine);
@@ -291,7 +294,7 @@ public class ExecutedEvent {
                 ActionUtils.setBlock(actionLine);
                 return;
             case SET_ITEM:
-                ActionUtils.setItem(actionLine,minecraftEvent);
+                ActionUtils.setItem(actionLine, minecraftEvent);
                 return;
             case SUMMON:
                 ActionUtils.summon(actionLine);
@@ -313,25 +316,25 @@ public class ExecutedEvent {
                 ActionUtils.playSoundResourcePack(livingEntity, actionLine);
                 return;
             case CALL_EVENT:
-                ActionUtils.callEvent(actionLine,livingEntity,plugin,eventVariables);
+                ActionUtils.callEvent(actionLine, livingEntity, plugin, eventVariables);
                 return;
             case EXECUTE_ACTION_GROUP:
-                ActionUtils.executeActionGroup(actionLine,this,plugin);
+                ActionUtils.executeActionGroup(actionLine, this, plugin);
                 return;
             case API:
-                plugin.getApiManager().executeAction(apiType,livingEntity,actionLine,minecraftEvent);
+                plugin.getApiManager().executeAction(apiType, livingEntity, actionLine, minecraftEvent);
                 return;
         }
 
         //LivingEntity actions
-        if(livingEntity == null){
+        if (livingEntity == null) {
             return;
         }
 
-        if(livingEntity instanceof Player){
+        if (livingEntity instanceof Player) {
             // Just player actions
-            Player player = (Player)livingEntity;
-            switch(type) {
+            Player player = (Player) livingEntity;
+            switch (type) {
                 case MESSAGE:
                     ActionUtils.message(player, actionLine);
                     return;
@@ -393,12 +396,12 @@ public class ExecutedEvent {
                     ActionUtils.stopSoundResourcePack(player, actionLine);
                     return;
                 case TAB_COMPLETE:
-                    ActionUtils.tabComplete(actionLine,minecraftEvent);
+                    ActionUtils.tabComplete(actionLine, minecraftEvent);
             }
         }
 
         // Rest of actions
-        switch(type) {
+        switch (type) {
             case TELEPORT:
                 ActionUtils.teleport(livingEntity, actionLine, minecraftEvent);
                 return;
@@ -425,9 +428,7 @@ public class ExecutedEvent {
                 return;
             case THROW_COORDINATE:
                 ActionUtils.throwCoordinate(livingEntity, actionLine);
-                return;
         }
-
     }
 
     public void setOnWait(boolean onWait) {
@@ -457,6 +458,7 @@ public class ExecutedEvent {
     public Event getMinecraftEvent() {
         return minecraftEvent;
     }
+
     public List<CEAction> getActions() {
         return actions;
     }

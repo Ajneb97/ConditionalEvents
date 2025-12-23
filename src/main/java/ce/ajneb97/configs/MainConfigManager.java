@@ -2,7 +2,7 @@ package ce.ajneb97.configs;
 
 import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.configs.model.CommonConfig;
-import ce.ajneb97.managers.MessagesManager;
+import ce.ajneb97.manager.MessagesManager;
 import ce.ajneb97.model.ToConditionGroup;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -12,11 +12,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+@SuppressWarnings("DataFlowIssue")
 public class MainConfigManager {
 
-    private CommonConfig configFile;
-    private ConditionalEvents plugin;
+    private final CommonConfig configFile;
+    private final ConditionalEvents plugin;
 
     private boolean updateNotifications;
     private boolean debugActions;
@@ -24,14 +26,15 @@ public class MainConfigManager {
     private boolean itemMetaVariableEnabled;
     private boolean useMiniMessage;
     private ArrayList<ToConditionGroup> toConditionGroups;
-    public MainConfigManager(ConditionalEvents plugin){
+
+    public MainConfigManager(ConditionalEvents plugin) {
         this.plugin = plugin;
-        this.configFile = new CommonConfig("config.yml",plugin,null,false);
+        this.configFile = new CommonConfig("config.yml", plugin, null, false);
         configFile.registerConfig();
         checkMessagesUpdate();
     }
 
-    public void configure(){
+    public void configure() {
         FileConfiguration config = configFile.getConfig();
 
         updateNotifications = config.getBoolean("Config.update_notification");
@@ -41,9 +44,9 @@ public class MainConfigManager {
         useMiniMessage = config.getBoolean("Config.use_minimessage");
         toConditionGroups = new ArrayList<>();
         String path = "Config.to_condition_groups";
-        if(config.contains(path)){
-            for(String key : config.getConfigurationSection(path).getKeys(false)){
-                ToConditionGroup group = new ToConditionGroup(key,config.getStringList(path+"."+key));
+        if (config.contains(path)) {
+            for (String key : config.getConfigurationSection(path).getKeys(false)) {
+                ToConditionGroup group = new ToConditionGroup(key, config.getStringList(path + "." + key));
                 toConditionGroups.add(group);
             }
         }
@@ -61,53 +64,53 @@ public class MainConfigManager {
         this.plugin.setMessagesManager(msgManager);
     }
 
-    public boolean reloadConfig(){
-        if(!configFile.reloadConfig()){
+    public boolean reloadConfig() {
+        if (!configFile.reloadConfig()) {
             return false;
         }
         configure();
         return true;
     }
 
-    public FileConfiguration getConfig(){
+    public FileConfiguration getConfig() {
         return configFile.getConfig();
     }
 
-    public CommonConfig getConfigFile(){
+    public CommonConfig getConfigFile() {
         return this.configFile;
     }
 
-    public void saveConfig(){
+    public void saveConfig() {
         configFile.saveConfig();
     }
 
-    public void checkMessagesUpdate(){
+    public void checkMessagesUpdate() {
         Path pathConfig = Paths.get(configFile.getRoute());
-        try{
+        try {
             String text = new String(Files.readAllBytes(pathConfig));
-            if(!text.contains("use_minimessage:")){
-                getConfig().set("Config.use_minimessage",false);
+            if (!text.contains("use_minimessage:")) {
+                getConfig().set("Config.use_minimessage", false);
                 configFile.saveConfig();
             }
-            if(!text.contains("eventIsNotEnabled:")){
+            if (!text.contains("eventIsNotEnabled:")) {
                 getConfig().set("Messages.eventIsNotEnabled", "&cThat event is not enabled.");
                 saveConfig();
             }
-            if(!text.contains("item_meta_variable_enabled:")){
+            if (!text.contains("item_meta_variable_enabled:")) {
                 getConfig().set("Config.item_meta_variable_enabled", false);
                 saveConfig();
             }
-            if(!text.contains("commandInterruptError:")){
+            if (!text.contains("commandInterruptError:")) {
                 getConfig().set("Messages.commandInterruptError", "&cUse &7/ce interrupt <event> (optional)<player>");
                 getConfig().set("Messages.commandInterruptCorrect", "&aActions of event &7%event% &ainterrupted.");
                 getConfig().set("Messages.commandInterruptCorrectPlayer", "&aActions of event &7%event% &ainterrupted for player &7%player%&a.");
                 saveConfig();
             }
-            if(!text.contains("variable_replacement:")){
+            if (!text.contains("variable_replacement:")) {
                 getConfig().set("Config.experimental.variable_replacement", false);
                 saveConfig();
             }
-            if(!text.contains("commandItemError:")){
+            if (!text.contains("commandItemError:")) {
                 getConfig().set("Messages.commandItemError", "&cUse &7/ce item <save/remove> <name>");
                 getConfig().set("Messages.savedItemDoesNotExists", "&cThat saved item doesn't exists.");
                 getConfig().set("Messages.savedItemRemoved", "&aItem &7%name% &aremoved.");
@@ -116,55 +119,55 @@ public class MainConfigManager {
                 getConfig().set("Messages.savedItemAdded", "&aItem &7%name% &asaved.");
                 saveConfig();
             }
-            if(!text.contains("commandCallCorrectPlayer:")){
+            if (!text.contains("commandCallCorrectPlayer:")) {
                 getConfig().set("Messages.commandCallCorrectPlayer", "&aEvent &7%event% &asuccessfully executed for player &7%player%&a.");
                 saveConfig();
             }
-            if(!text.contains("playerNotOnline:")){
+            if (!text.contains("playerNotOnline:")) {
                 getConfig().set("Messages.playerNotOnline", "&cThat player is not online.");
                 saveConfig();
             }
-            if(!text.contains("debugEnabledPlayer:")){
+            if (!text.contains("debugEnabledPlayer:")) {
                 getConfig().set("Messages.debugEnabledPlayer", "&aDebug now enabled for event &7%event% &aand player &7%player%&a!");
                 getConfig().set("Messages.debugDisabledPlayer", "&aDebug disabled for event &7%event% &aand player &7%player%&a!");
                 getConfig().set("Config.debug_actions", true);
                 saveConfig();
             }
-            if(!text.contains("eventDataResetForAllPlayers:")){
+            if (!text.contains("eventDataResetForAllPlayers:")) {
                 getConfig().set("Messages.eventDataResetForAllPlayers", "&aData reset for &eall players &aon event &e%event%&a!");
                 getConfig().set("Messages.eventDataResetAllForAllPlayers", "&aAll player data reset.");
                 saveConfig();
             }
-            if(!text.contains("commandCallError:")){
+            if (!text.contains("commandCallError:")) {
                 getConfig().set("Messages.commandCallError", "&cUse &7/ce call <event> (optional)%variable1%=<value1>;%variableN%=<valueN>");
                 getConfig().set("Messages.commandCallInvalidEvent", "&cYou can only execute a CALL event.");
                 getConfig().set("Messages.commandCallCorrect", "&aEvent &7%event% &asuccessfully executed.");
                 getConfig().set("Messages.commandCallFailed", "&cEvent &7%event% &ccould not be executed. Maybe a format error?");
                 saveConfig();
             }
-            if(!text.contains("register_commands:")){
+            if (!text.contains("register_commands:")) {
                 List<String> commands = new ArrayList<>();
                 getConfig().set("Config.register_commands", commands);
                 saveConfig();
             }
-            if(!text.contains("placeholderAPICooldownReady:")){
+            if (!text.contains("placeholderAPICooldownReady:")) {
                 getConfig().set("Messages.placeholderAPICooldownReady", "Ready!");
                 getConfig().set("Messages.placeholderAPICooldownNameError", "No event with that name!");
                 saveConfig();
             }
-            if(!text.contains("eventDataResetAll:")){
+            if (!text.contains("eventDataResetAll:")) {
                 getConfig().set("Messages.eventDataResetAll", "&aAll data reset for player &e%player%&a!");
                 saveConfig();
             }
-            if(!text.contains("eventDataReset:")){
+            if (!text.contains("eventDataReset:")) {
                 getConfig().set("Messages.eventDataReset", "&aData reset for player &e%player% &aon event &e%event%&a!");
                 saveConfig();
             }
-            if(!text.contains("data_save_time:")){
+            if (!text.contains("data_save_time:")) {
                 getConfig().set("Config.data_save_time", 5);
                 saveConfig();
             }
-            if(!text.contains("commandDebugError:")){
+            if (!text.contains("commandDebugError:")) {
                 getConfig().set("Messages.commandDebugError", "&cUse &7/ce debug <event>");
                 getConfig().set("Messages.debugEnabled", "&aDebug now enabled for event &7%event%&a!");
                 getConfig().set("Messages.debugDisabled", "&aDebug disabled for event &7%event%&a!");
@@ -172,8 +175,8 @@ public class MainConfigManager {
                 getConfig().set("Messages.playerDoesNotExists", "&cThat player doesn''t have any data.");
                 saveConfig();
             }
-        }catch(IOException e){
-            e.printStackTrace();
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Error while checking messages update.", e);
         }
     }
 
@@ -185,9 +188,9 @@ public class MainConfigManager {
         return debugActions;
     }
 
-    public ToConditionGroup getToConditionGroup(String name){
-        for(ToConditionGroup group : toConditionGroups){
-            if(group.getName().equals(name)) {
+    public ToConditionGroup getToConditionGroup(String name) {
+        for (ToConditionGroup group : toConditionGroups) {
+            if (group.getName().equals(name)) {
                 return group;
             }
         }
