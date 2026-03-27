@@ -1,8 +1,10 @@
 package ce.ajneb97.utils;
 
+import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.api.ConditionalEventsAPI;
 import ce.ajneb97.model.internal.AdditionalEventStorage;
 import dev.lone.itemsadder.api.CustomStack;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -313,5 +315,16 @@ public class GlobalVariablesUtils {
         }
 
         return stack.getNamespace()+":"+stack.getId();
+    }
+
+    public static String variableFormatRemove(String variable){
+        // %format_remove_<text>%
+        String result = variable.replace("format_remove_","");
+        ServerVersion serverVersion = ConditionalEvents.serverVersion;
+        if(ConditionalEventsAPI.getPlugin().getDependencyManager().isPaper() && serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_19_R3)) {
+            result = MiniMessage.miniMessage().escapeTags(result);
+        }
+        result = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&',result));
+        return result;
     }
 }

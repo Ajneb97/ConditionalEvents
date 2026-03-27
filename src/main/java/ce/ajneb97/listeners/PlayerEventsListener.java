@@ -91,7 +91,8 @@ public class PlayerEventsListener implements Listener {
                         new StoredVariable("%reason%",reason),
                         new StoredVariable("%x%",l.getX()+""),
                         new StoredVariable("%y%",l.getY()+""),
-                        new StoredVariable("%z%",l.getZ()+"")
+                        new StoredVariable("%z%",l.getZ()+""),
+                        new StoredVariable("%respawn_world%",l.getWorld().getName())
                 )
                 .checkEvent();
     }

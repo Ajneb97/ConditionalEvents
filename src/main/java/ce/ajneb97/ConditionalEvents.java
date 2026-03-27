@@ -167,11 +167,14 @@ public class ConditionalEvents extends JavaPlugin {
 			case "1.21.11":
 				serverVersion = ServerVersion.v1_21_R7;
 				break;
+			case "26.1":
+				serverVersion = ServerVersion.v26_1;
+				break;
 			default:
 				try{
 					serverVersion = ServerVersion.valueOf(packageName.replace("org.bukkit.craftbukkit.", ""));
 				}catch(Exception e){
-					serverVersion = ServerVersion.v1_21_R7;
+					serverVersion = ServerVersion.v26_1;
 				}
 		}
 	}
