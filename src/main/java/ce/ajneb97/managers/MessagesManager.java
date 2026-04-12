@@ -93,12 +93,16 @@ public class MessagesManager {
 
 	public static String getLegacyColoredMessage(String message) {
 		if(OtherUtils.isNew()) {
-			Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+			Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}|&x(&[a-fA-F0-9]){6}");
 			Matcher match = pattern.matcher(message);
 			
 			while(match.find()) {
 				String color = message.substring(match.start(),match.end());
-				message = message.replace(color, ChatColor.of(color)+"");
+				String colorToUse = color;
+				if(color.startsWith("&x")){
+					colorToUse = "#" + color.substring(2).replace("&", "");
+				}
+				message = message.replace(color, ChatColor.of(colorToUse)+"");
 				
 				match = pattern.matcher(message);
 			}
@@ -115,7 +119,7 @@ public class MessagesManager {
         boolean isBold = false;
        
         for(char c : message.toCharArray()){
-                if(c == '§'){
+                 if(c == '\u00A7'){
                         previousCode = true;
                         continue;
                 }else if(previousCode == true){
