@@ -1,6 +1,7 @@
 Config:
   update_notification: true
   data_save_time: 5
+  retain_player_data_until_restart: true
   debug_actions: true
   experimental:
     variable_replacement: false
@@ -32,7 +33,7 @@ Messages:
   debugEnabledPlayer: '&aDebug now enabled for event &7%event% &aand player &7%player%&a!'
   debugDisabledPlayer: '&aDebug disabled for event &7%event% &aand player &7%player%&a!'
   onlyPlayerCommand: "&cThis command can be only used by a player."
-  playerDoesNotExists: '&cThat player doesn''t have any data.'
+  playerHasNotPlayedRecentlyOrNoData: "&cThat player has not played recently or doesn't have any data."
   seconds: s
   minutes: m
   hours: h

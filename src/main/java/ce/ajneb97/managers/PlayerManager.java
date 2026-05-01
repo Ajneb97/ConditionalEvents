@@ -6,11 +6,9 @@ import ce.ajneb97.model.EventType;
 import ce.ajneb97.model.internal.ConditionEvent;
 import ce.ajneb97.model.player.GenericCallback;
 import ce.ajneb97.model.player.PlayerData;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -104,13 +102,9 @@ public class PlayerManager {
     }
 
     public String resetDataForPlayer(String playerName, String eventName, FileConfiguration messagesConfig){
-        if(Bukkit.getPlayer(playerName) == null){
-            return messagesConfig.getString("Messages.playerNotOnline");
-        }
-
         PlayerData playerData = getPlayerByName(playerName);
         if(playerData == null){
-            return messagesConfig.getString("Messages.playerDoesNotExists");
+            return messagesConfig.getString("Messages.playerHasNotPlayedRecentlyOrNoData");
         }
 
         if(eventName.equals("all")){
@@ -137,11 +131,11 @@ public class PlayerManager {
                     public void run() {
                         String result;
                         if(eventName.equals("all")) {
-                            // All data, Online:
+                            // All data, retained:
                             players.values().forEach(PlayerData::resetAll);
                             result = messagesConfig.getString("Messages.eventDataResetAllForAllPlayers");
                         }else {
-                            // Specific event, Online:
+                            // Specific event, retained:
                             players.values().forEach(p -> p.resetEvent(eventName));
                             result = messagesConfig.getString("Messages.eventDataResetForAllPlayers")
                                     .replace("%event%", eventName);
@@ -163,9 +157,21 @@ public class PlayerManager {
         String playerName = event.getName();
 
         // Load player data from file if exists
-        PlayerData playerData = plugin.getConfigsManager().getPlayerConfigsManager().loadConfig(uuid);
+        PlayerData playerData = null;
+        boolean alreadyOnMemory = false;
+        if(plugin.getConfigsManager().getMainConfigManager().isRetainPlayerDataUntilRestart()){
+            // Try to get retained data
+            playerData = getPlayerByUUID(uuid);
+            alreadyOnMemory = playerData != null;
+        }
+        if(playerData == null){
+            // Try to get file data
+            playerData = plugin.getConfigsManager().getPlayerConfigsManager().loadConfig(uuid);
+        }
         if(playerData != null){
-            addPlayer(playerData);
+            if(!alreadyOnMemory){
+                addPlayer(playerData);
+            }
             if(playerData.getName() == null || !playerData.getName().equals(playerName)){
                 updatePlayerName(playerData.getName(),playerName,uuid);
                 playerData.setName(playerName);
@@ -189,7 +195,11 @@ public class PlayerManager {
                     }
                 }.runTaskAsynchronously(plugin);
             }
-            removePlayer(playerData);
+
+            // Retain player data if enabled
+            if(!plugin.getConfigsManager().getMainConfigManager().isRetainPlayerDataUntilRestart()){
+                removePlayer(playerData);
+            }
         }
     }
 }

@@ -23,6 +23,7 @@ public class MainConfigManager {
     private boolean experimentalVariableReplacement;
     private boolean itemMetaVariableEnabled;
     private boolean useMiniMessage;
+    private boolean retainPlayerDataUntilRestart;
     private ArrayList<ToConditionGroup> toConditionGroups;
     public MainConfigManager(ConditionalEvents plugin){
         this.plugin = plugin;
@@ -39,6 +40,7 @@ public class MainConfigManager {
         experimentalVariableReplacement = config.getBoolean("Config.experimental.variable_replacement");
         itemMetaVariableEnabled = config.getBoolean("Config.item_meta_variable_enabled");
         useMiniMessage = config.getBoolean("Config.use_minimessage");
+        retainPlayerDataUntilRestart = config.getBoolean("Config.retain_player_data_until_restart");
         toConditionGroups = new ArrayList<>();
         String path = "Config.to_condition_groups";
         if(config.contains(path)){
@@ -85,6 +87,11 @@ public class MainConfigManager {
         Path pathConfig = Paths.get(configFile.getRoute());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
+            if(!text.contains("retain_player_data_until_restart:")){
+                getConfig().set("Config.retain_player_data_until_restart",true);
+                getConfig().set("Messages.playerHasNotPlayedRecentlyOrNoData","&cThat player has not played recently or doesn't have any data.");
+                saveConfig();
+            }
             if(!text.contains("use_minimessage:")){
                 getConfig().set("Config.use_minimessage",false);
                 configFile.saveConfig();
@@ -204,5 +211,9 @@ public class MainConfigManager {
 
     public boolean isUseMiniMessage() {
         return useMiniMessage;
+    }
+
+    public boolean isRetainPlayerDataUntilRestart() {
+        return retainPlayerDataUntilRestart;
     }
 }
