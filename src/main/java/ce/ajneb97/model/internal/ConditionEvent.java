@@ -328,4 +328,8 @@ public class ConditionEvent {
     public AdditionalEventStorage getAdditionalEventStorage() {
         return additionalEventStorage;
     }
+
+    public void setAdditionalEventStorage(AdditionalEventStorage additionalEventStorage) {
+        this.additionalEventStorage = additionalEventStorage;
+    }
 }

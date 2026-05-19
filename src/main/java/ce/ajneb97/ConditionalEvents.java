@@ -127,6 +127,11 @@ public class ConditionalEvents extends JavaPlugin {
 		if(dependencyManager.isWorldGuardEvents()){
 			pm.registerEvents(new WGRegionEventsListener(this), this);
 		}
+		if(dependencyManager.isPaper()){
+			if(serverVersion.serverVersionGreaterEqualThan(serverVersion,ServerVersion.v1_12_R1)){
+				pm.registerEvents(new PaperEventsListener(this), this);
+			}
+		}
 	}
 
 	public void setPrefix(){

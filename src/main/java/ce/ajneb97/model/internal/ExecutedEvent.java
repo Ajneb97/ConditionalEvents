@@ -321,7 +321,7 @@ public class ExecutedEvent {
                 ActionUtils.playSoundResourcePack(livingEntity, actionLine);
                 return;
             case CALL_EVENT:
-                ActionUtils.callEvent(actionLine,livingEntity,plugin,eventVariables);
+                ActionUtils.callEvent(actionLine,livingEntity,plugin,eventVariables,target,additionalEventStorage);
                 return;
             case EXECUTE_ACTION_GROUP:
                 ActionUtils.executeActionGroup(actionLine,this,plugin);

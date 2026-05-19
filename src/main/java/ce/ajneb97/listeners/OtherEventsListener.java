@@ -73,8 +73,9 @@ public class OtherEventsListener implements Listener {
             return;
         }
 
-        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.CALL, null)
+        ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.CALL, event.getTarget())
                 .addVariables(event.getVariables());
+        conditionEvent.setAdditionalEventStorage(event.getAdditionalEventStorage());
         eventsManager.checkSingularEvent(conditionEvent,ceEvent);
     }
 

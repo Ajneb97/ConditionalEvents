@@ -12,6 +12,7 @@ import ce.ajneb97.utils.ServerVersion;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -78,11 +79,13 @@ public class ItemEventsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onItemPickUp(PlayerPickupItemEvent event) {
         Player player = event.getPlayer();
-        ItemStack item = event.getItem().getItemStack();
+        Item itemEntity = event.getItem();
+        ItemStack item = itemEntity.getItemStack();
 
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.ITEM_PICKUP, null);
         if(!conditionEvent.containsValidEvents()) return;
-        conditionEvent.setCommonItemVariables(item,null)
+
+        conditionEvent.setCommonItemVariables(item,null).setCommonEntityVariables(itemEntity)
                 .checkEvent();
     }
 

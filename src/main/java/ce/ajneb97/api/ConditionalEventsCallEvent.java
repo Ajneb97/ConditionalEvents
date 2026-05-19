@@ -1,6 +1,8 @@
 package ce.ajneb97.api;
 
 import ce.ajneb97.model.StoredVariable;
+import ce.ajneb97.model.internal.AdditionalEventStorage;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -14,6 +16,8 @@ public class ConditionalEventsCallEvent extends Event{
 	private Player player;
 	private ArrayList<StoredVariable> variables;
 	private String event;
+	private LivingEntity target;
+	private AdditionalEventStorage additionalEventStorage;
 	private static final HandlerList handlers = new HandlerList();
 
 	public ConditionalEventsCallEvent(Player player, ArrayList<StoredVariable> variables, String event){
@@ -32,6 +36,22 @@ public class ConditionalEventsCallEvent extends Event{
 
 	public ArrayList<StoredVariable> getVariables() {
 		return variables;
+	}
+
+	public LivingEntity getTarget() {
+		return target;
+	}
+
+	public AdditionalEventStorage getAdditionalEventStorage() {
+		return additionalEventStorage;
+	}
+
+	public void setTarget(LivingEntity target) {
+		this.target = target;
+	}
+
+	public void setAdditionalEventStorage(AdditionalEventStorage additionalEventStorage) {
+		this.additionalEventStorage = additionalEventStorage;
 	}
 
 	@Override

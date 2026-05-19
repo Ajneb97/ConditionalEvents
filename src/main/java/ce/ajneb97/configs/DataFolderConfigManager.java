@@ -4,6 +4,7 @@ import ce.ajneb97.ConditionalEvents;
 import ce.ajneb97.configs.model.CommonConfig;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 public abstract class DataFolderConfigManager {
@@ -51,17 +52,26 @@ public abstract class DataFolderConfigManager {
 
         String pathFile = plugin.getDataFolder() + File.separator + folderName;
         File folder = new File(pathFile);
+        collectConfigs(folder,configs);
+
+        return configs;
+    }
+
+    private void collectConfigs(File folder, ArrayList<CommonConfig> configs) {
         File[] listOfFiles = folder.listFiles();
+        if (listOfFiles == null) return;
+
         for (File file : listOfFiles) {
-            if (file.isFile()) {
-                String pathName = file.getName();
-                CommonConfig commonConfig = new CommonConfig(pathName, plugin, folderName, true);
+            if (file.isDirectory()) {
+                collectConfigs(file, configs);
+            } else if (file.isFile() && file.getName().endsWith(".yml")) {
+                Path basePath = new File(plugin.getDataFolder(), folderName).toPath();
+                String path = basePath.relativize(file.toPath()).toString();
+                CommonConfig commonConfig = new CommonConfig(path, plugin, folderName, true);
                 commonConfig.registerConfig();
                 configs.add(commonConfig);
             }
         }
-
-        return configs;
     }
 
     public abstract void createFiles();

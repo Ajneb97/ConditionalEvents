@@ -9,6 +9,7 @@ import ce.ajneb97.managers.InterruptEventManager;
 import ce.ajneb97.managers.MessagesManager;
 import ce.ajneb97.managers.dependencies.DiscordSRVManager;
 import ce.ajneb97.model.StoredVariable;
+import ce.ajneb97.model.internal.AdditionalEventStorage;
 import ce.ajneb97.model.internal.ExecutedEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -1054,7 +1055,8 @@ public class ActionUtils {
         }
     }
 
-    public static boolean callEvent(String actionLine,LivingEntity livingEntity,ConditionalEvents plugin,ArrayList<StoredVariable> storedVariables){
+    public static boolean callEvent(String actionLine, LivingEntity livingEntity, ConditionalEvents plugin, ArrayList<StoredVariable> storedVariables,
+                                    LivingEntity target, AdditionalEventStorage additionalEventStorage){
         // If livingEntity exists, it must be a player
         Player player = null;
         if(livingEntity instanceof Player){
@@ -1065,6 +1067,7 @@ public class ActionUtils {
         // call_event: <event>;%variable1%=<value1>;%variable2%=<value2>;already_stored
         ArrayList<StoredVariable> variables = new ArrayList<>();
         String eventName = null;
+        boolean alreadyStored = false;
         try{
             String[] sep = actionLine.split(";");
             eventName = sep[0];
@@ -1074,6 +1077,7 @@ public class ActionUtils {
                         if(storedVariables != null){
                             variables.addAll(storedVariables);
                         }
+                        alreadyStored = true;
                         continue;
                     }
 
@@ -1091,6 +1095,10 @@ public class ActionUtils {
         }
 
         ConditionalEventsCallEvent event = new ConditionalEventsCallEvent(player,variables,eventName);
+        if(alreadyStored){
+            event.setTarget(target);
+            event.setAdditionalEventStorage(additionalEventStorage);
+        }
         plugin.getServer().getPluginManager().callEvent(event);
         return true;
     }

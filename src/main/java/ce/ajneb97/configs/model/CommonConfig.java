@@ -10,35 +10,39 @@ import java.io.IOException;
 
 public class CommonConfig {
 
-    private String fileName;
+    private String filePath;
     private FileConfiguration fileConfiguration = null;
     private File file = null;
-    private String route;
+    private String fullPath;
     private ConditionalEvents plugin;
     private String folderName;
     private boolean newFile;
     private boolean isFirstTime;
 
-    public CommonConfig(String fileName, ConditionalEvents plugin, String folderName, boolean newFile){
-        this.fileName = fileName;
+    public CommonConfig(String filePath, ConditionalEvents plugin, String folderName, boolean newFile){
+        this.filePath = filePath;
         this.plugin = plugin;
         this.newFile = newFile;
         this.folderName = folderName;
         this.isFirstTime = false;
     }
 
-    public String getPath(){
-        return this.fileName;
+    public String getFilePath(){
+        return this.filePath;
+    }
+
+    public String getFileName(){
+        return filePath.substring(filePath.lastIndexOf(File.separator) + 1);
     }
 
     public void registerConfig(){
         if(folderName != null){
-            file = new File(plugin.getDataFolder() +File.separator + folderName,fileName);
+            file = new File(plugin.getDataFolder() +File.separator + folderName, filePath);
         }else{
-            file = new File(plugin.getDataFolder(), fileName);
+            file = new File(plugin.getDataFolder(), filePath);
         }
 
-        route = file.getPath();
+        fullPath = file.getPath();
 
         if(!file.exists()){
             isFirstTime = true;
@@ -50,9 +54,9 @@ public class CommonConfig {
                 }
             }else {
                 if(folderName != null){
-                    plugin.saveResource(folderName+File.separator+fileName, false);
+                    plugin.saveResource(folderName+File.separator+filePath, false);
                 }else{
-                    plugin.saveResource(fileName, false);
+                    plugin.saveResource(filePath, false);
                 }
 
             }
@@ -85,9 +89,9 @@ public class CommonConfig {
     public boolean reloadConfig() {
         if (fileConfiguration == null) {
             if(folderName != null){
-                file = new File(plugin.getDataFolder() +File.separator + folderName, fileName);
+                file = new File(plugin.getDataFolder() +File.separator + folderName, filePath);
             }else{
-                file = new File(plugin.getDataFolder(), fileName);
+                file = new File(plugin.getDataFolder(), filePath);
             }
 
         }
@@ -100,8 +104,8 @@ public class CommonConfig {
         return true;
     }
 
-    public String getRoute() {
-        return route;
+    public String getFullPath() {
+        return fullPath;
     }
 
     public boolean isFirstTime() {

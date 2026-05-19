@@ -257,7 +257,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 			player = (Player) sender;
 		}
 
-		if(ActionUtils.callEvent(actionLine,player,plugin,null)){
+		if(ActionUtils.callEvent(actionLine,player,plugin,null,null,null)){
 			if(silent){
 				return;
 			}

@@ -84,7 +84,7 @@ public class MainConfigManager {
     }
 
     public void checkMessagesUpdate(){
-        Path pathConfig = Paths.get(configFile.getRoute());
+        Path pathConfig = Paths.get(configFile.getFullPath());
         try{
             String text = new String(Files.readAllBytes(pathConfig));
             if(!text.contains("retain_player_data_until_restart:")){

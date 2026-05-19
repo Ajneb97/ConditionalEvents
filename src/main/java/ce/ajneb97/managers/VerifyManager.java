@@ -155,7 +155,7 @@ public class VerifyManager {
                     }
                     String variable = line.substring(startPos,lastPos);
 
-                    if(variable.startsWith("random_") && !variable.startsWith("random_player")){
+                    if(variable.startsWith("random_") && !variable.startsWith("random_player") && !variable.startsWith("random_last")){
                         String[] sep = variable.split("_");
                         if(sep.length != 3){
                             return false;
