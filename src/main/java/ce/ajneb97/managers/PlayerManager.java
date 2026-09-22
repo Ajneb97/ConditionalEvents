@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerManager {
 
@@ -23,8 +24,8 @@ public class PlayerManager {
     private Map<String,UUID> playerNames;
     public PlayerManager(ConditionalEvents plugin){
         this.plugin = plugin;
-        this.players = new HashMap<>();
-        this.playerNames = new HashMap<>();
+        this.players = new ConcurrentHashMap<>();
+        this.playerNames = new ConcurrentHashMap<>();
     }
 
     public Map<UUID,PlayerData> getPlayers() {
