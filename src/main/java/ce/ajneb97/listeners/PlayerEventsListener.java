@@ -113,6 +113,14 @@ public class PlayerEventsListener implements Listener {
             if(entityDamageEvent instanceof EntityDamageByEntityEvent) {
                 EntityDamageByEntityEvent event2 = (EntityDamageByEntityEvent) entityDamageEvent;
                 Entity killer = event2.getDamager();
+
+                if(killer instanceof Projectile) {
+                    Projectile projectile = (Projectile) killer;
+                    if(projectile.getShooter() instanceof Entity) {
+                        killer = (Entity) projectile.getShooter();
+                    }
+                }
+
                 killerType = killer.getType().name();
                 if(killer.getCustomName() != null) {
                     if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
@@ -272,6 +280,14 @@ public class PlayerEventsListener implements Listener {
         if(event instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent event2 = (EntityDamageByEntityEvent) event;
             Entity damager = event2.getDamager();
+
+            if(damager instanceof Projectile) {
+                Projectile projectile = (Projectile) damager;
+                if(projectile.getShooter() instanceof Entity) {
+                    damager = (Entity) projectile.getShooter();
+                }
+            }
+
             damagerType = damager.getType().name();
             if(damager != null && damager.getCustomName() != null) {
                 if(plugin.getConfigsManager().getMainConfigManager().isUseMiniMessage()){
@@ -318,7 +334,7 @@ public class PlayerEventsListener implements Listener {
 
         ConditionEvent conditionEvent = new ConditionEvent(plugin, player, event, EventType.BLOCK_PLACE, null);
         if(!conditionEvent.containsValidEvents()) return;
-        conditionEvent.setCommonItemVariables(player.getItemInHand(),null)
+        conditionEvent.setCommonItemVariables(event.getItemInHand(),null)
                 .setCommonBlockVariables(block)
                 .checkEvent();
     }

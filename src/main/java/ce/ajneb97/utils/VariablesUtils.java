@@ -257,6 +257,9 @@ public class VariablesUtils {
         }else if(variable.startsWith("format_remove")) {
             // %format_remove_<text>%
             return GlobalVariablesUtils.variableFormatRemove(variable);
+        }else if(variable.startsWith("player_looking_")) {
+            // %player_looking_<block/entity>_<max_distance>%
+            return GlobalVariablesUtils.variablePlayerLooking(finalPlayer,variable);
         }
 
         // ends with

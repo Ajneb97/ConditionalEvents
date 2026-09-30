@@ -6,7 +6,7 @@
 
     <groupId>ce.ajneb97</groupId>
     <artifactId>ConditionalEvents</artifactId>
-    <version>4.80.1</version>
+    <version>4.80.2</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>26.1.2.build.69-stable</version>
+            <version>26.3.build.136-beta</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

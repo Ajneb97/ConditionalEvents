@@ -10,9 +10,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -326,5 +328,40 @@ public class GlobalVariablesUtils {
         }
         result = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&',result));
         return result;
+    }
+
+    public static String variablePlayerLooking(Player finalPlayer,String variable){
+        // %player_looking_<block/entity>_<max_distance>%
+        String[] sep = variable.replace("player_looking_","").split("_");
+        String type = sep[0];
+        int maxDistance = Integer.parseInt(sep[1]);
+
+        // 1.16.5+
+        if(type.equals("block")){
+            try{
+                Block b = finalPlayer.getTargetBlockExact(maxDistance);
+                return b != null ? b.getType().name() : "AIR";
+            }catch(Exception e){
+                return "AIR";
+            }
+        }else if(type.equals("entity")){
+            try{
+                RayTraceResult result = finalPlayer.getWorld().rayTraceEntities(
+                        finalPlayer.getEyeLocation(),
+                        finalPlayer.getEyeLocation().getDirection(),
+                        maxDistance,
+                        e -> e != finalPlayer
+                );
+
+                if (result != null && result.getHitEntity() != null) {
+                    return result.getHitEntity().getType().name();
+                }else{
+                    return "NONE";
+                }
+            }catch(Exception e){
+                return "NONE";
+            }
+        }
+        return "";
     }
 }
