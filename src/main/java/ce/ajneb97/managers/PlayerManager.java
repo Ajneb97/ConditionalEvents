@@ -63,6 +63,9 @@ public class PlayerManager {
 
     public PlayerData getPlayerByName(String name){
         UUID uuid = getPlayerUUID(name);
+        if(uuid == null){
+            return null;
+        }
         return players.get(uuid);
     }
 
